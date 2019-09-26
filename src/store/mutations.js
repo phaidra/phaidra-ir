@@ -64,7 +64,7 @@ export default {
         }
       )
     }
-    if (transition.to.name === 'submitresource') {
+    if (transition.to.name === 'submit-ir') {
       state.breadcrumbs.push(
         {
           text: 'Submit',
@@ -73,41 +73,18 @@ export default {
       )
       state.breadcrumbs.push(
         {
-          text: 'Submit ' + transition.to.params.cmodel,
+          text: 'Submit ' + transition.to.params.submitform,
           disabled: true
         }
       )
     }
-    if (transition.to.name === 'submitform') {
+    if (transition.to.name === 'admin') {
       state.breadcrumbs.push(
         {
-          text: 'Submit',
-          to: '/submit'
+          text: 'Admin',
+          disabled: true
         }
       )
-      if (transition.to.params.cmodel !== 'resource') {
-        state.breadcrumbs.push(
-          {
-            text: 'Submit ' + transition.to.params.cmodel,
-            to: { name: transition.from.name, params: { cmodel: transition.from.params.cmodel } }
-          }
-        )
-      }
-      if (transition.to.params.submitform !== 'general') {
-        state.breadcrumbs.push(
-          {
-            text: 'Submit ' + transition.to.params.cmodel + ' ' + transition.to.params.submitform,
-            disabled: true
-          }
-        )
-      } else {
-        state.breadcrumbs.push(
-          {
-            text: 'Submit ' + transition.to.params.cmodel,
-            disabled: true
-          }
-        )
-      }
     }
   },
   setGroups (state, groups) {

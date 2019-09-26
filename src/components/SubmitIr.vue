@@ -501,7 +501,7 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-entity-extended'">
-                    <v-col cols="10">
+                    <v-col cols="10" v-show="f.role !== 'role:uploader'">
                       <p-i-entity-extended
                         v-bind.sync="f"
                         v-on:change-type="f.type = $event"
@@ -1882,6 +1882,13 @@ export default {
       }
       smf.push(tf)
 
+      let uploader = fields.getField('role-extended')
+      uploader.role = 'role:uploader'
+      uploader.roleVocabulary = 'rolepredicate'
+      uploader.firstname = this.user.firstname
+      uploader.lastname = this.user.lastname
+      smf.push(uploader)
+
       if (doiImportData && doiImportData.authors.length > 0) {
         for (let author of doiImportData.authors) {
           let role = fields.getField('role-extended')
@@ -2070,68 +2077,72 @@ export default {
               }
             }
             if (f.component === 'p-entity-extended') {
-              f.firstnameErrorMessages = []
-              f.lastnameErrorMessages = []
-              f.roleErrorMessages = []
-              f.affiliationErrorMessages = []
-              f.affiliationTextErrorMessages = []
-              f.organizationErrorMessages = []
-              f.organizationTextErrorMessages = []
-              if (f.role.length < 1) {
-                f.roleErrorMessages.push(this.$t('Missing role'))
-                this.validationStatus = 'error'
-              }
-              if (f.type === 'schema:Person') {
-                if (f.firstname.length < 1) {
-                  f.firstnameErrorMessages.push(this.$t('Missing firstname'))
+              if (f.role !== 'role:uploader') {
+                f.firstnameErrorMessages = []
+                f.lastnameErrorMessages = []
+                f.roleErrorMessages = []
+                f.affiliationErrorMessages = []
+                f.affiliationTextErrorMessages = []
+                f.organizationErrorMessages = []
+                f.organizationTextErrorMessages = []
+                if (f.role.length < 1) {
+                  f.roleErrorMessages.push(this.$t('Missing role'))
                   this.validationStatus = 'error'
                 }
-                if (f.lastname.length < 1) {
-                  f.lastnameErrorMessages.push(this.$t('Missing lastname'))
-                  this.validationStatus = 'error'
-                }
-                if (f.affiliationType === 'select') {
-                  if (f.affiliation.length < 1) {
-                    f.affiliationErrorMessages.push(this.$t('Missing affiliation'))
-                    this.validationStatus = 'error'
-                  } else {
-                    hasLocalAffiliation = true
-                  }
-                }
-                if (f.affiliationType === 'other') {
-                  if (f.affiliationText.length < 1) {
-                    f.affiliationTextErrorMessages.push(this.$t('Missing affiliation'))
+                if (f.type === 'schema:Person') {
+                  if (f.firstname.length < 1) {
+                    f.firstnameErrorMessages.push(this.$t('Missing firstname'))
                     this.validationStatus = 'error'
                   }
-                }
-              }
-              if (f.type === 'schema:Organization') {
-                if (f.organizationType === 'select') {
-                  if (f.organization.length < 1) {
-                    f.organizationErrorMessages.push(this.$t('Missing organization'))
+                  if (f.lastname.length < 1) {
+                    f.lastnameErrorMessages.push(this.$t('Missing lastname'))
                     this.validationStatus = 'error'
-                  } else {
-                    hasLocalAffiliation = true
+                  }
+                  if (f.affiliationType === 'select') {
+                    if (f.affiliation.length < 1) {
+                      f.affiliationErrorMessages.push(this.$t('Missing affiliation'))
+                      this.validationStatus = 'error'
+                    } else {
+                      hasLocalAffiliation = true
+                    }
+                  }
+                  if (f.affiliationType === 'other') {
+                    if (f.affiliationText.length < 1) {
+                      f.affiliationTextErrorMessages.push(this.$t('Missing affiliation'))
+                      this.validationStatus = 'error'
+                    }
                   }
                 }
-                if (f.organizationType === 'other') {
-                  if (f.organizationText.length < 1) {
-                    f.organizationTextErrorMessages.push(this.$t('Missing organization'))
-                    this.validationStatus = 'error'
+                if (f.type === 'schema:Organization') {
+                  if (f.organizationType === 'select') {
+                    if (f.organization.length < 1) {
+                      f.organizationErrorMessages.push(this.$t('Missing organization'))
+                      this.validationStatus = 'error'
+                    } else {
+                      hasLocalAffiliation = true
+                    }
+                  }
+                  if (f.organizationType === 'other') {
+                    if (f.organizationText.length < 1) {
+                      f.organizationTextErrorMessages.push(this.$t('Missing organization'))
+                      this.validationStatus = 'error'
+                    }
                   }
                 }
               }
             }
             if (f.component === 'p-date-edtf') {
-              f.typeErrorMessages = []
-              f.valueErrorMessages = []
-              if (f.type.length < 1) {
-                f.typeErrorMessages.push(this.$t('Missing date type'))
-                this.validationStatus = 'error'
-              }
-              if (f.value.length < 1) {
-                f.valueErrorMessages.push(this.$t('Missing date'))
-                this.validationStatus = 'error'
+              if (this.showEmbargoDate || f.type !== 'dcterms:available' ) {
+                f.typeErrorMessages = []
+                f.valueErrorMessages = []
+                if (f.type.length < 1) {
+                  f.typeErrorMessages.push(this.$t('Missing date type'))
+                  this.validationStatus = 'error'
+                }
+                if (f.value.length < 1) {
+                  f.valueErrorMessages.push(this.$t('Missing date'))
+                  this.validationStatus = 'error'
+                }
               }
             }
             if (f.component === 'p-select') {
