@@ -9,13 +9,12 @@
               :initValue="q"
               :suggester="'titlesuggester'"
               :customParams="{ token: 'dev' }"
-              :classes="{ input: 'form-control', wrapper: 'input-wrapper'}"
+              :classes="{ input: 'form-control', wrapper: 'input-wrapper' }"
               :onSelect="handleSelect"
               solo
             ></autocomplete>
           </v-col>
           <v-spacer></v-spacer>
-          
         </v-row>
         <v-row justify="space-between">
           <v-col cols="6">
@@ -73,12 +72,13 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import qs from 'qs'
 import axios from 'axios'
 import Autocomplete from './Autocomplete'
 import AdminSearchResults from './AdminSearchResults'
-import SearchToolbar from './SearchToolbar'
 import PPagination from 'phaidra-vue-components/src/components/utils/PPagination'
+import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import '@/compiled-icons/fontello-sort-name-up'
 import '@/compiled-icons/fontello-sort-name-down'
 import '@/compiled-icons/fontello-sort-number-up'
@@ -90,14 +90,14 @@ import { facetQueries, updateFacetQueries, persAuthors, corpAuthors, deactivateF
 import { buildParams, buildSearchDef, sortdef } from '../utils/searchutils'
 import { setSearchParams } from '../utils/searchlocation'
 import { config } from '@/mixins/config'
+import { context } from '@/mixins/context'
 
 export default {
   name: 'admin-search',
-  mixins: [ config ],
+  mixins: [ config, context, vocabulary ],
   components: {
     Autocomplete,
     AdminSearchResults,
-    SearchToolbar,
     PPagination
   },
   computed: {
@@ -140,7 +140,7 @@ export default {
 
       Object.assign(this, options)
 
-      let { searchdefarr, ands } = buildSearchDef(this)
+      let { ands } = buildSearchDef(this)
       ands.push('isinadminset:"' + this.config.adminset + '"')
       let params = buildParams(this, ands)
       let response = await axios.post(this.config.solr + '/select',
@@ -158,6 +158,27 @@ export default {
         pagePids.push(d.pid)
       }
       // call add requested licenses
+      let rlresponse = await axios.post(this.config.api + '/ir/requestedlicenses',
+        null,
+        {
+          headers: {
+            'X-XSRF-TOKEN': this.user.token
+          },
+          params: {
+            pids: pagePids
+          }
+        }
+      )
+
+      if (rlresponse.data.requestedlicenses) {
+        for (let rl of rlresponse.data.requestedlicenses) {
+          for (let d of this.docs) {
+            if (rl.pid === d.pid) {
+              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('licenses', rl.requestedlicense))
+            }
+          }
+        }
+      }
     },
     handleSelect: function ({ term, payload }) {
       // called from Autocomplete

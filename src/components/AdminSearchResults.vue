@@ -3,20 +3,20 @@
     <template v-for="(doc, i) in this.docs">
       <v-row :key="'doc'+i">
         <v-col cols="1" class="text-right">
-          <span>{{ doc.created | date }}</span>
+          {{ doc.created | date }}
         </v-col>
         <v-col cols="1">
           <span v-if="doc.bib_roles_pers_uploader && doc.bib_roles_pers_uploader[0]">{{ doc.bib_roles_pers_uploader[0] }}</span>
           <span v-else>{{ doc.owner }}</span>
         </v-col>
         <v-col cols="1">
-          <span>{{ doc.pid }}</span>
+          {{ doc.pid }}
         </v-col>
         <v-col cols="4">
           <router-link class="font-weight-light primary--text" :to="{ name: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] | truncate(130) }}</router-link>
         </v-col>
         <v-col cols="1">
-          requested license
+          {{ doc.requestedlicense }}
         </v-col>
         <v-col cols="1">
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">

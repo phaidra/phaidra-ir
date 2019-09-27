@@ -2235,6 +2235,7 @@ export default {
       if (!self) {
         self = this
       }
+      self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
       self.loadTemplates()
