@@ -685,5 +685,6 @@ export default {
   'Please contact me via email': 'Bitte benachrichtigen Sie mich per E-Mail',
   'as soon as my submission has been successfully verified': 'sobald meine Eingaben erfolgreich geprüft wurden',
   'as soon as the embargo period has expired': 'sobald die Embargofrist abgelaufen ist',
-  'Please notify me by e-mail as soon as my object is fully accessible.': 'Bitte benachrichtigen Sie mich per E-Mail, sobald mein Objekt voll freigeschaltet ist.'
+  'Please notify me by e-mail as soon as my object is fully accessible.': 'Bitte benachrichtigen Sie mich per E-Mail, sobald mein Objekt voll freigeschaltet ist.',
+  'This item needs to be cleared by the repository management.': 'Dieser Eintrag muss noch vom Repository Management frei gegeben werden.'
 }

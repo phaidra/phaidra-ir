@@ -2132,7 +2132,7 @@ export default {
               }
             }
             if (f.component === 'p-date-edtf') {
-              if (this.showEmbargoDate || f.type !== 'dcterms:available' ) {
+              if (this.showEmbargoDate || f.type !== 'dcterms:available') {
                 f.typeErrorMessages = []
                 f.valueErrorMessages = []
                 if (f.type.length < 1) {

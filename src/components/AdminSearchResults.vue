@@ -5,17 +5,17 @@
         <v-col cols="1" class="text-right">
           {{ doc.created | date }}
         </v-col>
-        <v-col cols="1">
+        <v-col cols="2">
           <span v-if="doc.bib_roles_pers_uploader && doc.bib_roles_pers_uploader[0]">{{ doc.bib_roles_pers_uploader[0] }}</span>
           <span v-else>{{ doc.owner }}</span>
         </v-col>
         <v-col cols="1">
           {{ doc.pid }}
         </v-col>
-        <v-col cols="4">
-          <router-link class="font-weight-light primary--text" :to="{ name: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] | truncate(130) }}</router-link>
+        <v-col cols="3">
+          <router-link class="font-weight-light primary--text" :to="{ name: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] | truncate(100) }}</router-link>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="2">
           {{ doc.requestedlicense }}
         </v-col>
         <v-col cols="1">
@@ -23,12 +23,13 @@
             <v-icon dark>history</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="3">
-          <v-btn dark class="mx-2 font-weight-regular" color="primary" v-if="doc.owner !== config.iraccount" @click="accept(doc.pid)">Accept</v-btn>
-          <v-btn dark class="mx-2 font-weight-regular" color="grey darken-1" v-if="doc.owner !== config.iraccount" @click="reject(doc.pid)">Reject</v-btn>
-          <v-btn dark class="mx-2 font-weight-regular" color="grey darken-1" :to="{ name: 'metadataeditor', params: { pid: doc.pid } }">Edit</v-btn>
-          <v-btn dark class="mx-2 font-weight-regular" color="primary" @click="approve(doc.pid)">Approve</v-btn>
-          <v-icon class="mx-2">mdi-check</v-icon>
+        <v-col cols="2">
+          <v-spacer></v-spacer>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="primary" v-if="isNew(doc)" @click="accept(doc.pid)">Accept</v-btn>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="grey darken-1 white--text" v-if="isNew(doc)" @click="reject(doc.pid)">Reject</v-btn>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="grey darken-1 white--text" v-if="isAccepted(doc)" :to="{ name: 'metadataeditor', params: { pid: doc.pid } }">Edit</v-btn>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="primary" @click="approve(doc.pid)" v-if="isAccepted(doc) && !isApproved(doc)">Approve</v-btn>
+          <v-icon class="mx-2" v-if="isApproved(doc)">mdi-check</v-icon>
         </v-col>
       </v-row>
       <v-divider :key="'div'+doc.pid" class="my-4 mr-2"></v-divider>
@@ -49,19 +50,14 @@
 </template>
 
 <script>
-import PDLicense from 'phaidra-vue-components/src/components/display/PDLicense'
-import PImg from 'phaidra-vue-components/src/components/utils/PImg'
-import PExpandText from 'phaidra-vue-components/src/components/utils/PExpandText'
+import Vue from 'vue'
+import axios from 'axios'
 import { config } from '@/mixins/config'
+import { context } from '@/mixins/context'
 
 export default {
   name: 'admin-search-results',
-  mixins: [ config ],
-  components: {
-    PDLicense,
-    PImg,
-    PExpandText
-  },
+  mixins: [ config, context ],
   props: {
     getallresults: {
       type: Function,
@@ -70,16 +66,99 @@ export default {
     docs: {
       type: Array
     },
-    total: Number
+    total: Number,
+    search: Function
   },
   data () {
     return {
-      historyDialog: false
+      historyDialog: false,
+      loading: {}
     }
   },
   methods: {
+    isApproved: function (doc) {
+      return (doc.owner === this.config.iraccount) && doc.ispartof && doc.ispartof.includes(this.config.ircollection)
+    },
+    isAccepted: function (doc) {
+      return doc.owner === this.config.iraccount
+    },
+    isNew: function (doc) {
+      return doc.owner !== this.config.iraccount
+    },
     openHistory: function (pid) {
       this.historyDialog = true
+    },
+    approve: async function (pid) {
+      Vue.set(this.loading, pid, true)
+      try {
+        let response = await axios.post(this.config.api + '/ir/approve',
+          null,
+          {
+            headers: {
+              'X-XSRF-TOKEN': this.user.token
+            },
+            params: {
+              pid: pid
+            }
+          }
+        )
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        Vue.set(this.loading, pid, false)
+        this.search()
+      }
+    },
+    accept: async function (pid) {
+      Vue.set(this.loading, pid, true)
+      try {
+        let response = await axios.post(this.config.api + '/ir/accept',
+          null,
+          {
+            headers: {
+              'X-XSRF-TOKEN': this.user.token
+            },
+            params: {
+              pid: pid
+            }
+          }
+        )
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        Vue.set(this.loading, pid, false)
+        this.search()
+      }
+    },
+    reject: async function (pid) {
+      Vue.set(this.loading, pid, true)
+      try {
+        let response = await axios.post(this.config.api + '/ir/reject',
+          null,
+          {
+            headers: {
+              'X-XSRF-TOKEN': this.user.token
+            },
+            params: {
+              pid: pid
+            }
+          }
+        )
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        Vue.set(this.loading, pid, false)
+        this.search()
+      }
     }
   }
 }

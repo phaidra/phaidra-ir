@@ -5,6 +5,10 @@
 
         <v-col cols="12" md="8">
 
+          <v-alert type="info" outlined v-if="!isApproved">
+            {{ $t('This item needs to be cleared by the repository management.') }}
+          </v-alert>
+
           <v-row justify="start">
             <a :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/get'">
               <img v-if="objectInfo.cmodel === 'PDFDocument'" class="elevation-1" :src="'https://' + config.phaidrabaseurl + '/preview/' + objectInfo.pid + '/Document/preview/480'" />
@@ -309,6 +313,9 @@ export default {
           return false
       }
     },
+    isApproved: function () {
+      return (this.objectInfo.owner.username === this.config.iraccount) && this.objectInfo.ispartof && this.objectInfo.ispartof.includes(this.config.ircollection)
+    },
     coverPid: function () {
       // HACK
       var pidNumStr = this.objectInfo.pid.substr(2)
@@ -319,10 +326,6 @@ export default {
   methods: {
     async fetchAsyncData (self, pid) {
       await self.$store.dispatch('fetchObjectInfo', pid)
-      await self.$store.dispatch('fetchObjectMembers', pid)
-    },
-    getMemberDownloadUrl: function (member) {
-      return this.config.api + '/object/' + member.pid + '/diss/Content/download'
     }
   },
   serverPrefetch () {

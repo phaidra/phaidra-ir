@@ -63,7 +63,8 @@
             :docs="docs"
             :total="total"
             :selectioncheck="selectioncheck"
-            :getallresults="getAllResults">
+            :getallresults="getAllResults"
+            :search="search">
           </admin-search-results>
           <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page" class="mb-3" />
         </v-row>
