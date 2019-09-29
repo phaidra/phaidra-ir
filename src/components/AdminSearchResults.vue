@@ -39,7 +39,18 @@
         <v-card-title>
           <h3 class="title font-weight-light primary--text">{{ $t('History') }}</h3>
         </v-card-title>
-        <v-card-text>history</v-card-text>
+        <v-card-text>
+          <v-container>
+            <template v-for="(e, i) in this.events">
+              <v-row :key="'row'+i">
+                <v-col>{{ e.event }}</v-col>
+                <v-col>{{ e.username }}</v-col>
+                <v-col>{{ e.ts | time }}</v-col>
+              </v-row>
+              <v-divider :key="'div'+i"></v-divider>
+            </template>
+          </v-container>
+        </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" text @click.stop="historyDialog=false">Close</v-btn>
@@ -59,10 +70,6 @@ export default {
   name: 'admin-search-results',
   mixins: [ config, context ],
   props: {
-    getallresults: {
-      type: Function,
-      required: true
-    },
     docs: {
       type: Array
     },
@@ -72,7 +79,8 @@ export default {
   data () {
     return {
       historyDialog: false,
-      loading: {}
+      loading: {},
+      events: []
     }
   },
   methods: {
@@ -85,20 +93,37 @@ export default {
     isNew: function (doc) {
       return doc.owner !== this.config.iraccount
     },
-    openHistory: function (pid) {
-      this.historyDialog = true
+    openHistory: async function (pid) {
+      Vue.set(this.loading, pid, true)
+      try {
+        let response = await axios.get(this.config.api + '/ir/' + pid + '/events',
+          {
+            headers: {
+              'X-XSRF-TOKEN': this.user.token
+            }
+          }
+        )
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
+        }
+        if (response.data.events) {
+          this.events = response.data.events
+          this.historyDialog = true
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        Vue.set(this.loading, pid, false)
+      }
     },
     approve: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.post(this.config.api + '/ir/approve',
+        let response = await axios.post(this.config.api + '/ir/' + pid + '/approve',
           null,
           {
             headers: {
               'X-XSRF-TOKEN': this.user.token
-            },
-            params: {
-              pid: pid
             }
           }
         )
@@ -115,14 +140,11 @@ export default {
     accept: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.post(this.config.api + '/ir/accept',
+        let response = await axios.post(this.config.api + '/ir/' + pid + '/accept',
           null,
           {
             headers: {
               'X-XSRF-TOKEN': this.user.token
-            },
-            params: {
-              pid: pid
             }
           }
         )
@@ -139,14 +161,11 @@ export default {
     reject: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.post(this.config.api + '/ir/reject',
+        let response = await axios.post(this.config.api + '/ir/' + pid + '/reject',
           null,
           {
             headers: {
               'X-XSRF-TOKEN': this.user.token
-            },
-            params: {
-              pid: pid
             }
           }
         )

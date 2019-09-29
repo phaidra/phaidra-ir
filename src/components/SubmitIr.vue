@@ -1704,6 +1704,13 @@ export default {
               c.label = this.$t('Type of publication')
               c.hint = this.$t('The publication type you choose can restrict the possible version type values.')
             }
+            if (c.predicate === 'rdau:P60101') {
+              c.label = this.$t('Appeared in')
+              c.hideVolume = true
+              c.hideIssue = true
+              c.hideIssued = true
+              c.hideIssn = true
+            }
             if (c.predicate === 'dcterms:accessRights') {
               c.vocabulary = 'iraccessright'
             }
@@ -1824,6 +1831,13 @@ export default {
               c.label = c.value.contains('isbn:') ? 'ISBN' : 'DOI'
               c.multiplicable = true
             }
+            if (this.submitformparam !== 'journal-article') {
+              c.label = this.$t('Appeared in')
+              c.hideVolume = true
+              c.hideIssue = true
+              c.hideIssued = true
+              c.hideIssn = true
+            }
             added = true
             sof.push(c)
             if (fieldId === 'gnd-subject') {
@@ -1933,6 +1947,17 @@ export default {
       }
       smf.push(otf)
 
+      if (this.submitformparam === 'book-part') {
+        let sf = fields.getField('series')
+        sf.label = this.$t('Appeared in')
+        sf.predicate = 'rdau:P60101'
+        sf.hideVolume = true
+        sf.hideIssue = true
+        sf.hideIssued = true
+        sf.hideIssn = true
+        smf.push(sf)
+      }
+
       if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
         let pf = fields.getField('bf-publication')
         pf.multiplicable = false
@@ -2001,29 +2026,33 @@ export default {
 
       sof.push(fields.getField('keyword'))
 
-      let sf = fields.getField('series')
-      sf.journalSuggest = true
-      if (doiImportData) {
-        if (doiImportData.journalTitle) {
-          sf.title = doiImportData.journalTitle
+      if (this.submitformparam === 'journal-article') {
+        let sf = fields.getField('series')
+        sf.journalSuggest = true
+        if (doiImportData) {
+          if (doiImportData.journalTitle) {
+            sf.title = doiImportData.journalTitle
+          }
+          if (doiImportData.journalISSN) {
+            sf.issn = doiImportData.journalISSN
+          }
+          if (doiImportData.journalVolume) {
+            sf.volume = doiImportData.journalVolume
+          }
+          if (doiImportData.journalIssue) {
+            sf.issue = doiImportData.journalIssue
+          }
         }
-        if (doiImportData.journalISSN) {
-          sf.issn = doiImportData.journalISSN
-        }
-        if (doiImportData.journalVolume) {
-          sf.volume = doiImportData.journalVolume
-        }
-        if (doiImportData.journalIssue) {
-          sf.issue = doiImportData.journalIssue
-        }
+        sof.push(sf)
       }
-      sof.push(sf)
 
-      let ps = fields.getField('page-start')
-      if (doiImportData && doiImportData.pageStart) {
-        ps.value = doiImportData.pageStart
+      if (this.submitformparam !== 'book') {
+        let ps = fields.getField('page-start')
+        if (doiImportData && doiImportData.pageStart) {
+          ps.value = doiImportData.pageStart
+        }
+        sof.push(ps)
       }
-      sof.push(ps)
 
       let pe = fields.getField('page-end')
       if (doiImportData && doiImportData.pageEnd) {
@@ -2178,6 +2207,13 @@ export default {
                   f.publisherNameErrorMessages.push(this.$t('Missing publisher'))
                   this.validationStatus = 'error'
                 }
+              }
+            }
+            if (f.component === 'p-series') {
+              f.titleErrorMessages = []
+              if (f.title.length < 1) {
+                f.titleErrorMessages.push(this.$t('Missing title'))
+                this.validationStatus = 'error'
               }
             }
           }

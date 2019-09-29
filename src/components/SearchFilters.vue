@@ -135,30 +135,32 @@
             filled
             single-line
           ></v-select>
-          <div v-for="(role, i) in roles" :key="i" v-if="roles.length > 0" >
-            <v-row no-gutters>
-              <v-col cols="10">
-                <v-combobox
-                  :hint="role.type === 'pers' ? $t('Personal') : $t('Corporate')"
-                  persistent-hint
-                  class="mt-4"
-                  :placeholder="$t('ADD_PREFIX') + ' '  + $t(role.label) + ' ' + $t('ADD_SUFFIX') + '...'"
-                  chips
-                  clearable
-                  deletable-chips
-                  multiple
-                  filled
-                  single-line
-                  :items="role.values"
-                  v-model="role.values"
-                  @input="setRoleFilterValues(role)"
-                />
-              </v-col>
-              <v-col cols="2">
-                <icon name="material-navigation-close" class="primary--text" height="100%" @click.native="removeRoleFilter(role)"></icon>
-              </v-col>
-            </v-row>
-          </div>
+          <template v-if="roles.length > 0">
+            <div v-for="(role, i) in roles" :key="i">
+              <v-row no-gutters>
+                <v-col cols="10">
+                  <v-combobox
+                    :hint="role.type === 'pers' ? $t('Personal') : $t('Corporate')"
+                    persistent-hint
+                    class="mt-4"
+                    :placeholder="$t('ADD_PREFIX') + ' '  + $t(role.label) + ' ' + $t('ADD_SUFFIX') + '...'"
+                    chips
+                    clearable
+                    deletable-chips
+                    multiple
+                    filled
+                    single-line
+                    :items="role.values"
+                    v-model="role.values"
+                    @input="setRoleFilterValues(role)"
+                  />
+                </v-col>
+                <v-col cols="2">
+                  <icon name="material-navigation-close" class="primary--text" height="100%" @click.native="removeRoleFilter(role)"></icon>
+                </v-col>
+              </v-row>
+            </div>
+          </template>
         </v-row>
       </li>
     </ul>

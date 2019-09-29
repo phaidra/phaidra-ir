@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import config from '../config/phaidra-ir'
 
 export const facetQueries = [
   {
@@ -180,6 +181,32 @@ export const facetQueries = [
         id: 'cc-by-nc-nd',
         query: '(dc_license:\'CC BY-NC-ND 2.0 AT\' OR dc_license:\'CC BY-NC-ND 2.0 Generic\' OR dc_license:\'CC BY-NC-ND 3.0 AT\' OR dc_license:\'CC BY-NC-ND 3.0 Unported\' OR dc_license:\'CC BY-NC-ND 4.0 International\')',
         label: 'CC BY-NC-ND'
+      }
+    ]
+  }
+]
+
+export const adminFacetQueries = [
+  {
+    label: 'Status',
+    field: '',
+    exclusive: true,
+    id: 'adminstatus',
+    queries: [
+      {
+        id: 'acceptance',
+        query: '!owner:' + config.iraccount + ' AND !ispartof:"' + config.ircollection + '"',
+        label: 'Acceptance'
+      },
+      {
+        id: 'approval',
+        query: 'owner:' + config.iraccount + ' AND !ispartof:"' + config.ircollection + '"',
+        label: 'Approval'
+      },
+      {
+        id: 'cleared',
+        query: 'ispartof:"' + config.ircollection + '"',
+        label: 'Cleared'
       }
     ]
   }

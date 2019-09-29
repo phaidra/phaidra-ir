@@ -228,11 +228,12 @@ export default {
     }
   },
   mounted: function () {
+    // TODO read to cookie serverside too
     var token = this.getCookie('X-XSRF-TOKEN')
     if (token) {
       this.$store.commit('setToken', token)
       if (!this.user.username) {
-        // TODO get user from token
+        this.$store.dispatch('getLoginData')
       }
     }
   },

@@ -14,7 +14,17 @@
               solo
             ></autocomplete>
           </v-col>
-          <v-spacer></v-spacer>
+          <v-col cols="1" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
+          <template v-for="(f, i) in adminFacetQueries">
+            <template v-for="(q, j) in f.queries">
+              <v-col cols="1" align-self="center" :key="'f'+i+'q'+j">
+                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" class="mx-4">
+                  <span :class="{ active: q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
+                  <span class="title font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
+                </span>
+              </v-col>
+            </template>
+          </template>
         </v-row>
         <v-row justify="space-between">
           <v-col cols="6">
@@ -58,12 +68,9 @@
           </v-col>
         </v-row>
         <v-row no-gutters>
-          <v-col v-if="inCollection" class="title font-weight-light primary--text">{{ $t('Members of') }} {{ inCollection }} <icon name="material-navigation-close" class="primary--text" height="100%" @click.native="removeCollectionFilter()"></icon></v-col>
           <admin-search-results
             :docs="docs"
             :total="total"
-            :selectioncheck="selectioncheck"
-            :getallresults="getAllResults"
             :search="search">
           </admin-search-results>
           <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page" class="mb-3" />
@@ -74,7 +81,6 @@
 
 <script>
 import Vue from 'vue'
-import qs from 'qs'
 import axios from 'axios'
 import Autocomplete from './Autocomplete'
 import AdminSearchResults from './AdminSearchResults'
@@ -87,8 +93,9 @@ import '@/compiled-icons/fontello-sort-number-down'
 import '@/compiled-icons/material-content-link'
 import '@/compiled-icons/material-action-bookmark'
 import '@/compiled-icons/material-toggle-check-box-outline-blank'
-import { facetQueries, updateFacetQueries, persAuthors, corpAuthors, deactivateFacetQueries } from '../utils/searchfacets'
-import { buildParams, buildSearchDef, sortdef } from '../utils/searchutils'
+import { adminFacetQueries, updateFacetQueries, deactivateFacetQueries, toggleFacet, showFacet } from '../utils/searchfacets'
+import { adminBuildParams, adminBuildSearchDef, sortdef } from '../utils/searchutils'
+
 import { setSearchParams } from '../utils/searchlocation'
 import { config } from '@/mixins/config'
 import { context } from '@/mixins/context'
@@ -132,18 +139,11 @@ export default {
       // This allows us the buildSearchDef/buildParams functions to pick out
       // whatever properties they might need.
 
-      // exclude 'collection' from above manipulation, since it's only passed as a prop
-      let { collection } = options || {}
-      if (collection) {
-        this.inCollection = collection
-        delete options.collection
-      }
-
       Object.assign(this, options)
 
-      let { ands } = buildSearchDef(this)
+      let { ands } = adminBuildSearchDef(this)
       ands.push('isinadminset:"' + this.config.adminset + '"')
-      let params = buildParams(this, ands)
+      let params = adminBuildParams(this, ands)
       let response = await axios.post(this.config.solr + '/select',
         {
           params: params
@@ -152,7 +152,7 @@ export default {
       this.docs = response.data.response.docs
       this.total = response.data.response.numFound
       this.facet_counts = response.data.facet_counts
-      updateFacetQueries(response.data.facet_counts.facet_queries, facetQueries)
+      updateFacetQueries(response.data.facet_counts.facet_queries, adminFacetQueries)
 
       let pagePids = []
       for (let d of this.docs) {
@@ -188,64 +188,40 @@ export default {
       this.q = payload ? `"${payload}"` : term
       this.search()
     },
-    getAllResults: async function () {
-      if (this.total > this.config.search.selectionlimit) {
-        this.limitdialog = true
-      } else {
-        let { ands } = buildSearchDef(this)
-        let params = buildParams(this, ands)
-        params.page = 0
-        params.rows = this.total
-        params.fl = [ 'pid', 'dc_title' ]
-        let query = qs.stringify(params, { encodeValuesOnly: true, indices: false })
-        let url = this.config.solr + '/select'
-        let response = await fetch(url, {
-          method: 'POST',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: query
-        })
-        let json = await response.json()
-        return json.response.docs
-      }
+    showFacet: function (f) {
+      showFacet(f)
+      this.search({ adminFacetQueries: this.adminFacetQueries })
+    },
+    toggleFacet: function (q, f) {
+      toggleFacet(q, f)
+      this.search({ page: 1, adminFacetQueries: this.adminFacetQueries })
     },
     setSort: function (sort) {
-      for (let i = 0; i < this.sortdef.length; i++) {
-        if (this.sortdef[i].id === sort) {
-          this.sortdef[i].active = !this.sortdef[i].active
-        } else {
-          this.sortdef[i].active = false
+      if (this.sortdef) {
+        for (let i = 0; i < this.sortdef.length; i++) {
+          if (this.sortdef[i].id === sort) {
+            this.sortdef[i].active = !this.sortdef[i].active
+          } else {
+            this.sortdef[i].active = false
+          }
         }
+        this.search()
       }
-      this.search()
     },
     sortIsActive: function (sort) {
-      for (let i = 0; i < this.sortdef.length; i++) {
-        if (this.sortdef[i].id === sort) {
-          return this.sortdef[i].active
+      if (this.sortdef) {
+        for (let i = 0; i < this.sortdef.length; i++) {
+          if (this.sortdef[i].id === sort) {
+            return this.sortdef[i].active
+          }
         }
       }
-    },
-    removeCollectionFilter: function () {
-      this.inCollection = ''
-      this.search()
     },
     resetSearchParams: function () {
       this.q = ''
-      this.inColleection = ''
-      this.owner = ''
-      // TODO pass showAuthorFiler
-      // and showRoleFilter to searchFilters
-      // as props so that we can hide toggle them off here
-      // the same for roles
-      this.corpAuthors.values = []
-      this.persAuthors.values = []
-      this.roles = []
       this.currentPage = 1
       this.pagesize = 10
-      for (let fq of this.facetQueries) {
+      for (let fq of this.adminFacetQueries) {
         // resetable might be set to false in case this search should
         // work only in limited scope (eg only in a particular collection)
         if (fq.resetable) {
@@ -268,19 +244,12 @@ export default {
       link: '',
       limitdialog: false,
       linkdialog: false,
-      selectioncheck: false,
       q: '',
-      inCollection: this.collection,
       currentPage: 1,
       pagesize: 10,
       sortdef,
       lang: 'en',
-      facetQueries,
-
-      corpAuthors,
-      persAuthors,
-      roles: [],
-      owner: this.ownerProp,
+      adminFacetQueries,
 
       docs: [],
       total: 0,
@@ -321,5 +290,19 @@ svg {
 .theme--light.v-pagination .v-pagination__item--active {
   box-shadow: none;
   -webkit-box-shadow: none;
+}
+
+.facet-label {
+  font-weight: 300;
+  cursor: pointer
+}
+
+.facet-count {
+  margin-left: 5px
+}
+
+.active {
+  font-weight: 400;
+  text-shadow: rgba(0,0,0,.12) 1px 1px 4px;
 }
 </style>

@@ -5,7 +5,18 @@ export default {
   async fetchObjectInfo ({ commit, state }, pid) {
     console.log('[' + pid + '] fetching object info')
     try {
-      let response = await axios.get(state.config.api + '/object/' + pid + '/info')
+      let response
+      if (state.user.token) {
+        response = await axios.get(state.config.api + '/object/' + pid + '/info',
+          {
+            headers: {
+              'X-XSRF-TOKEN': state.user.token
+            }
+          }
+        )
+      } else {
+        response = await axios.get(state.config.api + '/object/' + pid + '/info')
+      }
       console.log('[' + pid + '] fetching object info done')
       commit('setObjectInfo', response.data.info)
     } catch (error) {
@@ -31,7 +42,18 @@ export default {
         let members = []
         for (let doc of response.data.response.docs) {
           console.log('[' + pid + '] fetching object info of member ' + doc.pid)
-          let memresponse = await axios.get(state.config.api + '/object/' + doc.pid + '/info')
+          let memresponse
+          if (state.user.token) {
+            memresponse = await axios.get(state.config.api + '/object/' + doc.pid + '/info',
+              {
+                headers: {
+                  'X-XSRF-TOKEN': state.user.token
+                }
+              }
+            )
+          } else {
+            memresponse = await axios.get(state.config.api + '/object/' + doc.pid + '/info')
+          }
           console.log('[' + pid + '] fetching object info of member ' + doc.pid + ' done')
           members.push(memresponse.data.info)
         }
@@ -39,6 +61,22 @@ export default {
       } else {
         commit('setObjectMembers', [])
       }
+    } catch (error) {
+      console.log(error)
+    }
+  },
+  async getLoginData ({ commit, dispatch, state }) {
+    try {
+      let response = await axios.get(state.config.api + '/directory/user/data', {
+        headers: {
+          'X-XSRF-TOKEN': state.user.token
+        }
+      })
+      if (response.data.alerts && response.data.alerts.length > 0) {
+        commit('setAlerts', response.data.alerts)
+      }
+      console.log('[' + state.user.username + '] got user data firstname[' + response.data.user_data.firstname + '] lastname[' + response.data.user_data.lastname + '] email[' + response.data.user_data.email + ']')
+      commit('setLoginData', response.data.user_data)
     } catch (error) {
       console.log(error)
     }
@@ -60,16 +98,7 @@ export default {
         console.log('[' + state.user.username + '] login successful token[' + response.data['XSRF-TOKEN'] + '], fetching user data')
         commit('setToken', response.data['XSRF-TOKEN'])
         document.cookie = 'X-XSRF-TOKEN=' + response.data['XSRF-TOKEN']
-        let userdatares = await axios.get(state.config.api + '/directory/user/' + state.user.username + '/data', {
-          headers: {
-            'X-XSRF-TOKEN': state.user.token
-          }
-        })
-        if (userdatares.data.alerts && userdatares.data.alerts.length > 0) {
-          commit('setAlerts', userdatares.data.alerts)
-        }
-        console.log('[' + state.user.username + '] got user data firstname[' + userdatares.data.user_data.firstname + '] lastname[' + userdatares.data.user_data.lastname + '] email[' + userdatares.data.user_data.email + ']')
-        commit('setLoginData', userdatares.data.user_data)
+        dispatch('getLoginData')
       }
     } catch (error) {
       console.log(error)

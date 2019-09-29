@@ -167,6 +167,117 @@ export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries },
   return params
 }
 
+export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQueries }) {
+  let searchdefarr = []
+
+  for (let i = 0; i < sortdef.length; i++) {
+    if (sortdef[i].active) {
+      searchdefarr.push('sortdef=' + window.encodeURIComponent(sortdef[i].id))
+    }
+  }
+
+  if (q) {
+    searchdefarr.push('q=' + window.encodeURIComponent(q))
+  }
+  searchdefarr.push('page=' + page)
+  if (pagesize) {
+    searchdefarr.push('pagesize=' + pagesize)
+  }
+
+  let ands = []
+  for (let i = 0; i < adminFacetQueries.length; i++) {
+    let ors = []
+    for (let j = 0; j < adminFacetQueries[i].queries.length; j++) {
+      if (adminFacetQueries[i].queries[j].active) {
+        // tag '{!tag=' + state.facetQueries[i].id + '}' +
+        if (adminFacetQueries[i].queries[j].childFacet) {
+          // there are two levels, only take the lowest active levels
+          let lvl1 = adminFacetQueries[i].queries[j].childFacet
+          let foundActiveLvl1Query = false
+          for (let k = 0; k < lvl1.queries.length; k++) {
+            if (lvl1.queries[k].active) {
+              foundActiveLvl1Query = true
+
+              let lvl2 = lvl1.queries[k].childFacet
+              let foundActiveLvl2Query = false
+              for (let l = 0; l < lvl2.queries.length; l++) {
+                if (lvl2.queries[l].active) {
+                  foundActiveLvl2Query = true
+                  ors.push(lvl2.queries[l].query)
+                  searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + lvl2.queries[l].id)
+                }
+              }
+
+              if (!foundActiveLvl2Query) {
+                ors.push(lvl1.queries[k].query)
+                searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + lvl1.queries[k].id)
+              }
+            }
+          }
+
+          if (!foundActiveLvl1Query) {
+            ors.push(adminFacetQueries[i].queries[j].query)
+            searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + adminFacetQueries[i].queries[j].id)
+          }
+        } else {
+          ors.push(adminFacetQueries[i].queries[j].query)
+          searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + adminFacetQueries[i].queries[j].id)
+        }
+      }
+    }
+    if (ors.length > 0) {
+      if (ors.length > 1) {
+        ands.push('(' + ors.join(' OR ') + ')')
+      } else {
+        ands.push(ors[0])
+      }
+    }
+  }
+
+  return { searchdefarr, ands }
+}
+
+export function adminBuildParams ({ q, page, pagesize, sortdef, lang, adminFacetQueries }, ands) {
+  let params = {
+    q,
+    defType: 'edismax',
+    wt: 'json',
+    qf: 'pid^5 dc_title^4 dc_creator^3 dc_subject^2 _text_',
+    start: (page - 1) * pagesize,
+    rows: pagesize,
+    sort: '',
+    facet: true,
+    'facet.query': []
+  }
+
+  if (q === '' || q === null) {
+    params.q = '*:*'
+    params.sort = 'created desc'
+  }
+
+  for (let i = 0; i < sortdef.length; i++) {
+    if (sortdef[i].active) {
+      if ((sortdef[i].id === 'title asc') || (sortdef[i].id === 'title desc')) {
+        params.sort = sortdef[i].def[lang]
+      } else {
+        params.sort = sortdef[i].def
+      }
+    }
+  }
+
+  for (let i = 0; i < adminFacetQueries.length; i++) {
+    for (let j = 0; j < adminFacetQueries[i].queries.length; j++) {
+      params['facet.query'].push(adminFacetQueries[i].queries[j].query)
+    }
+  }
+
+  if (ands.length > 0) {
+    params['fq'] = ands.join(' AND ')
+  }
+
+  return params
+}
+
 export const sortdef = [
   {
     id: 'title asc',
