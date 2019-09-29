@@ -236,8 +236,9 @@ export default {
       this.selectioncheck = !this.selectioncheck
     }
   },
-  mounted: function () {
+  mounted: async function () {
     setSearchParams(this, this.$route.query)
+    await this.search()
   },
   data () {
     return {
