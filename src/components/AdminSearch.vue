@@ -1,8 +1,8 @@
 <template>
     <v-row>
       <v-col cols="12">
-        <v-row>
-          <v-col cols="5">
+        <v-row justify="space-between">
+          <v-col cols="4">
             <autocomplete
               placeholder="Search..."
               name="autocomplete"
@@ -14,11 +14,11 @@
               solo
             ></autocomplete>
           </v-col>
-          <v-col cols="1" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
+          <v-col cols="2" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
           <template v-for="(f, i) in adminFacetQueries">
             <template v-for="(q, j) in f.queries">
-              <v-col cols="1" align-self="center" :key="'f'+i+'q'+j">
-                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" class="mx-4">
+              <v-col cols="2" align-self="center" :key="'f'+i+'q'+j">
+                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j">
                   <span :class="{ active: q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
                   <span class="title font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
                 </span>
@@ -31,7 +31,7 @@
             <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page"/>
           </v-col>
           <v-spacer></v-spacer>
-          <v-col cols="2">
+          <v-col cols="3">
             <v-spacer></v-spacer>
             <v-tooltip bottom>
               <template v-slot:activator="{ on }">

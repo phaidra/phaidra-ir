@@ -287,12 +287,12 @@
           <v-row no-gutters v-if="rightsCheckData" justify="center">
             <v-col cols="12" md="8">
               <v-row v-if="rightsCheckData.journal">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERCHIENENIN') }}</v-col>
-                <v-col md="10" cols="12">{{ rightsCheckData.journal.title }}</v-col>
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERCHIENENIN') }}</v-col>
+                <v-col md="9" cols="12">{{ rightsCheckData.journal.title }}</v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
+                <v-col md="9" cols="12">
                   <template v-if="rightsCheckData.publisher.homeurl">
                     <a target="_blank" :href="rightsCheckData.publisher.homeurl">{{ rightsCheckData.publisher.name }}</a>
                   </template>
@@ -300,8 +300,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.prearchiving">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
+                <v-col md="9" cols="12">
                   <v-icon v-if="rightsCheckData.publisher.prearchiving === 'can'" left color="green">mdi-check</v-icon>
                   <v-icon v-if="rightsCheckData.publisher.prearchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
                   <v-icon v-if="rightsCheckData.publisher.prearchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
@@ -309,8 +309,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.prerestrictions && (rightsCheckData.publisher.prerestrictions.length > 0)">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                <v-col md="9" cols="12">
                   <ul>
                     <li v-for="(r, i) in rightsCheckData.publisher.prerestrictions" :key="i">
                       {{ r }}
@@ -319,8 +319,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.postarchiving">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
+                <v-col md="9" cols="12">
                   <v-icon v-if="rightsCheckData.publisher.postarchiving === 'can'" left color="green">mdi-check</v-icon>
                   <v-icon v-if="rightsCheckData.publisher.postarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
                   <v-icon v-if="rightsCheckData.publisher.postarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
@@ -328,8 +328,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.postrestrictions && (rightsCheckData.publisher.postrestrictions.length > 0)">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                <v-col md="9" cols="12">
                   <ul>
                     <li v-for="(r, i) in rightsCheckData.publisher.postrestrictions" :key="i">
                       {{ r }}
@@ -338,8 +338,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.pdfarchiving">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
+                <v-col md="9" cols="12">
                   <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'can'" left color="green">mdi-check</v-icon>
                   <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
                   <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
@@ -347,8 +347,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.pdfrestrictions && (rightsCheckData.publisher.pdfrestrictions.length > 0)">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                <v-col md="9" cols="12">
                   <ul>
                     <li v-for="(r, i) in rightsCheckData.publisher.pdfrestrictions" :key="i">
                       {{ r }}
@@ -357,8 +357,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.publisher.conditions">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
-                <v-col md="10" cols="12">
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
+                <v-col md="9" cols="12">
                   <ul>
                     <li v-for="(r, i) in rightsCheckData.publisher.conditions" :key="i">
                       {{ r }}
@@ -367,8 +367,8 @@
                 </v-col>
               </v-row>
               <v-row v-if="rightsCheckData.disclaimer">
-                <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
-                <v-col md="10" cols="12">{{rightsCheckData.disclaimer}}</v-col>
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
+                <v-col md="9" cols="12">{{rightsCheckData.disclaimer}}</v-col>
               </v-row>
             </v-col>
           </v-row>
@@ -382,7 +382,7 @@
 
       <v-stepper-content v-for="(s) in form.sections" :key="'tabitem'+s.id" :step="s.id">
         <v-container>
-          <v-alert outlined type="error" color="primary" transition="slide-y-transition" v-if="validationErrors.length > 0">
+          <v-alert outlined type="error" transition="slide-y-transition" v-if="validationErrors.length > 0">
             <span v-for="(error, i) of validationErrors" :key="'verr'+i">{{ error }}</span>
           </v-alert>
           <v-row>
@@ -595,7 +595,7 @@
                         ></p-i-file>
                       </v-row>
                       <v-row no-gutters v-if="s.fields[i+1].component !== 'p-file'">
-                        <v-col cols="2" offset="8">
+                        <v-col cols="3" offset="7" class="text-right">
                           <v-btn @click="addField(s.fields, f)" color="grey" dark class="mb-8"><v-icon left dark>mdi-plus-box</v-icon>Add another format</v-btn>
                         </v-col>
                       </v-row>
@@ -910,7 +910,7 @@ export default {
           start: 0,
           rows: 1000,
           sort: 'created desc',
-          fq: [ 'edm_hastype_id:"https://vocab.phaidra.org/vocabulary/VKA6-9XTY"', 'owner:' + this.user.username ]
+          fq: [ 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/VKA6-9XTY"', 'owner:' + this.user.username ]
         }
         let query = qs.stringify(params, { encodeValuesOnly: true, indices: false })
         let response = await fetch(this.config.solr + '/select', {
@@ -1001,7 +1001,7 @@ export default {
         })
         let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
         let dp = new window.DOMParser()
-        let obj = this.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
+        let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
         let disclaimer = obj.romeoapi[1].header.disclaimer['#text']
         let j = obj.romeoapi[1].journals.journal
         let journal = {
@@ -1079,7 +1079,7 @@ export default {
               title: solrJson.response.docs[0].dc_title[0]
             }
           } else {
-            let response = await fetch('https://' + this.config.apis.doi.phaidrabaseurl + '/' + this.doiToImport, {
+            let response = await fetch('https://' + this.config.apis.doi.baseurl + '/' + this.doiToImport, {
               method: 'GET',
               mode: 'cors',
               headers: {
@@ -1113,7 +1113,7 @@ export default {
 
             if (crossrefData['issued']) {
               if (crossrefData['issued']['date-parts']) {
-                this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0]
+                this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
               }
             }
 
@@ -1131,37 +1131,37 @@ export default {
               case 'journal-article':
               case 'article-journal':
                 this.doiImportData.publicationType = 'article'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/VKA6-9XTY'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
                 break
               case 'report':
                 this.doiImportData.publicationType = 'report'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/JMAV-7F3R'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
                 break
               case 'book':
               case 'monograph':
               case 'reference-book':
               case 'edited-book':
                 this.doiImportData.publicationType = 'book'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/47QB-8QF1'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
                 break
               case 'book-chapter':
               case 'book-part':
               case 'book-section':
                 this.doiImportData.publicationType = 'book_part'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/XA52-09WA'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
                 break
               case 'dissertation':
                 this.doiImportData.publicationType = 'doctoral_thesis'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/1PHE-7VMS'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
                 break
               case 'proceedings-article':
               case 'proceedings':
                 this.doiImportData.publicationType = 'conference_object'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/QKDF-E5HA'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
                 break
               case 'dataset':
                 this.doiImportData.publicationType = 'research_data'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/KW6N-2VTP'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
                 break
               case 'other':
               case 'standard':
@@ -1176,11 +1176,11 @@ export default {
               case 'journal':
               case 'report-series':
                 this.doiImportData.publicationType = 'other'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/PYRE-RAWJ'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
                 break
               default:
                 this.doiImportData.publicationType = 'other'
-                this.doiImportData.publicationTypeId = 'https://vocab.phaidra.org/vocabulary/PYRE-RAWJ'
+                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
             }
 
             if (crossrefData['publisher']) {
@@ -1466,7 +1466,7 @@ export default {
         }
 
         if (f.predicate === 'dcterms:accessRights') {
-          this.showEmbargoDate = f.value === 'https://vocab.phaidra.org/vocabulary/AVFC-ZZSZ'
+          this.showEmbargoDate = f.value === 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
         }
 
         this.$store.commit('enableAllVocabularyTerms', 'versiontypes')
@@ -1482,40 +1482,40 @@ export default {
               {
                 // if object is dataset
                 conditionIds: [
-                  'https://vocab.phaidra.org/vocabulary/KW6N-2VTP'
+                  'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
                 ],
                 // disable version AO and AM
                 disableIds: [
-                  'https://vocab.phaidra.org/vocabulary/TV31-080M',
-                  'https://vocab.phaidra.org/vocabulary/PHXV-R6B3'
+                  'https://pid.phaidra.org/vocabulary/TV31-080M',
+                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
                 ]
               },
               {
                 // if object is 'dissertation' or 'book' or 'book part' or 'journal article'
                 conditionIds: [
-                  'https://vocab.phaidra.org/vocabulary/1PHE-7VMS',
-                  'https://vocab.phaidra.org/vocabulary/47QB-8QF1',
-                  'https://vocab.phaidra.org/vocabulary/XA52-09WA',
-                  'https://vocab.phaidra.org/vocabulary/VKA6-9XTY'
+                  'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
+                  'https://pid.phaidra.org/vocabulary/47QB-8QF1',
+                  'https://pid.phaidra.org/vocabulary/XA52-09WA',
+                  'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
                 ],
                 // disable version AO and SMUR
                 disableIds: [
-                  'https://vocab.phaidra.org/vocabulary/TV31-080M',
-                  'https://vocab.phaidra.org/vocabulary/JTD4-R26P'
+                  'https://pid.phaidra.org/vocabulary/TV31-080M',
+                  'https://pid.phaidra.org/vocabulary/JTD4-R26P'
                 ]
               },
               {
                 // if object is 'preprint' or 'working paper'
                 conditionIds: [
-                  'https://vocab.phaidra.org/vocabulary/T023-BGTD',
-                  'https://vocab.phaidra.org/vocabulary/489N-Y6VX'
+                  'https://pid.phaidra.org/vocabulary/T023-BGTD',
+                  'https://pid.phaidra.org/vocabulary/489N-Y6VX'
                 ],
                 // disable version AM and VoR and CVoR and EVoR
                 disableIds: [
-                  'https://vocab.phaidra.org/vocabulary/PHXV-R6B3',
-                  'https://vocab.phaidra.org/vocabulary/PMR8-3C8D',
-                  'https://vocab.phaidra.org/vocabulary/MT1G-APSB',
-                  'https://vocab.phaidra.org/vocabulary/SSQW-AP1S'
+                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
+                  'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
+                  'https://pid.phaidra.org/vocabulary/MT1G-APSB',
+                  'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
                 ]
               }
             ]
@@ -1532,41 +1532,41 @@ export default {
               {
                 // if version is AO or AM
                 conditionIds: [
-                  'https://vocab.phaidra.org/vocabulary/TV31-080M',
-                  'https://vocab.phaidra.org/vocabulary/PHXV-R6B3'
+                  'https://pid.phaidra.org/vocabulary/TV31-080M',
+                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
                 ],
                 // disable type dataset
                 disableIds: [
-                  'https://vocab.phaidra.org/vocabulary/KW6N-2VTP'
+                  'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
                 ]
               },
               {
                 // if version is AO or SMUR
                 conditionIds: [
-                  'https://vocab.phaidra.org/vocabulary/TV31-080M',
-                  'https://vocab.phaidra.org/vocabulary/JTD4-R26P'
+                  'https://pid.phaidra.org/vocabulary/TV31-080M',
+                  'https://pid.phaidra.org/vocabulary/JTD4-R26P'
                 ],
                 // disable object 'dissertation' and 'book' and 'book part' and 'journal article'
                 disableIds: [
-                  'https://vocab.phaidra.org/vocabulary/1PHE-7VMS',
-                  'https://vocab.phaidra.org/vocabulary/47QB-8QF1',
-                  'https://vocab.phaidra.org/vocabulary/XA52-09WA',
-                  'https://vocab.phaidra.org/vocabulary/VKA6-9XTY'
+                  'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
+                  'https://pid.phaidra.org/vocabulary/47QB-8QF1',
+                  'https://pid.phaidra.org/vocabulary/XA52-09WA',
+                  'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
                 ]
               },
               {
                 // if version is AM or VoR or CVoR or EVoR
                 conditionIds: [
-                  'https://vocab.phaidra.org/vocabulary/PHXV-R6B3',
-                  'https://vocab.phaidra.org/vocabulary/PMR8-3C8D',
-                  'https://vocab.phaidra.org/vocabulary/MT1G-APSB',
-                  'https://vocab.phaidra.org/vocabulary/SSQW-AP1S'
+                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
+                  'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
+                  'https://pid.phaidra.org/vocabulary/MT1G-APSB',
+                  'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
 
                 ],
                 // disable object 'preprint' and 'working paper'
                 disableIds: [
-                  'https://vocab.phaidra.org/vocabulary/T023-BGTD',
-                  'https://vocab.phaidra.org/vocabulary/489N-Y6VX'
+                  'https://pid.phaidra.org/vocabulary/T023-BGTD',
+                  'https://pid.phaidra.org/vocabulary/489N-Y6VX'
                 ]
               }
             ]
@@ -1698,7 +1698,7 @@ export default {
             if (c.predicate === 'edm:hasType') {
               c.vocabulary = this.irObjectTypeVocabulary
               if (this.submitformparam === 'book-part') {
-                c.value = 'https://vocab.phaidra.org/vocabulary/XA52-09WA'
+                c.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
                 c.disabled = true
               }
               c.label = this.$t('Type of publication')
@@ -1739,7 +1739,7 @@ export default {
           if (field.predicate === 'edm:hasType') {
             field.vocabulary = this.irObjectTypeVocabulary
             if (this.submitformparam === 'book-part') {
-              field.value = 'https://vocab.phaidra.org/vocabulary/XA52-09WA'
+              field.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
               field.disabled = true
             }
             field.label = this.$t('Type of publication')
@@ -1942,7 +1942,7 @@ export default {
         otf.value = doiImportData.publicationTypeId
       }
       if (this.submitformparam === 'book-part') {
-        otf.value = 'https://vocab.phaidra.org/vocabulary/XA52-09WA'
+        otf.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
         otf.disabled = true
       }
       smf.push(otf)
