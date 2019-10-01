@@ -118,6 +118,7 @@ export default {
       Object.assign(this, options)
 
       let { searchdefarr, ands } = buildSearchDef(this)
+      ands.push('isinadminset:"' + this.config.adminset + '"')
       let params = buildParams(this, ands)
 
       if (process.browser) {

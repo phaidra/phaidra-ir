@@ -629,7 +629,7 @@
           </v-row>
           <v-row v-if="altVersionPid">
             <v-col md="10" offset-md="1">
-              <v-alert outlined type="info">
+              <v-alert outlined type="info" color="primary">
                 <p>
                   {{ $t('This object will be marked as alternative version of object') }}
                   <a class="mx-4" target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + altVersionPid">{{ 'https://' + config.phaidrabaseurl + '/' + altVersionPid }}</a>
@@ -699,6 +699,45 @@
                 </v-card-actions>
               </v-card>
             </v-dialog>
+            <v-dialog v-model="loginDialog" max-width="500px">
+              <v-card>
+                <v-card-title class="title font-weight-light grey white--text">
+                  {{ $t('Please log in') }}
+                </v-card-title>
+                <v-card-text>
+                  <p class="mt-6 title font-weight-light grey--text text--darken-3">{{ $t('You have been logged out. Please log in to continue submit.') }}</p>
+                  <v-col cols="10" offset="1">
+                    <v-text-field
+                      :disabled="loading"
+                      :label="$t('Username')"
+                      v-model="credentials.username"
+                      required
+                      filled
+                      single-line
+                      :autocomplete="'username'"
+                    ></v-text-field>
+                    <v-text-field
+                      :disabled="loading"
+                      :label="$t('Password')"
+                      v-model="credentials.password"
+                      required
+                      filled
+                      single-line
+                      :append-icon="loginPassVisible ? 'mdi-eye' : 'mdi-eye-off'"
+                      @click:append="loginPassVisible = !loginPassVisible"
+                      :type="loginPassVisible ? 'password' : 'text'"
+                      :autocomplete="'current-password'"
+                    ></v-text-field>
+                  </v-col>
+                </v-card-text>
+                <v-divider class="mt-5"></v-divider>
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn dark @click="loginDialog = false" color="grey">{{ $t('Cancel') }}</v-btn>
+                  <v-btn @click="login()" :disabled="loading" :loading="loading" color="primary" raised>{{ $t('Login') }}</v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
             <v-btn raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
           </v-row>
         </v-container>
@@ -752,7 +791,8 @@
             </v-checkbox>
           </v-row>
           <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters justify="space-between">
+          <v-row no-gutters>
+            <v-spacer></v-spacer>
             <v-btn color="primary" :loading="loading" :disabled="loading" @click="confirm()">{{ $t('Confirm') }}</v-btn>
           </v-row>
         </v-container>
@@ -858,7 +898,13 @@ export default {
       submitResponse: null,
       altVersionPid: null,
       notificationCheckbox: false,
-      embargoNotificationCheckbox: false
+      embargoNotificationCheckbox: false,
+      loginDialog: false,
+      loginPassVisible: true,
+      credentials: {
+        username: '',
+        password: ''
+      }
     }
   },
   watch: {
@@ -870,6 +916,22 @@ export default {
     }
   },
   methods: {
+    async login () {
+      this.loading = true
+      try {
+        await this.$store.dispatch('login', this.credentials)
+        if (this.signedin) {
+          this.loginDialog = false
+          this.credentials.username = ''
+          this.credentials.password = ''
+          this.submit()
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        this.loading = false
+      }
+    },
     async loadObjectMetadata (doc) {
       this.objectListLoading = true
       try {
@@ -1281,6 +1343,11 @@ export default {
       }
     },
     submit: async function () {
+      if (!this.user.token) {
+        this.loginDialog = true
+        return
+      }
+
       this.loading = true
       this.submitResponse = null
       var httpFormData = new FormData()

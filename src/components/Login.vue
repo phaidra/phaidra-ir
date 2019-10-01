@@ -66,6 +66,8 @@ export default {
       try {
         await this.$store.dispatch('login', this.credentials)
         if (this.signedin) {
+          this.credentials.username = ''
+          this.credentials.password = ''
           this.$router.push('/')
         }
       } catch (error) {

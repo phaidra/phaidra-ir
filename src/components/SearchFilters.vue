@@ -39,29 +39,6 @@
       <li>
         <v-row no-gutters>
           <v-col>
-            <icon @click.native="toggleOwnerFilter()" v-if="showOwnerFilter" name="univie-stop2" class="primary--text"></icon>
-            <icon @click.native="toggleOwnerFilter()" v-if="!showOwnerFilter" name="univie-checkbox-unchecked" class="primary--text"></icon>
-            <span @click="toggleOwnerFilter()" class="facet-label primary--text" :class="{ active: showOwnerFilter }">{{ $t('Owner') }}</span>
-          </v-col>
-        </v-row>
-        <v-row no-gutters>
-          <autocomplete
-            class="mt-4"
-            v-if="showOwnerFilter"
-            searchaction="search"
-            placeholder="Search..."
-            name="autocomplete"
-            :initValue="owner"
-            :suggester="'ownersuggester'"
-            :customParams="{ token: 'dev' }"
-            :classes="{ input: 'form-control', wrapper: 'input-wrapper'}"
-            :onSelect="handleOwnerSelect"
-          ></autocomplete>
-        </v-row>
-      </li>
-      <li>
-        <v-row no-gutters>
-          <v-col>
             <icon @click.native="toggleAuthorFilter()" v-if="showAuthorFilter" name="univie-stop2" class="primary--text"></icon>
             <icon @click.native="toggleAuthorFilter()" v-if="!showAuthorFilter" name="univie-checkbox-unchecked" class="primary--text"></icon>
             <span @click="toggleAuthorFilter()" class="facet-label primary--text" :class="{ active: showAuthorFilter }">{{ $t('Authors') }}</span>

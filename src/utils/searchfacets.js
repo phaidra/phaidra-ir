@@ -87,50 +87,6 @@ export const facetQueries = [
     ]
   },
   {
-    label: 'Size',
-    field: 'tsize',
-    id: 'size',
-    show: false,
-    resetable: true,
-    queries: [
-      {
-        id: 'less10',
-        query: 'tsize:[0 TO 10485760]',
-        label: 'less 10MB'
-      },
-      {
-        id: '10to50',
-        query: 'tsize:[10485760 TO 52428800]',
-        label: '10MB - 50MB'
-      },
-      {
-        id: '50to100',
-        query: 'tsize:[52428800 TO 104857600]',
-        label: '50MB - 100MB'
-      },
-      {
-        id: '100to200',
-        query: 'tsize:[104857600 TO 209715200]',
-        label: '100MB - 200MB'
-      },
-      {
-        id: '200to500',
-        query: 'tsize:[209715200 TO 524288000]',
-        label: '200MB - 500MB'
-      },
-      {
-        id: '500to1000',
-        query: 'tsize:[524288000 TO 1073741824]',
-        label: '500MB - 1GB'
-      },
-      {
-        id: 'more1000',
-        query: 'tsize:[1073741824 TO *]',
-        label: 'more 1GB'
-      }
-    ]
-  },
-  {
     label: 'License',
     field: 'dc_license',
     id: 'license',
