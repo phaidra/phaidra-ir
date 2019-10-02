@@ -10,7 +10,6 @@
           </v-alert>
 
           <p-d-jsonld v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid"></p-d-jsonld>
-          <!--  -->
 
         </v-col>
 
@@ -46,39 +45,33 @@
             </v-col>
           </v-row>
 
-          <v-row class="my-6" v-if="objectInfo.isalternativeformatof || objectInfo.isalternativeversionof">
+          <v-row class="my-6" v-if="alternativeVersions.length > 0">
             <v-col class="pt-0">
               <v-row>
-                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Relationships') }}</h3>
+                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Alternative versions') }}</h3>
               </v-row>
               <v-divider></v-divider>
-              <v-row v-if="objectInfo.isalternativeformatof" no-gutters class="pt-2">
-                <v-col class="caption grey--text text--darken-2" cols="4">{{ $t('Is alternative format of') }}</v-col>
-                <v-col cols="7" offset="1">
-                  <template v-if="objectInfo.isalternativeformatof.length > 1">
-                    <v-row>
-                      <v-col v-for="(oId,i) in objectInfo.isalternativeformatof" :key="i">
-                        <router-link :to="{ name: 'detail', params: { pid: oId } }">{{ oId }}</router-link>
-                      </v-col>
-                    </v-row>
-                  </template>
-                  <router-link :to="{ name: 'detail', params: { pid: objectInfo.isalternativeformatof[0] } }">{{ objectInfo.isalternativeformatof[0] }}</router-link>
-                </v-col>
+              <v-row v-for="(version,i) in alternativeVersions" :key="i" no-gutters class="pt-2">
+                <span class="caption grey--text text--darken-2 mr-3">{{ version.label }}</span>
+                <span>
+                  <router-link :to="{ name: 'detail', params: { pid: version.pid } }">{{ version.pid }}</router-link>
+                </span>
               </v-row>
-              <v-row v-if="objectInfo.isalternativeversionof" no-gutters class="pt-2">
-                <v-col class="caption grey--text text--darken-2" cols="4">{{ $t('Is alternative version of') }}</v-col>
-                <v-col cols="7" offset="1">
-                  <template v-if="objectInfo.isalternativeversionof.length > 1">
-                    <v-row>
-                      <v-col v-for="(oId,i) in objectInfo.isalternativeversionof" :key="i">
-                        <router-link :to="{ name: 'detail', params: { pid: oId } }">{{ oId }}</router-link>
-                      </v-col>
-                    </v-row>
-                  </template>
-                  <router-link :to="{ name: 'detail', params: { pid: objectInfo.isalternativeversionof[0] } }">{{ objectInfo.isalternativeversionof[0] }}</router-link>
-                </v-col>
-              </v-row>
+            </v-col>
+          </v-row>
 
+          <v-row class="my-6" v-if="alternativeFormats.length > 0">
+            <v-col class="pt-0">
+              <v-row>
+                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Alternative formats') }}</h3>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row v-for="(format,i) in alternativeFormats" :key="i" no-gutters class="pt-2">
+                <span class="caption grey--text text--darken-2 mr-3">{{ format.label }}</span>
+                <span>
+                  <router-link :to="{ name: 'detail', params: { pid: format.pid } }">{{ format.pid }}</router-link>
+                </span>
+              </v-row>
             </v-col>
           </v-row>
 
@@ -98,7 +91,6 @@ import { context } from '../mixins/context'
 import { config } from '../mixins/config'
 import configjs from '../config/phaidra-ir'
 import axios from 'axios'
-import qs from 'qs'
 
 export default {
   name: 'detail',
@@ -140,17 +132,90 @@ export default {
     },
     isApproved: function () {
       return (this.objectInfo.owner.username === this.config.iraccount) && this.objectInfo.ispartof && this.objectInfo.ispartof.includes(this.config.ircollection)
-    },
-    coverPid: function () {
-      // HACK
-      var pidNumStr = this.objectInfo.pid.substr(2)
-      var coverPidNum = parseInt(pidNumStr) + 1
-      return 'o:' + coverPidNum
+    }
+  },
+  data () {
+    return {
+      alternativeVersions: [],
+      alternativeFormats: []
     }
   },
   methods: {
     async fetchAsyncData (self, pid) {
       await self.$store.dispatch('fetchObjectInfo', pid)
+    },
+    async fetchAlternatives (self) {
+      self.alternativeFormats = []
+      self.alternativeVersions = []
+      if (self.objectInfo.isalternativeformatof) {
+        for (let o of self.objectInfo.isalternativeformatof) {
+          self.fetchAlternativesRec(self, o, 'isalternativeformatof', 'ebucore:hasMimeType', 'mimetypes', self.alternativeFormats)
+        }
+      }
+      if (self.objectInfo.isalternativeversionof) {
+        for (let o of self.objectInfo.isalternativeversionof) {
+          self.fetchAlternativesRec(self, o, 'isalternativeversionof', 'oaire:version', 'versiontypes', self.alternativeVersions)
+        }
+      }
+    },
+    async fetchAlternativesRec (self, pid, property, predicate, vocabulary, array) {
+      try {
+        // avoid infinite loops
+        if (pid === self.objectInfo.pid) {
+          console.log('fetchAlternatives skipping ' + pid + ' (source pid)')
+          return
+        }
+        for (let o of array) {
+          if (o.pid === pid) {
+            console.log('fetchAlternatives skipping ' + pid + ' (already visited)')
+            return
+          }
+        }
+        console.log('fetchAlternatives [' + predicate + '] fetching ' + pid)
+        let response = await axios.get(self.config.api + '/object/' + pid + '/info',
+          {
+            headers: {
+              'X-XSRF-TOKEN': self.user.token
+            }
+          }
+        )
+        let objectInfo = response.data.info
+        if (objectInfo) {
+          let jsonld = objectInfo.metadata['JSON-LD']
+          if (jsonld) {
+            if (jsonld[predicate]) {
+              let objarr = jsonld[predicate]
+              if (objarr.length > 0) {
+                let id
+                if (predicate === 'oaire:version') {
+                  if (objarr[0]['skos:exactMatch']) {
+                    if (objarr[0]['skos:exactMatch'].length > 0) {
+                      id = objarr[0]['skos:exactMatch'][0]
+                    }
+                  }
+                }
+                if (predicate === 'ebucore:hasMimeType') {
+                  id = objarr[0]
+                }
+                array.push(
+                  {
+                    label: self.getLocalizedTermLabel(vocabulary, id),
+                    pid: pid
+                  }
+                )
+              }
+            }
+          }
+        }
+        if (objectInfo[property]) {
+          for (let o of self.objectInfo[property]) {
+            self.fetchAlternatives(self, o, property, predicate, vocabulary, array)
+          }
+        }
+        console.log('[' + pid + '] fetching object info done')
+      } catch (error) {
+        console.log(error)
+      }
     },
     getFormatLabel (objectInfo) {
       if (objectInfo.metadata) {
@@ -171,41 +236,20 @@ export default {
     // see https://router.vuejs.org/guide/advanced/data-fetching.html#fetching-before-navigation
     // here the component does not exist yet so we don't have 'this' or access to the store
     let inforesponse
-    let members = []
     try {
       console.log('[' + to.params.pid + '] fetching object info')
       inforesponse = await axios.get(configjs.api + '/object/' + to.params.pid + '/info')
-      console.log('[' + to.params.pid + '] fetching object info done, querying object members')
-      let params = {
-        q: 'ismemberof:"' + to.params.pid + '"',
-        defType: 'edismax',
-        wt: 'json',
-        qf: 'ismemberof^5',
-        fl: 'pid',
-        sort: 'pos_in_' + to.params.pid.replace(':', '_') + ' asc'
-      }
-      let query = qs.stringify(params, { encodeValuesOnly: true, indices: false })
-      let membersresponse = await axios.get(configjs.solr + '/select?' + query)
-      console.log('[' + to.params.pid + '] object has ' + membersresponse.data.response.numFound + ' members')
-      if (membersresponse.data.response.numFound > 0) {
-        for (let doc of membersresponse.data.response.docs) {
-          console.log('[' + to.params.pid + '] fetching object info of member ' + doc.pid)
-          let memresponse = await axios.get(configjs.api + '/object/' + doc.pid + '/info')
-          console.log('[' + to.params.pid + '] fetching object info of member ' + doc.pid + ' done')
-          members.push(memresponse.data.info)
-        }
-      }
     } catch (error) {
       console.error(error)
     }
-    // on next() the component will be rendered, waits for no async calls, but we can put data to store since we already have them
     next(vm => {
       vm.$store.commit('setObjectInfo', inforesponse.data.info)
-      vm.$store.commit('setObjectMembers', members)
+      vm.fetchAlternatives(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     await this.fetchAsyncData(this, to.params.pid)
+    this.fetchAlternatives(this)
     next()
   }
 }
