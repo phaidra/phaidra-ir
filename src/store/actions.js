@@ -78,6 +78,10 @@ export default {
       console.log('[' + state.user.username + '] got user data firstname[' + response.data.user_data.firstname + '] lastname[' + response.data.user_data.lastname + '] email[' + response.data.user_data.email + ']')
       commit('setLoginData', response.data.user_data)
     } catch (error) {
+      if (error.response.status === 401) {
+        // this token is invalid
+        dispatch('logout')
+      }
       console.log(error)
     }
   },
@@ -107,15 +111,16 @@ export default {
   async logout ({ commit, dispatch, state }) {
     document.cookie = 'X-XSRF-TOKEN='
     try {
-      let response = await axios.get(state.config.api + '/signout', {
+      // let response =
+      await axios.get(state.config.api + '/signout', {
         headers: {
           'X-XSRF-TOKEN': state.user.token
         }
       })
       commit('clearStore')
-      if (response.data.alerts && response.data.alerts.length > 0) {
-        commit('setAlerts', response.data.alerts)
-      }
+      // if (response.data.alerts && response.data.alerts.length > 0) {
+      //  commit('setAlerts', response.data.alerts)
+      // }
     } catch (error) {
       commit('clearStore')
       console.log(error)

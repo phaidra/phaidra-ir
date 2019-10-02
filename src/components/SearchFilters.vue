@@ -145,7 +145,6 @@
 </template>
 
 <script>
-import Autocomplete from './Autocomplete'
 import '@/compiled-icons/univie-stop2'
 import '@/compiled-icons/univie-checkbox-unchecked'
 import '@/compiled-icons/material-action-account-balance'
@@ -156,9 +155,6 @@ import { toggleFacet, showFacet } from '../utils/searchfacets'
 
 export default {
   name: 'search-filters',
-  components: {
-    Autocomplete
-  },
   props: {
     search: {
       type: Function,

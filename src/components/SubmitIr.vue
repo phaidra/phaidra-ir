@@ -1,5 +1,16 @@
 <template>
-  <v-stepper v-if="form.sections.length > 0" v-model="step" non-linear>
+
+  <v-container v-if="submitformLoading">
+    <div class="text-center">
+      <v-progress-circular
+        indeterminate
+        color="primary"
+        class="progressbar mt-12">
+      </v-progress-circular>
+    </div>
+  </v-container>
+
+  <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear>
     <v-stepper-header>
       <v-stepper-step :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
       <v-divider></v-divider>
@@ -904,7 +915,8 @@ export default {
       credentials: {
         username: '',
         password: ''
-      }
+      },
+      submitformLoading: false
     }
   },
   watch: {
@@ -2334,7 +2346,7 @@ export default {
         this.loading = false
       }
     },
-    resetSubmission: function (self) {
+    resetSubmission: async function (self) {
       if (!self) {
         self = this
       }
@@ -2346,17 +2358,21 @@ export default {
       self.resetForm(self, null, null)
     }
   },
-  mounted: function () {
+  mounted: async function () {
     // this.objectListLoad()
     // this.resetSubmission(this)
   },
   beforeRouteEnter: async function (to, from, next) {
     next(vm => {
+      vm.submitformLoading = true
+      setTimeout(function () { vm.submitformLoading = false }, 500)
       vm.objectListLoad()
       vm.resetSubmission(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
+    this.submitformLoading = true
+    setTimeout(function () { this.submitformLoading = false }, 500)
     this.objectListLoad()
     this.resetSubmission(this)
     next()
@@ -2371,5 +2387,9 @@ export default {
 
 .prewrap {
   white-space: pre-wrap;
+}
+
+.progressbar {
+  opacity: 0.7
 }
 </style>
