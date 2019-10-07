@@ -686,5 +686,6 @@ export default {
   'as soon as my submission has been successfully verified': 'sobald meine Eingaben erfolgreich geprüft wurden',
   'as soon as the embargo period has expired': 'sobald die Embargofrist abgelaufen ist',
   'Please notify me by e-mail as soon as my object is fully accessible.': 'Bitte benachrichtigen Sie mich per E-Mail, sobald mein Objekt voll freigeschaltet ist.',
-  'This item needs to be cleared by the repository management.': 'Dieser Eintrag muss noch vom Repository Management frei gegeben werden.'
+  'This item needs to be cleared by the repository management.': 'Dieser Eintrag muss noch vom Repository Management frei gegeben werden.',
+  'SUBMIT_ATTENTION': 'Gemäß den in SHERPA/RoMEO angegebenen rechtlichen Rahmenbedingungen ist es möglicherweise nicht gestattet, veröffentlichte Versionen von Artikeln aus {journal} in das institutionelle Repositorium u:scholar hochzuladen. Bitte prüfen Sie Ihren Upload und wählen Sie ggf. eine Version, bei der dies erlaubt ist. Falls Ihnen der Verlag die Rechte zum Upload ausdrücklich überlassen hat, bestätigen Sie uns dies bitte schriftlich via E-Mail an'
 }
