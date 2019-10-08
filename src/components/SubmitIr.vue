@@ -18,8 +18,8 @@
       <v-divider></v-divider>
       <v-stepper-step :editable="(step > 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :editable="(step > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
-      <v-divider></v-divider>
+      <v-stepper-step v-if="(submitformparam === 'journal-article')" :editable="(step > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
+      <v-divider v-if="(submitformparam === 'journal-article')"></v-divider>
       <v-stepper-step :editable="(step > 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
       <v-divider></v-divider>
       <v-stepper-step :editable="(step > 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
@@ -200,7 +200,7 @@
           <v-divider class="mt-5 mb-7"></v-divider>
           <v-row no-gutters justify="space-between">
             <v-btn dark color="grey" @click="step = 2; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-            <v-btn color="primary" @click="step = 4; $vuetify.goTo(1)">
+            <v-btn color="primary" @click="step = (submitformparam === 'journal-article' ?  4 : 5);  $vuetify.goTo(1)">
               <template v-if="doiImportData">{{ $t('Continue') }}</template>
               <template v-else>{{ $t('Skip') }}</template>
             </v-btn>
@@ -208,7 +208,7 @@
         </v-container>
       </v-stepper-content>
 
-      <v-stepper-content step="4">
+      <v-stepper-content v-if="(submitformparam === 'journal-article')" step="4">
         <v-container>
           <v-row no-gutters>
             <h3 class="title font-weight-light primary--text mb-4">{{ $t('SHERPA/RoMEO') }}</h3>
@@ -237,7 +237,7 @@
                   <v-list-item-content>
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                     <v-list-item-subtitle>{{ $t('ISSN') + ': ' + item.issn }}</v-list-item-subtitle>
-                    <v-list-item-subtitle>{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="romeopub">{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
                 <template slot="selection" slot-scope="{ item }">
@@ -393,7 +393,7 @@
 
                   <template v-else-if="f.component === 'p-select'">
                     <p-i-select
-                      v-show="f.predicate !== 'dcterms:type'"
+                      v-show="f.predicate !== 'dcterms:type' && !((f.predicate === 'edm:hasType') && (submitformparam === 'book-part'))"
                       v-bind.sync="f"
                       v-on:input="selectInput(s.fields, f, $event)"
                       v-on:add="addField(s.fields, f)"
@@ -580,7 +580,7 @@
               </v-row>
               <v-divider class="mt-5 mb-7"></v-divider>
               <v-row no-gutters justify="space-between">
-                <v-btn dark color="grey" @click="step = (s.id - 1); $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+                <v-btn dark color="grey" @click="step = (s.id - (submitformparam === 'journal-article' ?  1 : 2)); $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
                 <v-btn color="primary" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
               </v-row>
             </v-col>
@@ -915,7 +915,7 @@ export default {
               {
                 title: j.jtitle['#text'],
                 issn: j.issn['#text'],
-                romeopub: j.romeopub['#text'] ? j.romeopub['#text'] : this.$t('Not available')
+                romeopub: j.romeopub['#text']
               }
             )
           }
@@ -959,7 +959,7 @@ export default {
         let journal = {
           title: j.jtitle['#text'],
           issn: j.issn['#text'],
-          romeopub: j.romeopub['#text'] ? j.romeopub['#text'] : this.$t('Not available')
+          romeopub: j.romeopub['#text']
         }
         let p = obj.romeoapi[1].publishers.publisher
         let publisher = {
@@ -1572,6 +1572,7 @@ export default {
       if (doiImportData && doiImportData.authors.length > 0) {
         for (let author of doiImportData.authors) {
           let role = fields.getField('role-extended')
+          role.type = 'schema:Person'
           role.role = 'role:aut'
           role.roleVocabulary = 'irrolepredicate'
           role.ordergroup = 'roles'
@@ -1582,6 +1583,12 @@ export default {
       } else {
         let role = fields.getField('role-extended')
         role.role = 'role:aut'
+        role.type = 'schema:Person'
+        role.enableTypeSelect = false
+        if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book-part')) {
+          role.hideRole = true
+          role.label = this.$t('Author')
+        }
         role.roleVocabulary = 'irrolepredicate'
         role.ordergroup = 'roles'
         smf.push(role)
@@ -1626,7 +1633,11 @@ export default {
 
       if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
         let pf = fields.getField('bf-publication')
+        pf.publisherSearch = false
         pf.multiplicable = false
+        pf.showPlace = false
+        pf.showDate = false
+        pf.label = this.$t('PUBLISHER_VERLAG')
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -1685,11 +1696,16 @@ export default {
         sof.push(isbn)
       }
 
-      sof.push(fields.getField('keyword'))
+      let kof = fields.getField('keyword')
+      kof.multilingual = false
+      sof.push(kof)
 
       if (this.submitformparam === 'journal-article') {
         let sf = fields.getField('series')
+        sf.multilingual = false
         sf.journalSuggest = true
+        sf.hideIdentifier = true
+        sf.issuedDatePicker = true
         if (doiImportData) {
           if (doiImportData.journalTitle) {
             sf.title = doiImportData.journalTitle
@@ -1724,6 +1740,9 @@ export default {
       if (this.submitformparam === 'journal-article') {
         let pf = fields.getField('bf-publication')
         pf.multiplicable = false
+        pf.showPlace = false
+        pf.showDate = false
+        pf.label = this.$t('PUBLISHER_VERLAG')
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -1931,7 +1950,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
-      self.step = 6
+      self.step = 5
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
@@ -1978,5 +1997,10 @@ export default {
 
 .progressbar {
   opacity: 0.7
+}
+
+.v-stepper__content {
+  transition: none;
+  -webkit-transition: none;
 }
 </style>
