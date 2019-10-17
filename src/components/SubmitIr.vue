@@ -508,7 +508,7 @@
                     ></p-i-vocab-ext-readonly>
                   </template>
 
-                  <template v-else-if="(f.component === 'p-literal') || (f.component === 'p-alternate-identifier')">
+                  <template v-else-if="f.component === 'p-literal'">
                     <p-i-literal
                       v-bind.sync="f"
                       v-on:input-value="f.value=$event"
@@ -518,33 +518,29 @@
                     ></p-i-literal>
                   </template>
 
-                  <template v-else-if="f.component === 'p-project'">
-                    <v-col cols="10">
-                      <p-i-project
-                        v-bind.sync="f"
-                        v-on:input-name="f.name=$event"
-                        v-on:input-name-language="setSelected(f, 'nameLanguage', $event)"
-                        v-on:input-description="f.description=$event"
-                        v-on:input-description-language="setSelected(f, 'descriptionLanguage', $event)"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:input-homepage="f.homepage=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-project>
-                    </v-col>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-funder'">
-                    <p-i-funder
+                  <template v-else-if="f.component === 'p-alternate-identifier'">
+                    <p-i-alternate-identifier
                       v-bind.sync="f"
-                      v-on:input-name="f.name=$event"
-                      v-on:input-name-language="setSelected(f, 'nameLanguage', $event)"
-                      v-on:input-identifier="f.identifier=$event"
+                      v-on:input-identifier="f.value=$event"
+                      v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
                       class="my-2"
-                    ></p-i-funder>
+                    ></p-i-alternate-identifier>
+                  </template>
+
+                  <template v-else-if="f.component === 'p-project'">
+                    <v-col cols="10">
+                      <submit-ir-funding-field
+                        v-bind.sync="f"
+                        v-on:select-funder="setFunder(f, $event)"
+                        v-on:input-funder-name="f.funderName=$event"
+                        v-on:input-identifier="f.identifier=$event"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        class="my-2"
+                      ></submit-ir-funding-field>
+                    </v-col>
                   </template>
 
                   <template v-else-if="f.component === 'p-file'">
@@ -740,6 +736,7 @@
 
 <script>
 import SubmitIrLicenseInfo from '@/components/SubmitIrLicenseInfo'
+import SubmitIrFundingField from '@/components/SubmitIrFundingField'
 import xmlUtils from 'phaidra-vue-components/src/utils/xml'
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
@@ -755,7 +752,8 @@ export default {
   name: 'submit-ir',
   mixins: [ context, config, validationrules ],
   components: {
-    SubmitIrLicenseInfo
+    SubmitIrLicenseInfo,
+    SubmitIrFundingField
   },
   computed: {
     doiToImport: function () {
@@ -1295,11 +1293,24 @@ export default {
         }
       }
     },
+    setFunder: function (f, event) {
+      if (event) {
+        f.funderIdentifier = event['@id']
+        f.funderName = ''
+        if (event['@id'] !== 'other') {
+          let preflabels = event['skos:prefLabel']
+          Object.entries(preflabels).forEach(([key, value]) => {
+            f.funderName = value
+          })
+        }
+        this.$forceUpdate()
+      }
+    },
     affiliationSelectInput: function (f, event) {
       if (event) {
         f.affiliation = event['@id']
         f.affiliationSelectedName = []
-        var preflabels = event['skos:prefLabel']
+        let preflabels = event['skos:prefLabel']
         Object.entries(preflabels).forEach(([key, value]) => {
           f.affiliationSelectedName.push({ '@value': value, '@language': key })
         })
@@ -1309,7 +1320,7 @@ export default {
       if (event) {
         f.publisherOrgUnit = event['@id']
         f.publisherSelectedName = []
-        var preflabels = event['skos:prefLabel']
+        let preflabels = event['skos:prefLabel']
         Object.entries(preflabels).forEach(([key, value]) => {
           f.publisherSelectedName.push({ '@value': value, '@language': key })
         })
@@ -1324,7 +1335,7 @@ export default {
       if (event) {
         f.organization = event['@id']
         f.organizationSelectedName = []
-        var preflabels = event['skos:prefLabel']
+        let preflabels = event['skos:prefLabel']
         Object.entries(preflabels).forEach(([key, value]) => {
           f.organizationSelectedName.push({ '@value': value, '@language': key })
         })
@@ -1624,6 +1635,7 @@ export default {
         let sf = fields.getField('series')
         sf.label = this.$t('Appeared in')
         sf.predicate = 'rdau:P60101'
+        sf.multilingual = false
         sf.hideVolume = true
         sf.hideIssue = true
         sf.hideIssued = true
@@ -1677,13 +1689,13 @@ export default {
       dof.multilingual = false
       sof.push(dof)
 
-      sof.push(fields.getField('funder'))
-
       sof.push(fields.getField('project'))
 
       let aif = fields.getField('alternate-identifier')
-      aif.label = 'DOI'
+      aif.identifierLabel = 'DOI'
       aif.multiplicable = true
+      aif.type = 'doi'
+      aif.showType = false
       if (doiImportData && doiImportData.doi) {
         aif.value = doiImportData.doi
       }
@@ -1950,7 +1962,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
-      self.step = 5
+      self.step = 6
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
