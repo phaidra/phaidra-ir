@@ -1692,11 +1692,11 @@ export default {
       sof.push(fields.getField('project'))
 
       let aif = fields.getField('alternate-identifier')
-      aif.identifierLabel = 'DOI'
+      aif.identifierLabel = 'Identifier'
+      aif.vocabulary = 'irobjectidentifiertype'
       aif.multiplicable = true
-      aif.type = 'doi'
-      aif.showType = false
       if (doiImportData && doiImportData.doi) {
+        aif.type = 'doi'
         aif.value = doiImportData.doi
       }
       sof.push(aif)
