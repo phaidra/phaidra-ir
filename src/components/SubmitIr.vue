@@ -1589,6 +1589,9 @@ export default {
           role.ordergroup = 'roles'
           role.firstname = author.firstname
           role.lastname = author.lastname
+          role.showIdentifierType = false
+          role.identifierType = 'orcid'
+          role.identifierLabel = 'ORCID'
           smf.push(role)
         }
       } else {
@@ -1602,6 +1605,9 @@ export default {
         }
         role.roleVocabulary = 'irrolepredicate'
         role.ordergroup = 'roles'
+        role.showIdentifierType = false
+        role.identifierType = 'orcid'
+        role.identifierLabel = 'ORCID'
         smf.push(role)
       }
 
@@ -1610,6 +1616,7 @@ export default {
       issued.type = 'dcterms:issued'
       issued.hideType = true
       issued.dateLabel = self.$t('Date issued')
+      issued.multiplicable = false
       if (doiImportData && doiImportData.dateIssued) {
         issued.value = doiImportData.dateIssued
       }
@@ -1962,7 +1969,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
-      self.step = 6
+      self.step = 5
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
