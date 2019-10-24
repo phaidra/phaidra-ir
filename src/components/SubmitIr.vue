@@ -32,7 +32,7 @@
     <v-stepper-items>
 
       <v-stepper-content step="1">
-        <v-container>
+        <v-container v-if="checkAllowSubmitRes.allowsubmit === 1">
           <v-row no-gutters>
             <h3 class="title font-weight-light primary--text mb-4">{{ $t('Submitting a publication') }}</h3>
           </v-row>
@@ -66,18 +66,31 @@
           </v-row>
           <v-row no-gutters>
             <i18n path="SUBMIT_START_5" tag="p">
-              <a :href="'mailto:' + config.email">{{ config.email }}</a>
+              <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
             </i18n>
           </v-row>
           <v-row no-gutters>
             <i18n path="SUBMIT_START_6" tag="p">
               <a :href="'/info/about'" target="_blank">{{ $t('contact us') }}</a>
-              <a :href="'mailto:' + config.email">{{ config.email }}</a>
+              <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
             </i18n>
           </v-row>
           <v-divider class="mt-5 mb-7"></v-divider>
           <v-row no-gutters justify="center">
             <v-btn color="primary" @click="step = 2; $vuetify.goTo(1)">{{ $t('Start') }}</v-btn>
+          </v-row>
+        </v-container>
+        <v-container v-else>
+          <v-row no-gutters justify="center">
+            <v-col>
+              <v-alert outlined type="error">
+                <i18n path="SUBMIT_NOT_ALLOWED" tag="p">
+                  <span>{{ checkAllowSubmitRes.nruploads }}</span>
+                  <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
+                  <span>{{ config.officecontact.phone }}</span>
+                </i18n>
+              </v-alert>
+            </v-col>
           </v-row>
         </v-container>
       </v-stepper-content>
@@ -570,7 +583,7 @@
                 <v-col cols="12" md="10">
                   <v-alert type="error" outlined>
                     <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: rightsCheckData.journal.title }) }}</span>
-                    <a :href="'mailto:' + config.email">{{ config.email }}</a>.
+                    <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>.
                   </v-alert>
                 </v-col>
               </v-row>
@@ -839,7 +852,13 @@ export default {
         username: '',
         password: ''
       },
-      submitformLoading: false
+      submitformLoading: false,
+      checkAllowSubmitRes: {
+        allowsubmit: null,
+        candobulkupload: null,
+        nrdays: null,
+        nruploads: null
+      }
     }
   },
   watch: {
@@ -851,6 +870,37 @@ export default {
     }
   },
   methods: {
+    async checkAllowSubmit () {
+      this.submitformLoading = true
+      try {
+        let response = await axios.get(this.config.api + '/ir/allowsubmit',
+          {
+            headers: {
+              'X-XSRF-TOKEN': this.user.token
+            }
+          }
+        )
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
+        }
+        if (response.data.allowsubmit) {
+          this.checkAllowSubmitRes.allowsubmit = response.data.allowsubmit
+        }
+        if (response.data.candobulkupload) {
+          this.checkAllowSubmitRes.candobulkupload = response.data.candobulkupload
+        }
+        if (response.data.nrdays) {
+          this.checkAllowSubmitRes.nrdays = response.data.nrdays
+        }
+        if (response.data.nrdays) {
+          this.checkAllowSubmitRes.nrdays = response.data.nrdays
+        }
+      } catch (error) {
+        console.error(error)
+      } finally {
+        this.submitformLoading = false
+      }
+    },
     async login () {
       this.loading = true
       try {
@@ -1307,9 +1357,10 @@ export default {
       }
     },
     affiliationSelectInput: function (f, event) {
+      f.affiliation = ''
+      f.affiliationSelectedName = []
       if (event) {
         f.affiliation = event['@id']
-        f.affiliationSelectedName = []
         let preflabels = event['skos:prefLabel']
         Object.entries(preflabels).forEach(([key, value]) => {
           f.affiliationSelectedName.push({ '@value': value, '@language': key })
@@ -1317,9 +1368,10 @@ export default {
       }
     },
     publisherSelectInput: function (f, event) {
+      f.publisherOrgUnit = ''
+      f.publisherSelectedName = []
       if (event) {
         f.publisherOrgUnit = event['@id']
-        f.publisherSelectedName = []
         let preflabels = event['skos:prefLabel']
         Object.entries(preflabels).forEach(([key, value]) => {
           f.publisherSelectedName.push({ '@value': value, '@language': key })
@@ -1332,9 +1384,10 @@ export default {
       }
     },
     organizationSelectInput: function (f, event) {
+      f.organization = ''
+      f.organizationSelectedName = []
       if (event) {
         f.organization = event['@id']
-        f.organizationSelectedName = []
         let preflabels = event['skos:prefLabel']
         Object.entries(preflabels).forEach(([key, value]) => {
           f.organizationSelectedName.push({ '@value': value, '@language': key })
@@ -1381,17 +1434,21 @@ export default {
         if (event['@type']) {
           f.type = event['@type']
         }
-        var preflabels = event['skos:prefLabel']
-        f['skos:prefLabel'] = []
-        Object.entries(preflabels).forEach(([key, value]) => {
-          f['skos:prefLabel'].push({ '@value': value, '@language': key })
-        })
-        var rdfslabels = event['rdfs:label']
-        if (rdfslabels) {
-          f['rdfs:label'] = []
-          Object.entries(rdfslabels).forEach(([key, value]) => {
-            f['rdfs:label'].push({ '@value': value, '@language': key })
+        if (event['skos:prefLabel']) {
+          let preflabels = event['skos:prefLabel']
+          f['skos:prefLabel'] = []
+          Object.entries(preflabels).forEach(([key, value]) => {
+            f['skos:prefLabel'].push({ '@value': value, '@language': key })
           })
+        }
+        if (event['rdfs:label']) {
+          let rdfslabels = event['rdfs:label']
+          if (rdfslabels) {
+            f['rdfs:label'] = []
+            Object.entries(rdfslabels).forEach(([key, value]) => {
+              f['rdfs:label'].push({ '@value': value, '@language': key })
+            })
+          }
         }
         f['skos:notation'] = event['skos:notation']
 
@@ -1540,8 +1597,10 @@ export default {
       }
     },
     setFilename: function (f, event) {
-      f.value = event.name
-      f.file = event
+      if (event) {
+        f.value = event.name
+        f.file = event
+      }
       this.$emit('form-input-' + f.component, f)
     },
     resetForm: function (self, doiImportData, importedComponents) {
@@ -1969,7 +2028,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
-      self.step = 5
+      self.step = 1
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
@@ -1990,15 +2049,17 @@ export default {
     // this.resetSubmission(this)
   },
   beforeRouteEnter: async function (to, from, next) {
-    next(vm => {
-      vm.submitformLoading = true
-      setTimeout(function () { vm.submitformLoading = false }, 500)
+    next(async vm => {
+      await vm.checkAllowSubmit()
+      // vm.submitformLoading = true
+      // setTimeout(function () { vm.submitformLoading = false }, 500)
       vm.resetSubmission(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
-    this.submitformLoading = true
-    setTimeout(function () { this.submitformLoading = false }, 500)
+    await this.checkAllowSubmit()
+    // this.submitformLoading = true
+    // setTimeout(function () { this.submitformLoading = false }, 500)
     this.resetSubmission(this)
     next()
   }
