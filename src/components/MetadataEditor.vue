@@ -11,6 +11,7 @@
 
 <script>
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
+import fields from 'phaidra-vue-components/src/utils/fields'
 import { context } from '../mixins/context'
 import { config } from '../mixins/config'
 
@@ -43,6 +44,12 @@ export default {
         .then(function (response) { return response.json() })
         .then(function (json) {
           self.editform = self.json2form(json.metadata['JSON-LD'])
+          for (let f of self.editform.sections[0].fields) {
+            if (f.predicate === 'edm:rights') {
+              f.vocabulary = 'alllicenses'
+            }
+          }
+          self.editform.sections[0].fields.push(fields.getField('rights'))
         })
         .catch(function (error) {
           console.log(error)
