@@ -1,4 +1,4 @@
-export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, corpAuthors, persAuthors, roles, owner, inCollection: collection }) {
+export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, persAuthors, journals, inCollection: collection }) {
   let searchdefarr = []
 
   for (let i = 0; i < sortdef.length; i++) {
@@ -65,14 +65,6 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, corp
     }
   }
 
-  for (let j = 0; j < corpAuthors.values.length; j++) {
-    let v = corpAuthors.values[j]
-    if (v !== '') {
-      ands.push('(' + corpAuthors.field + ':"' + v + '")')
-      searchdefarr.push('fr=' + corpAuthors.field + '_' + window.encodeURIComponent(v))
-    }
-  }
-
   for (let j = 0; j < persAuthors.values.length; j++) {
     let v = persAuthors.values[j]
     if (v !== '') {
@@ -81,24 +73,16 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, corp
     }
   }
 
-  for (let i = 0; i < roles.length; i++) {
-    let field = roles[i]
-    for (let j = 0; j < field.values.length; j++) {
-      let v = field.values[j]
-      if (v !== '') {
-        ands.push('(' + field.field + ':"' + v + '")')
-        searchdefarr.push('fr=' + field.field + '_' + window.encodeURIComponent(v))
-      }
+  for (let j = 0; j < journals.values.length; j++) {
+    let v = journals.values[j]
+    if (v !== '') {
+      ands.push('(' + journals.field + ':"' + v + '")')
+      searchdefarr.push('fr=' + journals.field + '_' + window.encodeURIComponent(v))
     }
   }
 
-  if (owner) {
-    ands.push('owner:"' + owner + '"')
-    searchdefarr.push('owner=' + owner)
-  } else {
-    // an object should have at least an owner, else it's garbage
-    ands.push('owner:*')
-  }
+  // an object should have at least an owner, else it's garbage
+  ands.push('owner:*')
 
   if (collection) {
     ands.push('ispartof:"' + collection + '"')
@@ -113,7 +97,7 @@ export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries },
     q,
     defType: 'edismax',
     wt: 'json',
-    qf: 'pid^5 dc_title^4 dc_creator^3 dc_subject^2 _text_',
+    qf: 'pid^5 dc_title^4 dc_creator^3 dc_subject^2 dc_source^2 _text_',
     start: (page - 1) * pagesize,
     rows: pagesize,
     sort: '',

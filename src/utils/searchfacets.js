@@ -3,31 +3,11 @@ import config from '../config/phaidra-ir'
 
 export const facetQueries = [
   {
-    label: 'Access',
-    field: 'datastreams',
-    id: 'datastreams',
-    exclusive: true,
-    resetable: true,
-    show: false,
-    queries: [
-      {
-        id: 'restricted',
-        query: 'datastreams:POLICY',
-        label: 'Restricted'
-      },
-      {
-        id: 'unrestricted',
-        query: '-datastreams:POLICY',
-        label: 'Unrestricted'
-      }
-    ]
-  },
-  {
     label: 'Type',
     field: 'resourcetype',
     id: 'resourcetype',
     resetable: true,
-    show: true,
+    show: false,
     queries: [
       {
         id: 'image',
@@ -85,60 +65,6 @@ export const facetQueries = [
         label: 'Sound'
       }
     ]
-  },
-  {
-    label: 'License',
-    field: 'dc_license',
-    id: 'license',
-    show: false,
-    resetable: true,
-    queries: [
-      {
-        id: 'all-rights-reserved',
-        query: 'dc_license:\'All rights reserved\'',
-        label: 'All rights reserved'
-      },
-      {
-        id: 'gplv3',
-        query: 'dc_license:\'GPLv3\'',
-        label: 'GPLv3'
-      },
-      {
-        id: 'pdm',
-        query: 'dc_license:\'Public Domain Mark\'',
-        label: 'Public Domain Mark'
-      },
-      {
-        id: 'cc-by',
-        query: '(dc_license:\'CC BY 2.0 AT\' OR dc_license:\'CC BY 2.0 Generic\' OR dc_license:\'CC BY 3.0 AT\' OR dc_license:\'CC BY 3.0 Unported\' OR dc_license:\'CC BY 4.0 International\')',
-        label: 'CC BY'
-      },
-      {
-        id: 'cc-by-sa',
-        query: '(dc_license:\'CC BY-SA 2.0 AT\' OR dc_license:\'CC BY-SA 2.0 Generic\' OR dc_license:\'CC BY-SA 3.0 AT\' OR dc_license:\'CC BY-SA 3.0 Unported\' OR dc_license:\'CC BY-SA 4.0 International\')',
-        label: 'CC BY-SA'
-      },
-      {
-        id: 'cc-by-nc',
-        query: '(dc_license:\'CC BY-NC 2.0 AT\' OR dc_license:\'CC BY-NC 2.0 Generic\' OR dc_license:\'CC BY-NC 3.0 AT\' OR dc_license:\'CC BY-NC 3.0 Unported\' OR dc_license:\'CC BY-NC 4.0 International\')',
-        label: 'CC BY-NC'
-      },
-      {
-        id: 'cc-by-nd',
-        query: '(dc_license:\'CC BY-ND 2.0 AT\' OR dc_license:\'CC BY-ND 2.0 Generic\' OR dc_license:\'CC BY-ND 3.0 AT\' OR dc_license:\'CC BY-ND 3.0 Unported\' OR dc_license:\'CC BY-ND 4.0 International\')',
-        label: 'CC BY-ND'
-      },
-      {
-        id: 'cc-by-nc-sa',
-        query: '(dc_license:\'CC BY-NC-SA 2.0 AT\' OR dc_license:\'CC BY-NC-SA 2.0 Generic\' OR dc_license:\'CC BY-NC-SA 3.0 AT\' OR dc_license:\'CC BY-NC-SA 3.0 Unported\' OR dc_license:\'CC BY-NC-SA 4.0 International\')',
-        label: 'CC BY-NC-SA'
-      },
-      {
-        id: 'cc-by-nc-nd',
-        query: '(dc_license:\'CC BY-NC-ND 2.0 AT\' OR dc_license:\'CC BY-NC-ND 2.0 Generic\' OR dc_license:\'CC BY-NC-ND 3.0 AT\' OR dc_license:\'CC BY-NC-ND 3.0 Unported\' OR dc_license:\'CC BY-NC-ND 4.0 International\')',
-        label: 'CC BY-NC-ND'
-      }
-    ]
   }
 ]
 
@@ -167,6 +93,70 @@ export const adminFacetQueries = [
     ]
   }
 ]
+
+export function buildAssociationFacet (orgUnitsTree) {
+  let associationFacet = {
+    label: 'Association',
+    field: 'association_id',
+    id: 'association',
+    show: true,
+    resetable: true,
+    queries: []
+  }
+
+  for (let l1Unit of orgUnitsTree) {
+    let l2Facet = {
+      label: 'Subunits of ' + l1Unit['@id'],
+      field: 'association_id',
+      resetable: true,
+      id: 'l1-' + l1Unit['@id'],
+      queries: []
+    }
+
+    if (l1Unit.subunits) {
+      for (let l2Unit of l1Unit.subunits) {
+        let l3Facet = {
+          label: 'Subunits of ' + l2Unit['@id'],
+          field: 'association_id',
+          resetable: true,
+          id: 'l2-' + l2Unit['@id'],
+          queries: []
+        }
+
+        if (l2Unit.subunits) {
+          for (let l3Unit of l2Unit.subunits) {
+            l3Facet.queries.push({
+              query: 'association_id:"' + l3Unit['@id'] + '"',
+              id: l3Unit['@id'],
+              label: {
+                'skos:prefLabel': l3Unit['skos:prefLabel']
+              }
+            })
+          }
+        }
+
+        l2Facet.queries.push({
+          query: 'association_id:"' + l2Unit['@id'] + '"',
+          id: l2Unit['@id'],
+          label: {
+            'skos:prefLabel': l2Unit['skos:prefLabel']
+          },
+          childFacet: l3Facet
+        })
+      }
+    }
+
+    associationFacet.queries.push({
+      query: 'association_id:"' + l1Unit['@id'] + '"',
+      id: l1Unit['@id'],
+      label: {
+        'skos:prefLabel': l1Unit['skos:prefLabel']
+      },
+      childFacet: l2Facet
+    })
+  }
+  return associationFacet
+}
 
 function buildDateFacet () {
   let months31 = [1, 3, 5, 7, 8, 10, 12]
@@ -322,9 +312,9 @@ export const persAuthors = {
   values: []
 }
 
-export const corpAuthors = {
-  field: 'bib_roles_corp_aut',
-  label: 'Author',
+export const journals = {
+  field: 'dc_source',
+  label: 'Journal',
   values: []
 }
 

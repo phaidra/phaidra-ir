@@ -48,6 +48,12 @@ export function createApp () {
     }
   })
 
+  Vue.filter('dateyear', function (value) {
+    if (value) {
+      return moment(String(value)).format('YYYY')
+    }
+  })
+
   Vue.filter('time', function (value) {
     if (value) {
       return moment(String(value)).format('DD.MM.YYYY hh:mm:ss')

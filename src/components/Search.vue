@@ -39,9 +39,7 @@
           :search="search"
           :facetQueries="facetQueries"
           :persAuthorsProp="persAuthors"
-          :corpAuthorsProp="corpAuthors"
-          :rolesProp="roles"
-          :ownerProp="owner"
+          :journalsProp="journals"
           ></search-filters>
       </v-col>
     </v-row>
@@ -62,14 +60,15 @@ import '@/compiled-icons/fontello-sort-number-down'
 import '@/compiled-icons/material-content-link'
 import '@/compiled-icons/material-action-bookmark'
 import '@/compiled-icons/material-toggle-check-box-outline-blank'
-import { facetQueries, updateFacetQueries, persAuthors, corpAuthors, deactivateFacetQueries } from '../utils/searchfacets'
+import { facetQueries, updateFacetQueries, persAuthors, journals, deactivateFacetQueries, buildAssociationFacet } from '../utils/searchfacets'
 import { buildParams, buildSearchDef, sortdef } from '../utils/searchutils'
 import { setSearchParams } from '../utils/searchlocation'
 import { config } from '@/mixins/config'
+import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 
 export default {
   name: 'search',
-  mixins: [ config ],
+  mixins: [ config, vocabulary ],
   components: {
     Autocomplete,
     SearchResults,
@@ -93,10 +92,6 @@ export default {
   },
   props: {
     collection: {
-      type: String,
-      default: ''
-    },
-    ownerProp: {
       type: String,
       default: ''
     }
@@ -190,14 +185,8 @@ export default {
     resetSearchParams: function () {
       this.q = ''
       this.inCollection = ''
-      this.owner = ''
-      // TODO pass showAuthorFiler
-      // and showRoleFilter to searchFilters
-      // as props so that we can hide toggle them off here
-      // the same for roles
-      this.corpAuthors.values = []
       this.persAuthors.values = []
-      this.roles = []
+      this.journals.values = []
       this.currentPage = 1
       this.pagesize = 10
       for (let fq of this.facetQueries) {
@@ -215,16 +204,9 @@ export default {
       this.selectioncheck = !this.selectioncheck
     }
   },
-  mounted: function () {
-    setSearchParams(this, this.$route.query)
-  },
   watch: {
     collection: function (col) {
       this.inCollection = col
-      this.search()
-    },
-    ownerProp: function (owner) {
-      this.owner = owner
       this.search()
     }
   },
@@ -242,15 +224,27 @@ export default {
       lang: 'en',
       facetQueries,
 
-      corpAuthors,
       persAuthors,
-      roles: [],
-      owner: this.ownerProp,
+      journals,
 
       docs: [],
       total: 0,
       facet_counts: null
     }
+  },
+  mounted: function () {
+    setSearchParams(this, this.$route.query)
+    this.$nextTick(async function () {
+      if (!this.vocabularies['orgunits'].loaded) {
+        await this.$store.dispatch('loadOrgUnits', this.$i18n.locale)
+        facetQueries.push(buildAssociationFacet(this.vocabularies['orgunits'].tree))
+      }
+      this.search()
+    })
+    // This call is delayed because at this point
+    // `setInstanceSolr` has not yet been executed and
+    // the solr url is missing.
+    // setTimeout(() => { this.search() }, 100)
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.resetSearchParams()

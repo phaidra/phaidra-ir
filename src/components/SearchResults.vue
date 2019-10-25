@@ -33,20 +33,17 @@
                   </span>
                 </v-col>
               </v-row>
+              <v-row no-gutters class="my-4 mr-2" v-if="doc.bib_journal">
+                <v-col>
+                  <span class="grey--text text--darken-4">
+                    <span class="font-italic mr-2">{{ doc.bib_journal[0] }}</span> <template v-if="doc.bib_volume">{{ doc.bib_volume[0] }}.</template>{{ doc.bib_published | dateyear }} <template v-if="doc.bib_issue">({{ doc.bib_issue[0] }})</template>
+                  </span>
+                </v-col>
+              </v-row>
               <v-row no-gutters class="my-4 mr-2" v-if="doc.dc_description">
                 <v-col>
                   <span class="grey--text text--darken-4"><p-expand-text :text="doc.dc_description[0]" :moreStr="$t('read more')"/></span>
                 </v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-row no-gutters class="my-4 mr-2" :key="'lic'+doc.pid">
-            <v-col cols="2" class="preview-maxwidth"></v-col>
-            <v-col>
-              <v-row no-gutters>
-                <span>https://{{ config.phaidrabaseurl }}/{{ doc.pid }}</span>
-                <v-spacer></v-spacer>
-                <p-d-license v-if="doc.dc_license" :hideLabel="true" :o="doc.dc_license[0]"></p-d-license>
               </v-row>
             </v-col>
           </v-row>
@@ -59,7 +56,6 @@
 </template>
 
 <script>
-import PDLicense from 'phaidra-vue-components/src/components/display/PDLicense'
 import PImg from 'phaidra-vue-components/src/components/utils/PImg'
 import PExpandText from 'phaidra-vue-components/src/components/utils/PExpandText'
 import { config } from '@/mixins/config'
@@ -68,7 +64,6 @@ export default {
   name: 'search-results',
   mixins: [ config ],
   components: {
-    PDLicense,
     PImg,
     PExpandText
   },
