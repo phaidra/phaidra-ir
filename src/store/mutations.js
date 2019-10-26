@@ -86,6 +86,54 @@ export default {
         }
       )
     }
+    if (transition.to.name === 'about') {
+      state.breadcrumbs.push(
+        {
+          text: 'About',
+          disabled: true
+        }
+      )
+    }
+    if (transition.to.name === 'policy') {
+      state.breadcrumbs.push(
+        {
+          text: 'Policy',
+          disabled: true
+        }
+      )
+    }
+    if (transition.to.name === 'contact') {
+      state.breadcrumbs.push(
+        {
+          text: 'Contact',
+          disabled: true
+        }
+      )
+    }
+    if (transition.to.name === 'impressum') {
+      state.breadcrumbs.push(
+        {
+          text: 'Impressum',
+          disabled: true
+        }
+      )
+    }
+    if (transition.to.name === 'metadata-policy') {
+      state.breadcrumbs.push(
+        {
+          text: 'Metadata policy',
+          disabled: true
+        }
+      )
+    }
+    if (transition.to.name === 'terms-of-use') {
+      state.breadcrumbs.push(
+        {
+          text: 'Terms of use',
+          disabled: true
+        }
+      )
+    }
   },
   setGroups (state, groups) {
     state.groups = groups

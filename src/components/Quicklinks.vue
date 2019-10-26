@@ -20,13 +20,6 @@
           </v-row>
 
           <v-row>
-            <a href="https://uscholar.univie.ac.at/" target="_blank">
-              <span>u:scholar</span>
-              <icon name="univie-extern"></icon>
-            </a>
-          </v-row>
-
-          <v-row>
             <a href="http://unidam.univie.ac.at/" target="_blank">
               <span>unidam</span>
               <icon name="univie-extern"></icon>

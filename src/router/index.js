@@ -11,6 +11,12 @@ import Submit from '@/components/Submit'
 import Admin from '@/components/Admin'
 import AdminSubmitIr from '@/components/AdminSubmitIr'
 import AdminSubmit from '@/components/AdminSubmit'
+import About from '@/components/info/About'
+import Policy from '@/components/info/Policy'
+import Contact from '@/components/info/Contact'
+import Impressum from '@/components/info/Impressum'
+import MetadataPolicy from '@/components/info/MetadataPolicy'
+import TermsOfUse from '@/components/info/TermsOfUse'
 
 Vue.use(Router)
 
@@ -72,7 +78,40 @@ export function createRouter () {
         path: '/admin/submit/:submitform',
         name: 'adminsubmitform',
         component: AdminSubmitIr
+      },
+      {
+        path: '/info/about',
+        name: 'about',
+        component: About
+      },
+      {
+        path: '/info/policy',
+        name: 'policy',
+        component: Policy
+      },
+      {
+        path: '/info/contact',
+        name: 'contact',
+        component: Contact
+      },
+      {
+        path: '/info/impressum',
+        name: 'impressum',
+        component: Impressum
+      },
+      {
+        path: '/info/metadata_policy',
+        name: 'metadata-policy',
+        component: MetadataPolicy
+      },
+      {
+        path: '/info/terms',
+        name: 'terms',
+        component: TermsOfUse
       }
-    ]
+    ],
+    scrollBehavior () {
+      return { x: 0, y: 0 }
+    }
   })
 }

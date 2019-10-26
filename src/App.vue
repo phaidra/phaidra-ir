@@ -63,9 +63,11 @@
                               <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
                             </template>
                             <v-list>
+                              <v-list-item @click="$router.push('about')"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
+                              <v-list-item @click="$router.push('policy')"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
+                              <v-list-item @click="$router.push('contact')"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
                               <v-list-item @click="$router.push('search')"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
                               <v-list-item v-if="signedin" @click="$router.push('submit')"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
-                              <v-list-item v-if="signedin" @click="$router.push('myobjects')"><v-list-item-title>{{ $t("My objects") }}</v-list-item-title></v-list-item>
                               <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push('admin')"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
                               <v-list-item v-if="!signedin && config.enablelogin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
                               <v-list-item v-if="signedin" @click="logout"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
@@ -76,13 +78,19 @@
                       <v-spacer></v-spacer>
                       <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
                         <v-hover v-slot:default="{ hover }">
+                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/about' }">{{ $t('ABOUT_LINK', { name: config.title })}}</router-link>
+                        </v-hover>
+                        <v-hover v-slot:default="{ hover }">
+                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/policy' }">{{ $t("Policy") }}</router-link>
+                        </v-hover>
+                        <v-hover v-slot:default="{ hover }">
+                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/contact' }">{{ $t("Contact") }}</router-link>
+                        </v-hover>
+                        <v-hover v-slot:default="{ hover }">
                           <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
                         </v-hover>
                         <v-hover v-slot:default="{ hover }">
                           <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" :to="'/submit'">{{ $t("Submit") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" :to="{ path: '/search', query: { owner: user.username } }">{{ $t("My objects") }}</router-link>
                         </v-hover>
                         <v-hover v-slot:default="{ hover }">
                           <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin && (user.username === config.iraccount)" :to="'/admin'">{{ $t("Admin") }}</router-link>
@@ -147,7 +155,7 @@
                   <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
                 </v-col>
                 <v-col class="text-right" >
-                  <a href="http://datamanagement.univie.ac.at/" target="_blank">{{ $t('Servicepage') }}</a> | <router-link :to="'impressum'">{{ $t('Impressum') }}</router-link>
+                  <router-link :to="'/info/impressum'">{{ $t('Impressum') }}</router-link> | <router-link :to="'/info/metadata_policy'">{{ $t('Metadata policy') }}</router-link> | <router-link :to="'/info/terms'">{{ $t('Terms of use') }}</router-link> | powered by <a :href="'https://' + config.phaidrabaseurl">Phaidra</a>
                 </v-col>
               </v-row>
             </v-col>

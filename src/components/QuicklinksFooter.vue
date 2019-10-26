@@ -24,14 +24,6 @@
               </a>
             </div>
             <div class="footer-quicklinks-list">
-              <a href="https://uscholar.univie.ac.at/" target="_blank">
-                <div>
-                  <span>u:scholar</span>
-                  <icon name="univie-right" class="float-right"></icon>
-                </div>
-              </a>
-            </div >
-            <div class="footer-quicklinks-list">
               <a href="http://unidam.univie.ac.at/" target="_blank">
                 <div>
                   <span>unidam</span>
