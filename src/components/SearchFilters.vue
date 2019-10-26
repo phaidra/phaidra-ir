@@ -98,6 +98,43 @@
           </v-col>
         </v-row>
       </li>
+      <li>
+        <v-row no-gutters>
+          <v-col>
+            <icon @click.native="toggleFunderFilter()" v-if="showFunderFilter" name="univie-stop2" class="primary--text"></icon>
+            <icon @click.native="toggleFunderFilter()" v-if="!showFunderFilter" name="univie-checkbox-unchecked" class="primary--text"></icon>
+            <span @click="toggleFunderFilter()" class="facet-label primary--text" :class="{ active: showFunderFilter }">{{ $t('Funder') }}</span>
+          </v-col>
+        </v-row>
+        <v-row no-gutters v-if="showFunderFilter">
+          <v-col cols="12">
+            <v-autocomplete
+              :value="getTerm('irfunders', funder.value)"
+              v-on:input="setFunder($event)"
+              :items="vocabularies['irfunders'].terms"
+              :item-value="'@id'"
+              :filter="autocompleteFilter"
+              hide-no-data
+              :height="7"
+              :label="$t('Funder')"
+              filled
+              return-object
+              clearable
+            >
+              <template slot="item" slot-scope="{ attr, item }">
+                <v-list-item-content two-line>
+                  <v-list-item-title  v-html="`${getLocalizedTermLabel('irfunders', item['@id'])}`"></v-list-item-title>
+                </v-list-item-content>
+              </template>
+              <template slot="selection" slot-scope="{ item }">
+                <v-list-item-content>
+                  <v-list-item-title v-html="`${getLocalizedTermLabel('irfunders', item['@id'])}`"></v-list-item-title>
+                </v-list-item-content>
+              </template>
+            </v-autocomplete>
+          </v-col>
+        </v-row>
+      </li>
     </ul>
   </v-container>
 </template>
@@ -109,9 +146,11 @@ import '@/compiled-icons/material-action-account-balance'
 import '@/compiled-icons/material-social-person'
 import '@/compiled-icons/material-navigation-close'
 import { toggleFacet, showFacet } from '../utils/searchfacets'
+import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 
 export default {
   name: 'search-filters',
+  mixins: [ vocabulary ],
   props: {
     search: {
       type: Function,
@@ -122,12 +161,13 @@ export default {
       required: true
     },
     persAuthorsProp: {
-      type: Object,
-      required: true
+      type: Object
     },
     journalsProp: {
-      type: Object,
-      required: true
+      type: Object
+    },
+    funderProp: {
+      type: Object
     }
   },
   data () {
@@ -135,7 +175,9 @@ export default {
       showAuthorFilter: false,
       persAuthors: {},
       showJournalsFilter: false,
-      journals: {}
+      journals: {},
+      showFunderFilter: false,
+      funder: null
     }
   },
   methods: {
@@ -166,11 +208,27 @@ export default {
     },
     setJournals: function () {
       this.search({ journals: this.journals })
+    },
+    toggleFunderFilter: function () {
+      this.showFunderFilter = !this.showFunderFilter
+      if (!this.showFunderFilter) {
+        this.funder.value = null
+        this.search({ funder: this.funder })
+      }
+    },
+    setFunder: function ($event) {
+      if ($event) {
+        this.funder.value = $event['@id']
+      } else {
+        this.funder.value = null
+      }
+      this.search({ funder: this.funder })
     }
   },
   mounted () {
     this.persAuthors = this.persAuthorsProp
     this.journals = this.journalsProp
+    this.funder = this.funderProp
   },
   watch: {
     persAuthorsProp: function (v) {
@@ -183,6 +241,12 @@ export default {
       this.journals = v
       if (v.length) {
         this.showJournalsFilter = true
+      }
+    },
+    funderProp: function (v) {
+      this.funder = v
+      if (v.length) {
+        this.showFunderFilter = true
       }
     }
   }

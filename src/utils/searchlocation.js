@@ -1,5 +1,3 @@
-import { getMarcRoleLabel } from './searchfilters'
-
 export function setSearchParams (self, { q, page, pagesize, sortdef, owner, collection, fq, fr }) {
   if (q) {
     self.q = q
@@ -91,19 +89,6 @@ export function setSearchParams (self, { q, page, pagesize, sortdef, owner, coll
       if (role === 'bib_roles_pers_aut') {
         self.persAuthors.values = roles[role].values
         // SearchFilters.watch will set "showAuthorFilter = true"
-      } else {
-        if (role === 'bib_roles_corp_aut') {
-          self.corpAuthors.values = roles[role].values
-          // SearchFilters.watch will set "showAuthorFilter = true"
-        } else {
-          self.roles.push({
-            field: role,
-            label: getMarcRoleLabel(role),
-            values: roles[role].values,
-            type: role.includes('_pers_') ? 'pers' : 'corp'
-          })
-          // SearchFilters.watch will set "showRoleFilter = true"
-        }
       }
     })
   }

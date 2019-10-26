@@ -9,6 +9,8 @@ import MetadataEditor from '@/components/MetadataEditor'
 import SubmitIr from '@/components/SubmitIr'
 import Submit from '@/components/Submit'
 import Admin from '@/components/Admin'
+import AdminSubmitIr from '@/components/AdminSubmitIr'
+import AdminSubmit from '@/components/AdminSubmit'
 
 Vue.use(Router)
 
@@ -60,6 +62,16 @@ export function createRouter () {
         path: '/admin',
         name: 'admin',
         component: Admin
+      },
+      {
+        path: '/admin/submit',
+        name: 'adminsubmit',
+        component: AdminSubmit
+      },
+      {
+        path: '/admin/submit/:submitform',
+        name: 'adminsubmitform',
+        component: AdminSubmitIr
       }
     ]
   })

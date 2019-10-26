@@ -40,6 +40,7 @@
           :facetQueries="facetQueries"
           :persAuthorsProp="persAuthors"
           :journalsProp="journals"
+          :funderProp="funder"
           ></search-filters>
       </v-col>
     </v-row>
@@ -60,7 +61,7 @@ import '@/compiled-icons/fontello-sort-number-down'
 import '@/compiled-icons/material-content-link'
 import '@/compiled-icons/material-action-bookmark'
 import '@/compiled-icons/material-toggle-check-box-outline-blank'
-import { facetQueries, updateFacetQueries, persAuthors, journals, deactivateFacetQueries, buildAssociationFacet } from '../utils/searchfacets'
+import { facetQueries, updateFacetQueries, persAuthors, journals, funder, deactivateFacetQueries, buildAssociationFacet } from '../utils/searchfacets'
 import { buildParams, buildSearchDef, sortdef } from '../utils/searchutils'
 import { setSearchParams } from '../utils/searchlocation'
 import { config } from '@/mixins/config'
@@ -187,6 +188,7 @@ export default {
       this.inCollection = ''
       this.persAuthors.values = []
       this.journals.values = []
+      this.funder.value = null
       this.currentPage = 1
       this.pagesize = 10
       for (let fq of this.facetQueries) {
@@ -226,6 +228,7 @@ export default {
 
       persAuthors,
       journals,
+      funder,
 
       docs: [],
       total: 0,

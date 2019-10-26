@@ -2,7 +2,7 @@
     <v-row>
       <v-col cols="12">
         <v-row justify="space-between">
-          <v-col cols="4">
+          <v-col cols="3">
             <autocomplete
               placeholder="Search..."
               name="autocomplete"
@@ -14,17 +14,22 @@
               solo
             ></autocomplete>
           </v-col>
-          <v-col cols="2" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
+          <v-col cols="1" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
           <template v-for="(f, i) in adminFacetQueries">
             <template v-for="(q, j) in f.queries">
               <v-col cols="2" align-self="center" :key="'f'+i+'q'+j">
-                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j">
+                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" class="float-right">
                   <span :class="{ active: q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
                   <span class="title font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
                 </span>
               </v-col>
             </template>
           </template>
+          <v-col cols="2" align-self="center">
+            <v-btn raised color="primary mr-2 float-right" :to="'/admin/submit'">
+              <v-icon dark left>mdi-plus</v-icon> {{$t('Submit')}}
+            </v-btn>
+          </v-col>
         </v-row>
         <v-row justify="space-between">
           <v-col cols="6">
@@ -95,7 +100,6 @@ import '@/compiled-icons/material-action-bookmark'
 import '@/compiled-icons/material-toggle-check-box-outline-blank'
 import { adminFacetQueries, updateFacetQueries, deactivateFacetQueries, toggleFacet, showFacet } from '../utils/searchfacets'
 import { adminBuildParams, adminBuildSearchDef, sortdef } from '../utils/searchutils'
-
 import { setSearchParams } from '../utils/searchlocation'
 import { config } from '@/mixins/config'
 import { context } from '@/mixins/context'

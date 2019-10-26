@@ -1,4 +1,4 @@
-export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, persAuthors, journals, inCollection: collection }) {
+export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, persAuthors, journals, funder, inCollection: collection }) {
   let searchdefarr = []
 
   for (let i = 0; i < sortdef.length; i++) {
@@ -79,6 +79,11 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
       ands.push('(' + journals.field + ':"' + v + '")')
       searchdefarr.push('fr=' + journals.field + '_' + window.encodeURIComponent(v))
     }
+  }
+
+  if (funder.value && funder.value !== '') {
+    ands.push('(' + funder.field + ':"' + funder.value + '")')
+    searchdefarr.push('fr=' + funder.field + '_' + window.encodeURIComponent(funder.value))
   }
 
   // an object should have at least an owner, else it's garbage

@@ -318,4 +318,10 @@ export const journals = {
   values: []
 }
 
+export const funder = {
+  field: 'funder_id',
+  label: 'Funder',
+  value: null
+}
+
 facetQueries.push(buildDateFacet())
