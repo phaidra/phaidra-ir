@@ -27,7 +27,7 @@
           </template>
           <v-col cols="2" align-self="center">
             <v-btn raised color="primary mr-2 float-right" :to="'/admin/submit'">
-              <v-icon dark left>mdi-plus</v-icon> {{$t('Submit')}}
+              <v-icon dark left>mdi-plus</v-icon> {{$t('Add publication')}}
             </v-btn>
           </v-col>
         </v-row>

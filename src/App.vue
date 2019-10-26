@@ -70,7 +70,7 @@
                               <v-list-item v-if="signedin" @click="$router.push('submit')"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
                               <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push('admin')"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
                               <v-list-item v-if="!signedin && config.enablelogin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
-                              <v-list-item v-if="signedin" @click="logout"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
+                              <v-list-item v-if="signedin" @click="logout()"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
                             </v-list>
                           </v-menu>
                         </v-app-bar-nav-icon>
@@ -99,7 +99,7 @@
                           <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="!signedin" :to="'/login'">{{ $t("Login") }}</router-link>
                         </v-hover>
                         <v-hover v-slot:default="{ hover }">
-                          <a class="flat dark ph-button grey" v-if="signedin" @click="logout" >{{ $t("Logout") }}</a>
+                          <a class="flat dark ph-button grey" v-if="signedin" @click="logout()" >{{ $t("Logout") }}</a>
                         </v-hover>
                       </v-toolbar-items>
                     </v-toolbar>
