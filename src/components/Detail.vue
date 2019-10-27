@@ -9,7 +9,7 @@
             {{ $t('This item needs to be cleared by the repository management.') }}
           </v-alert>
 
-          <p-d-jsonld v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid"></p-d-jsonld>
+          <p-d-jsonld v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="3"></p-d-jsonld>
 
         </v-col>
 

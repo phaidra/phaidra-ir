@@ -24,12 +24,12 @@
               <v-row no-gutters class="my-4 mr-2">
                 <v-col>
                   <span class="grey--text text--darken-4">
-                    <span v-for="(aut,i) in doc.bib_roles_pers_aut" :key="'pers'+i">
+                    <span v-for="(aut,i) in doc.bib_roles_pers_aut">
+                      <template v-if="(i < 3) || doc.showAllAuthors">
                       {{aut}}<span v-if="(i+1) < doc.bib_roles_pers_aut.length">; </span>
+                      </template>
                     </span>
-                    <span v-for="(aut,i) in doc.bib_roles_corp_aut" :key="'corp'+i">
-                      {{aut}}<span v-if="(i+1) < doc.bib_roles_corp_aut.length">; </span>
-                    </span>
+                    <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_aut.length > 3 && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
                   </span>
                 </v-col>
               </v-row>
@@ -56,6 +56,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import PImg from 'phaidra-vue-components/src/components/utils/PImg'
 import PExpandText from 'phaidra-vue-components/src/components/utils/PExpandText'
 import { config } from '@/mixins/config'
@@ -76,6 +77,11 @@ export default {
       type: Array
     },
     total: Number
+  },
+  methods: {
+    showAll: function (doc) {
+      Vue.set(doc, 'showAllAuthors', !doc.showAllAuthors)
+    }
   }
 }
 </script>
