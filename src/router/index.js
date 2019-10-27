@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Home from '@/components/Home'
 import Login from '@/components/Login'
 import Search from '@/components/Search'
 import Detail from '@/components/Detail'
@@ -17,6 +16,7 @@ import Contact from '@/components/info/Contact'
 import Impressum from '@/components/info/Impressum'
 import MetadataPolicy from '@/components/info/MetadataPolicy'
 import TermsOfUse from '@/components/info/TermsOfUse'
+import Home from '@/components/info/Home'
 
 Vue.use(Router)
 
