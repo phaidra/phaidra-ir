@@ -222,12 +222,14 @@ h2.footer-headline {
 
 .underline {
     padding-bottom: 2px;
-    border-bottom: solid 1px #bdbdbd;
+    border-bottom: solid 1px;
+    border-color: rgba(0, 0, 0, 0.12);
 }
 
 h2.md-headline {
   font-size: 21pt;
-  border-bottom: solid 1px #bdbdbd;
+  border-bottom: solid 1px;
+  border-color: rgba(0, 0, 0, 0.12);
   color: #0063a6;
   font-weight: 300;
 }

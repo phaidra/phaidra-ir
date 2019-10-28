@@ -14,7 +14,7 @@
             <v-col cols="10">
               <v-row no-gutters class="mb-4">
                 <v-col cols="10">
-                  <h3 class="title font-weight-light primary--text" @click.stop v-if="doc.dc_title">
+                  <h3 class="subtitle-1 font-weight-light primary--text" @click.stop v-if="doc.dc_title">
                     <router-link :to="{ name: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] }}</router-link>
                   </h3>
                 </v-col>

@@ -5,7 +5,7 @@
         <v-col cols="1" class="text-right">
           {{ doc.created | date }}
         </v-col>
-        <v-col cols="2">
+        <v-col cols="1">
           <span v-if="doc.bib_roles_pers_uploader && doc.bib_roles_pers_uploader[0]">{{ doc.bib_roles_pers_uploader[0] }}</span>
           <span v-else>{{ doc.owner }}</span>
         </v-col>
@@ -23,7 +23,7 @@
             <v-icon dark>history</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-spacer></v-spacer>
           <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="primary" v-if="isNew(doc)" @click="accept(doc.pid)">Accept</v-btn>
           <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="grey darken-1 white--text" v-if="isNew(doc)" @click="reject(doc.pid)">Reject</v-btn>

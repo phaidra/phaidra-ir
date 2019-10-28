@@ -285,11 +285,13 @@ export default {
 
 <style scoped>
 .border-right {
-  border-right: 1px solid #bdbdbd;
+  border-right: 1px solid;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .border-bottom {
-  border-bottom: 1px solid #bdbdbd;
+  border-bottom: 1px solid;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 svg {

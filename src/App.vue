@@ -417,11 +417,18 @@ address {
 }
 
 .border-bottom {
-  border-bottom: 1px solid #bdbdbd;
+  border-bottom: 1px solid;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
+.border-right {
+  border-right: 1px solid;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 .border-top {
-  border-top: 1px solid #bdbdbd;
+  border-top: 1px solid;
+  border-color: rgba(0, 0, 0, 0.12);
 }
 
 #app .v-btn {
@@ -430,6 +437,10 @@ address {
 #app .v-tabs__div {
   text-transform: none;
   font-weight: 300;
+}
+
+.v-application .subtitle-1 {
+  line-height: 1.25rem;
 }
 
 .univie-grey {
