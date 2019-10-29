@@ -27,18 +27,18 @@
             </v-col>
           </v-row>
 
-          <v-row class="mb-6">
+          <v-row class="mb-6" v-show="stats.detail || stats.download">
             <v-col class="pt-0">
               <v-row>
                 <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Usage statistics') }}</h3>
               </v-row>
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">
-                <v-col cols="3">
-                  <v-icon>mdi-eye-outline</v-icon><span class="ml-2">64</span>
+                <v-col cols="3" v-show="stats.detail">
+                  <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
                 </v-col>
-                <v-col cols="3">
-                  <v-icon>mdi-download</v-icon><span class="ml-2">32</span>
+                <v-col cols="3" v-show="stats.download">
+                  <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
                 </v-col>
                 <v-spacer></v-spacer>
               </v-row>
@@ -137,12 +137,35 @@ export default {
   data () {
     return {
       alternativeVersions: [],
-      alternativeFormats: []
+      alternativeFormats: [],
+      stats: {
+        download: null,
+        detail: null
+      }
     }
   },
   methods: {
     async fetchAsyncData (self, pid) {
       await self.$store.dispatch('fetchObjectInfo', pid)
+    },
+    async fetchUsageStats (self) {
+      self.stats.download = null
+      self.stats.detail = null
+      try {
+        let response = await axios.get(self.config.api + '/ir/stats/' + self.routepid,
+          {
+            headers: {
+              'X-XSRF-TOKEN': self.user.token
+            }
+          }
+        )
+        if (response.data.stats) {
+          self.stats.download = response.data.stats.downloads
+          self.stats.detail = response.data.stats.detail_page
+        }
+      } catch (error) {
+        console.log(error)
+      }
     },
     async fetchAlternatives (self) {
       self.alternativeFormats = []
@@ -245,11 +268,13 @@ export default {
     next(vm => {
       vm.$store.commit('setObjectInfo', inforesponse.data.info)
       vm.fetchAlternatives(vm)
+      vm.fetchUsageStats(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     await this.fetchAsyncData(this, to.params.pid)
     this.fetchAlternatives(this)
+    this.fetchUsageStats(this)
     next()
   }
 }
