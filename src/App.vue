@@ -167,6 +167,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import '@/assets/css/material-icons.css'
 import Quicklinks from '@/components/Quicklinks'
 import QuicklinksFooter from '@/components/QuicklinksFooter'
@@ -233,9 +234,29 @@ export default {
         this.$store.dispatch('search')
         this.$vuetify.theme.primary = this.$store.state.config.primary
       })
+    },
+    loadTracking: async function () {
+      const scriptPromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script')
+        script.async = true
+        script.defer = true
+        script.src = '//' + this.config.stats.trackerbaseurl + '/matomo.js'
+
+        const head = document.head || document.getElementsByTagName('head')[0]
+        head.appendChild(script)
+
+        script.onload = resolve
+        script.onerror = reject
+      })
+
+      scriptPromise.catch((error) => {
+        console.error('An error occurred trying to load ' + error.target.src + '. If the file exists you may have an ad- or trackingblocker enabled.')
+      })
+
+      return scriptPromise
     }
   },
-  mounted: function () {
+  mounted: async function () {
     // TODO read to cookie serverside too
     var token = this.getCookie('X-XSRF-TOKEN')
     if (token) {
@@ -244,6 +265,16 @@ export default {
         this.$store.dispatch('getLoginData')
       }
     }
+    await this.loadTracking()
+    const Matomo = window.Piwik.getTracker('https://' + this.config.stats.trackerbaseurl + '/matomo.php', this.config.stats.siteid)
+    Matomo.trackPageView()
+    Matomo.enableLinkTracking()
+    Vue.prototype.$matomo = Matomo
+    this.$router.afterEach((to, from) => {
+      this.$matomo.setCustomUrl('https://' + this.config.baseurl + to.path)
+      this.$matomo.setDocumentTitle(this.$store.state.pagetitle)
+      this.$matomo.trackPageView()
+    })
   },
   created: function () {
     this.$vuetify.theme.themes.light.primary = this.$store.state.config.primary

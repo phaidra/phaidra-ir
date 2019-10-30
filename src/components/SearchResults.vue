@@ -24,7 +24,7 @@
               <v-row no-gutters class="my-4 mr-2">
                 <v-col>
                   <span class="grey--text text--darken-4">
-                    <span v-for="(aut,i) in doc.bib_roles_pers_aut">
+                    <span v-for="(aut,i) in doc.bib_roles_pers_aut" :key="'aut'+i">
                       <template v-if="(i < 3) || doc.showAllAuthors">
                       {{aut}}<span v-if="(i+1) < doc.bib_roles_pers_aut.length">; </span>
                       </template>

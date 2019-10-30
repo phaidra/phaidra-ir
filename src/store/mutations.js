@@ -2,6 +2,7 @@ import Vue from 'vue'
 
 export default {
   updateBreadcrumbs (state, transition) {
+    let pagetitle
     state.breadcrumbs = [
       {
         text: state.config.institution,
@@ -14,15 +15,17 @@ export default {
       }
     ]
     if (transition.to.name === 'search') {
+      pagetitle = 'Search'
       state.breadcrumbs.push(
         {
-          text: 'Search',
+          text: pagetitle,
           to: transition.to.name,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'detail') {
+      pagetitle = 'Detail ' + transition.to.params.pid
       if (transition.from.name === 'search') {
         state.breadcrumbs.push(
           {
@@ -33,13 +36,14 @@ export default {
       }
       state.breadcrumbs.push(
         {
-          text: 'Detail ' + transition.to.params.pid,
+          text: pagetitle,
           to: { name: transition.to.name, params: { pid: transition.to.params.pid } },
           disabled: true
         }
       )
     }
     if (transition.to.name === 'metadataeditor') {
+      pagetitle = 'Metadata editor ' + transition.to.params.pid
       if (transition.from.name === 'detail') {
         state.breadcrumbs.push(
           {
@@ -50,21 +54,23 @@ export default {
       }
       state.breadcrumbs.push(
         {
-          text: 'Metadata editor ' + transition.to.params.pid,
+          text: pagetitle,
           to: { name: transition.to.name, params: { pid: transition.to.params.pid } },
           disabled: true
         }
       )
     }
     if (transition.to.name === 'submit') {
+      pagetitle = 'Submit'
       state.breadcrumbs.push(
         {
-          text: 'Submit',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'submit-ir') {
+      pagetitle = 'Submit ' + transition.to.params.submitform
       state.breadcrumbs.push(
         {
           text: 'Submit',
@@ -73,66 +79,83 @@ export default {
       )
       state.breadcrumbs.push(
         {
-          text: 'Submit ' + transition.to.params.submitform,
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'admin') {
+      pagetitle = 'Admin'
       state.breadcrumbs.push(
         {
-          text: 'Admin',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'about') {
+      pagetitle = 'About'
       state.breadcrumbs.push(
         {
-          text: 'About',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'policy') {
+      pagetitle = 'Policy'
       state.breadcrumbs.push(
         {
-          text: 'Policy',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'contact') {
+      pagetitle = 'Contact'
       state.breadcrumbs.push(
         {
-          text: 'Contact',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'impressum') {
+      pagetitle = 'Impressum'
       state.breadcrumbs.push(
         {
-          text: 'Impressum',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'metadata-policy') {
+      pagetitle = 'Metadata policy'
       state.breadcrumbs.push(
         {
-          text: 'Metadata policy',
+          text: pagetitle,
           disabled: true
         }
       )
     }
     if (transition.to.name === 'terms-of-use') {
+      pagetitle = 'Terms of use'
       state.breadcrumbs.push(
         {
-          text: 'Terms of use',
+          text: pagetitle,
           disabled: true
         }
       )
+    }
+
+    if (pagetitle) {
+      state.pagetitle = state.config.title + ' - ' + pagetitle
+    } else {
+      state.pagetitle = state.config.title
+    }
+
+    if (process.browser) {
+      document.title = state.pagetitle
     }
   },
   setGroups (state, groups) {

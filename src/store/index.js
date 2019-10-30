@@ -21,7 +21,8 @@ export function createStore () {
       objectMembers: [],
       user: {},
       groups: [],
-      breadcrumbs: []
+      breadcrumbs: [],
+      pagetitle: null
     }),
     modules: {
       vocabulary
