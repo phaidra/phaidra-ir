@@ -22,7 +22,7 @@
               </v-row>
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">
-                <v-btn color="primary" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
+                <v-btn color="primary" @click="trackDownload()" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
               </v-row>
             </v-col>
           </v-row>
@@ -145,6 +145,11 @@ export default {
     }
   },
   methods: {
+    trackDownload () {
+      this.$matomo.setCustomUrl('https://' + this.config.baseurl + '/download/' + this.routepid)
+      this.$matomo.setDocumentTitle('Download ' + this.routepid)
+      this.$matomo.trackPageView()
+    },
     async fetchAsyncData (self, pid) {
       await self.$store.dispatch('fetchObjectInfo', pid)
     },
@@ -266,7 +271,9 @@ export default {
       console.error(error)
     }
     next(vm => {
-      vm.$store.commit('setObjectInfo', inforesponse.data.info)
+      if (inforesponse) {
+        vm.$store.commit('setObjectInfo', inforesponse.data.info)
+      }
       vm.fetchAlternatives(vm)
       vm.fetchUsageStats(vm)
     })
