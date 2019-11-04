@@ -540,7 +540,7 @@ export default {
   'seconds': 'Sekunden',
   'Language of subtitles': 'Untertitelsprache',
 
-  'datacite:hasIdentifier': 'Alternativer Identifikator',
+  'rdam:P30004': 'Alternativer Identifikator',
 
   'bf:Title': 'Titel',
   'bf:ParallelTitle': 'Parallel titel',
@@ -589,6 +589,7 @@ export default {
   'bf:shelfMark': 'Signatur',
   'dcterms:provenance': 'Provenienz',
 
+  'rdau:P60550': 'Umfang',
   'schema:numberOfPages': 'Seitenanzahl',
   'bf:soundCharacteristic': 'Sound characteristic',
   'bf:supplementaryContent': 'Supplementary content',

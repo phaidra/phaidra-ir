@@ -309,7 +309,7 @@
                     <p-i-alternate-identifier
                       v-bind.sync="f"
                       v-on:input-identifier="f.value=$event"
-                      v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                      v-on:input-identifier-type="setSelected(f, 'type', $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
                       class="my-2"
@@ -1066,7 +1066,7 @@ export default {
           role.firstname = author.firstname
           role.lastname = author.lastname
           role.showIdentifierType = false
-          role.identifierType = 'orcid'
+          role.type = 'ids:orcid'
           role.identifierLabel = 'ORCID'
           smf.push(role)
         }
@@ -1082,7 +1082,7 @@ export default {
         role.roleVocabulary = 'irrolepredicate'
         role.ordergroup = 'roles'
         role.showIdentifierType = false
-        role.identifierType = 'orcid'
+        role.type = 'ids:orcid'
         role.identifierLabel = 'ORCID'
         smf.push(role)
       }
@@ -1177,7 +1177,7 @@ export default {
       aif.vocabulary = 'irobjectidentifiertype'
       aif.multiplicable = true
       if (doiImportData && doiImportData.doi) {
-        aif.type = 'doi'
+        aif.type = 'ids:doi'
         aif.value = doiImportData.doi
       }
       sof.push(aif)
