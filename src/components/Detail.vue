@@ -175,14 +175,16 @@ export default {
     async fetchAlternatives (self) {
       self.alternativeFormats = []
       self.alternativeVersions = []
-      if (self.objectInfo.isalternativeformatof) {
-        for (let o of self.objectInfo.isalternativeformatof) {
-          self.fetchAlternativesRec(self, o, 'isalternativeformatof', 'ebucore:hasMimeType', 'mimetypes', self.alternativeFormats)
+      if (self.objectInfo) {
+        if (self.objectInfo.isalternativeformatof) {
+          for (let o of self.objectInfo.isalternativeformatof) {
+            self.fetchAlternativesRec(self, o, 'isalternativeformatof', 'ebucore:hasMimeType', 'mimetypes', self.alternativeFormats)
+          }
         }
-      }
-      if (self.objectInfo.isalternativeversionof) {
-        for (let o of self.objectInfo.isalternativeversionof) {
-          self.fetchAlternativesRec(self, o, 'isalternativeversionof', 'oaire:version', 'versiontypes', self.alternativeVersions)
+        if (self.objectInfo.isalternativeversionof) {
+          for (let o of self.objectInfo.isalternativeversionof) {
+            self.fetchAlternativesRec(self, o, 'isalternativeversionof', 'oaire:version', 'versiontypes', self.alternativeVersions)
+          }
         }
       }
     },

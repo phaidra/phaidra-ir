@@ -1514,6 +1514,46 @@ export default {
         }
 
         if (f.predicate === 'oaire:version') {
+          let dateType = null
+          let dateLabel = null
+          switch (f.value) {
+            case 'https://pid.phaidra.org/vocabulary/TV31-080M': // AO
+            case 'https://pid.phaidra.org/vocabulary/83ZP-CPP2': // P
+              dateType = 'dcterms:created'
+              dateLabel = 'Date created'
+              break
+            case 'https://pid.phaidra.org/vocabulary/JTD4-R26P': // SMUR
+              dateType = 'dcterms:dateSubmitted'
+              dateLabel = 'Date submitted'
+              break
+            case 'https://pid.phaidra.org/vocabulary/PHXV-R6B3': // AM
+              dateType = 'dcterms:dateAccepted'
+              dateLabel = 'Date accepted'
+              break
+            case 'https://pid.phaidra.org/vocabulary/PMR8-3C8D': // VoR
+              dateType = 'dcterms:issued'
+              dateLabel = 'Date issued'
+              break
+            case 'https://pid.phaidra.org/vocabulary/SSQW-AP1S': // EVoR
+            case 'https://pid.phaidra.org/vocabulary/MT1G-APSB': // CVoR
+              dateType = 'dcterms:modified'
+              dateLabel = 'Date modified'
+              break
+            case 'https://pid.phaidra.org/vocabulary/KZB5-0F5G': // NA
+              dateType = 'dcterms:date'
+              dateLabel = 'Date'
+              break
+          }
+
+          if (dateType) {
+            for (let formfield of fields) {
+              if (formfield.mainSubmitDate) {
+                formfield.type = dateType
+                formfield.dateLabel = dateLabel
+              }
+            }
+          }
+
           this.filterVocabulary(
             this.irObjectTypeVocabulary,
             'edm:hasType',
@@ -1660,7 +1700,7 @@ export default {
         role.enableTypeSelect = false
         if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book-part')) {
           role.hideRole = true
-          role.label = this.$t('Author')
+          role.label = 'Author'
         }
         role.roleVocabulary = 'irrolepredicate'
         role.ordergroup = 'roles'
@@ -1671,10 +1711,11 @@ export default {
       }
 
       let issued = fields.getField('date-edtf')
+      issued.mainSubmitDate = true // we need to find this field again when changing predicates
       issued.picker = true
       issued.type = 'dcterms:issued'
       issued.hideType = true
-      issued.dateLabel = self.$t('Date issued')
+      issued.dateLabel = 'Date issued'
       issued.multiplicable = false
       if (doiImportData && doiImportData.dateIssued) {
         issued.value = doiImportData.dateIssued
@@ -1685,7 +1726,7 @@ export default {
 
       let otf = fields.getField('object-type')
       otf.vocabulary = this.irObjectTypeVocabulary
-      otf.label = self.$t('Type of publication')
+      otf.label = 'Type of publication'
       otf.hint = self.$t('The publication type you choose can restrict the possible version type values.')
       otf.showValueDefinition = true
       if (doiImportData && doiImportData.publicationTypeId) {
@@ -1699,7 +1740,7 @@ export default {
 
       if (this.submitformparam === 'book-part') {
         let sf = fields.getField('series')
-        sf.label = this.$t('Appeared in')
+        sf.label = 'Appeared in'
         sf.predicate = 'rdau:P60101'
         sf.multilingual = false
         sf.hideVolume = true
@@ -1715,7 +1756,7 @@ export default {
         pf.multiplicable = false
         pf.showPlace = false
         pf.showDate = false
-        pf.label = this.$t('PUBLISHER_VERLAG')
+        pf.label = 'PUBLISHER_VERLAG'
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -1735,7 +1776,7 @@ export default {
       embargoDate.picker = true
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
-      embargoDate.dateLabel = self.$t('Embargo date')
+      embargoDate.dateLabel = 'Embargo date'
       smf.push(embargoDate)
 
       smf.push(fields.getField('license'))
