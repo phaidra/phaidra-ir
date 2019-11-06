@@ -478,6 +478,27 @@
                     </v-col>
                   </template>
 
+                  <template v-else-if="f.component === 'p-contained-in'">
+                    <p-i-contained-in
+                      v-bind.sync="f"
+                      v-on:input-title="f.title=$event"
+                      v-on:input-subtitle="f.subtitle=$event"
+                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                      v-on:input-role="containedInRoleInput(f, $event)"
+                      v-on:input-series-title="f.seriesTitle=$event"
+                      v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
+                      v-on:input-series-volume="f.seriesVolume=$event"
+                      v-on:input-series-issue="f.seriesIssue=$event"
+                      v-on:input-series-issued="f.seriesIssued=$event"
+                      v-on:input-series-issn="f.seriesIssn=$event"
+                      v-on:input-series-identifier="f.seriesIdentifier=$event"
+                      v-on:add-role="addContainedInRole(f.roles, $event)"
+                      v-on:remove-role="removeContainedInRole(f.roles, $event)"
+                      v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
+                      v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                    ></p-i-contained-in>
+                  </template>
+
                   <template v-else-if="f.component === 'p-entity-extended'">
                     <v-col cols="10" v-show="f.role !== 'role:uploader'">
                       <p-i-entity-extended
@@ -1343,6 +1364,34 @@ export default {
         }
       }
     },
+    addContainedInRole: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.removable = true
+      }
+    },
+    removeContainedInRole: function (arr, f) {
+      if (arr.length > 1) {
+        arrays.remove(arr, f)
+      }
+    },
+    sortContainedInRoleUp: function (arr, f) {
+      var i = arr.indexOf(f)
+      if (arr[i - 1]) {
+        if (arr[i - 1].ordergroup === f.ordergroup) {
+          arrays.moveUp(arr, f)
+        }
+      }
+    },
+    sortContainedInRoleDown: function (arr, f) {
+      var i = arr.indexOf(f)
+      if (arr[i + 1]) {
+        if (arr[i + 1].ordergroup === f.ordergroup) {
+          arrays.moveDown(arr, f)
+        }
+      }
+    },
     setFunder: function (f, event) {
       if (event) {
         f.funderIdentifier = event['@id']
@@ -1739,14 +1788,9 @@ export default {
       smf.push(otf)
 
       if (this.submitformparam === 'book-part') {
-        let sf = fields.getField('series')
+        let sf = fields.getField('contained-in')
         sf.label = 'Appeared in'
-        sf.predicate = 'rdau:P60101'
         sf.multilingual = false
-        sf.hideVolume = true
-        sf.hideIssue = true
-        sf.hideIssued = true
-        sf.hideIssn = true
         smf.push(sf)
       }
 
