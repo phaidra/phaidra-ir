@@ -1836,7 +1836,7 @@ export default {
 
       let sof = []
 
-      let dof = fields.getField('description')
+      let dof = fields.getField('abstract')
       dof.multilingual = false
       sof.push(dof)
 
