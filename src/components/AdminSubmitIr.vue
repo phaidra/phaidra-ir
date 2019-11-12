@@ -1041,7 +1041,9 @@ export default {
             })
           }
         }
-        f['skos:notation'] = event['skos:notation']
+        if (event['skos:notation']) {
+          f['skos:notation'] = event['skos:notation']
+        }
 
         if (f.predicate === 'edm:rights') {
           this.license = f.value
@@ -1053,6 +1055,8 @@ export default {
       } else {
         f.value = ''
         f['skos:prefLabel'] = []
+        f['rdfs:label'] = []
+        f['skos:notation'] = []
       }
       this.$emit('form-input-' + f.component, f)
     },
