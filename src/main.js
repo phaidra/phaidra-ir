@@ -13,7 +13,6 @@ import { sync } from 'vuex-router-sync'
 import * as svgicon from 'vue-svgicon'
 import eng from './i18n/eng'
 import deu from './i18n/deu'
-import ita from './i18n/ita'
 import moment from 'moment'
 import axios from 'axios'
 import PhaidraVueComponents from 'phaidra-vue-components/src/components'
@@ -34,7 +33,7 @@ export function createApp () {
     defaultHeight: '1em'
   })
 
-  const messages = { eng, deu, ita }
+  const messages = { eng, deu }
   const i18n = new VueI18n({
     locale: 'deu',
     fallbackLocale: 'eng',

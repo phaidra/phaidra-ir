@@ -406,7 +406,7 @@
 
                   <template v-else-if="f.component === 'p-select'">
                     <p-i-select
-                      v-show="f.predicate !== 'dcterms:type' && !((f.predicate === 'edm:hasType') && (submitformparam === 'book-part'))"
+                      v-show="f.predicate !== 'dcterms:type' && !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book')))"
                       v-bind.sync="f"
                       v-on:input="selectInput(s.fields, f, $event)"
                       v-on:add="addField(s.fields, f)"
@@ -479,24 +479,26 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-contained-in'">
-                    <p-i-contained-in
-                      v-bind.sync="f"
-                      v-on:input-title="f.title=$event"
-                      v-on:input-subtitle="f.subtitle=$event"
-                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
-                      v-on:input-role="containedInRoleInput(f, $event)"
-                      v-on:input-series-title="f.seriesTitle=$event"
-                      v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
-                      v-on:input-series-volume="f.seriesVolume=$event"
-                      v-on:input-series-issue="f.seriesIssue=$event"
-                      v-on:input-series-issued="f.seriesIssued=$event"
-                      v-on:input-series-issn="f.seriesIssn=$event"
-                      v-on:input-series-identifier="f.seriesIdentifier=$event"
-                      v-on:add-role="addContainedInRole(f.roles, $event)"
-                      v-on:remove-role="removeContainedInRole(f.roles, $event)"
-                      v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
-                      v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
-                    ></p-i-contained-in>
+                    <v-col cols="10">
+                      <p-i-contained-in
+                        v-bind.sync="f"
+                        v-on:input-title="f.title=$event"
+                        v-on:input-subtitle="f.subtitle=$event"
+                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                        v-on:input-role="containedInRoleInput(f, $event)"
+                        v-on:input-series-title="f.seriesTitle=$event"
+                        v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
+                        v-on:input-series-volume="f.seriesVolume=$event"
+                        v-on:input-series-issue="f.seriesIssue=$event"
+                        v-on:input-series-issued="f.seriesIssued=$event"
+                        v-on:input-series-issn="f.seriesIssn=$event"
+                        v-on:input-series-identifier="f.seriesIdentifier=$event"
+                        v-on:add-role="addContainedInRole(f.roles, $event)"
+                        v-on:remove-role="removeContainedInRole(f.roles, $event)"
+                        v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
+                        v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                      ></p-i-contained-in>
+                    </v-col>
                   </template>
 
                   <template v-else-if="f.component === 'p-entity-extended'">
@@ -810,8 +812,6 @@ export default {
       switch (this.submitformparam) {
         case 'journal-article':
           return 'irobjecttypearticle'
-        case 'book':
-          return 'irobjecttypebook'
         default:
           return 'irobjecttype'
       }
@@ -1512,54 +1512,56 @@ export default {
         this.$store.commit('enableAllVocabularyTerms', 'versiontypes')
         this.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
 
-        if (f.predicate === 'edm:hasType') {
-          this.filterVocabulary(
-            'versiontypes',
-            'oaire:version',
-            fields,
-            f.value,
-            [
-              {
-                // if object is dataset
-                conditionIds: [
-                  'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                ],
-                // disable version AO and AM
-                disableIds: [
-                  'https://pid.phaidra.org/vocabulary/TV31-080M',
-                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
-                ]
-              },
-              {
-                // if object is 'dissertation' or 'book' or 'book part' or 'journal article'
-                conditionIds: [
-                  'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
-                  'https://pid.phaidra.org/vocabulary/47QB-8QF1',
-                  'https://pid.phaidra.org/vocabulary/XA52-09WA',
-                  'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                ],
-                // disable version AO and SMUR
-                disableIds: [
-                  'https://pid.phaidra.org/vocabulary/TV31-080M',
-                  'https://pid.phaidra.org/vocabulary/JTD4-R26P'
-                ]
-              },
-              {
-                // if object is 'preprint' or 'working paper'
-                conditionIds: [
-                  'https://pid.phaidra.org/vocabulary/T023-BGTD',
-                  'https://pid.phaidra.org/vocabulary/489N-Y6VX'
-                ],
-                // disable version AM and VoR and CVoR and EVoR
-                disableIds: [
-                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
-                  'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
-                  'https://pid.phaidra.org/vocabulary/MT1G-APSB',
-                  'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
-                ]
-              }
-            ]
-          )
+        if (this.submitformparam !== 'book') {
+          if (f.predicate === 'edm:hasType') {
+            this.filterVocabulary(
+              'versiontypes',
+              'oaire:version',
+              fields,
+              f.value,
+              [
+                {
+                  // if object is dataset
+                  conditionIds: [
+                    'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
+                  ],
+                  // disable version AO and AM
+                  disableIds: [
+                    'https://pid.phaidra.org/vocabulary/TV31-080M',
+                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
+                  ]
+                },
+                {
+                  // if object is 'dissertation' or 'book' or 'book part' or 'journal article'
+                  conditionIds: [
+                    'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
+                    'https://pid.phaidra.org/vocabulary/47QB-8QF1',
+                    'https://pid.phaidra.org/vocabulary/XA52-09WA',
+                    'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+                  ],
+                  // disable version AO and SMUR
+                  disableIds: [
+                    'https://pid.phaidra.org/vocabulary/TV31-080M',
+                    'https://pid.phaidra.org/vocabulary/JTD4-R26P'
+                  ]
+                },
+                {
+                  // if object is 'preprint' or 'working paper'
+                  conditionIds: [
+                    'https://pid.phaidra.org/vocabulary/T023-BGTD',
+                    'https://pid.phaidra.org/vocabulary/489N-Y6VX'
+                  ],
+                  // disable version AM and VoR and CVoR and EVoR
+                  disableIds: [
+                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
+                    'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
+                    'https://pid.phaidra.org/vocabulary/MT1G-APSB',
+                    'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
+                  ]
+                }
+              ]
+            )
+          }
         }
 
         if (f.predicate === 'oaire:version') {
@@ -1594,6 +1596,56 @@ export default {
               break
           }
 
+          if (this.submitformparam !== 'book') {
+            this.filterVocabulary(
+              this.irObjectTypeVocabulary,
+              'edm:hasType',
+              fields,
+              f.value,
+              [
+                {
+                  // if version is AO or AM
+                  conditionIds: [
+                    'https://pid.phaidra.org/vocabulary/TV31-080M',
+                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
+                  ],
+                  // disable type dataset
+                  disableIds: [
+                    'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
+                  ]
+                },
+                {
+                  // if version is AO or SMUR
+                  conditionIds: [
+                    'https://pid.phaidra.org/vocabulary/TV31-080M',
+                    'https://pid.phaidra.org/vocabulary/JTD4-R26P'
+                  ],
+                  // disable object 'dissertation' and 'book' and 'book part' and 'journal article'
+                  disableIds: [
+                    'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
+                    'https://pid.phaidra.org/vocabulary/47QB-8QF1',
+                    'https://pid.phaidra.org/vocabulary/XA52-09WA',
+                    'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+                  ]
+                },
+                {
+                  // if version is AM or VoR or CVoR or EVoR
+                  conditionIds: [
+                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
+                    'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
+                    'https://pid.phaidra.org/vocabulary/MT1G-APSB',
+                    'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
+
+                  ],
+                  // disable object 'preprint' and 'working paper'
+                  disableIds: [
+                    'https://pid.phaidra.org/vocabulary/T023-BGTD',
+                    'https://pid.phaidra.org/vocabulary/489N-Y6VX'
+                  ]
+                }
+              ]
+            )
+          }
           if (dateType) {
             for (let formfield of fields) {
               if (formfield.mainSubmitDate) {
@@ -1602,55 +1654,6 @@ export default {
               }
             }
           }
-
-          this.filterVocabulary(
-            this.irObjectTypeVocabulary,
-            'edm:hasType',
-            fields,
-            f.value,
-            [
-              {
-                // if version is AO or AM
-                conditionIds: [
-                  'https://pid.phaidra.org/vocabulary/TV31-080M',
-                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
-                ],
-                // disable type dataset
-                disableIds: [
-                  'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                ]
-              },
-              {
-                // if version is AO or SMUR
-                conditionIds: [
-                  'https://pid.phaidra.org/vocabulary/TV31-080M',
-                  'https://pid.phaidra.org/vocabulary/JTD4-R26P'
-                ],
-                // disable object 'dissertation' and 'book' and 'book part' and 'journal article'
-                disableIds: [
-                  'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
-                  'https://pid.phaidra.org/vocabulary/47QB-8QF1',
-                  'https://pid.phaidra.org/vocabulary/XA52-09WA',
-                  'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                ]
-              },
-              {
-                // if version is AM or VoR or CVoR or EVoR
-                conditionIds: [
-                  'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
-                  'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
-                  'https://pid.phaidra.org/vocabulary/MT1G-APSB',
-                  'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
-
-                ],
-                // disable object 'preprint' and 'working paper'
-                disableIds: [
-                  'https://pid.phaidra.org/vocabulary/T023-BGTD',
-                  'https://pid.phaidra.org/vocabulary/489N-Y6VX'
-                ]
-              }
-            ]
-          )
         }
       } else {
         f.value = ''
@@ -1761,6 +1764,11 @@ export default {
         smf.push(role)
       }
 
+      let vtf = fields.getField('version-type')
+      vtf.showValueDefinition = true
+      vtf.hint = self.$t('The version type you choose can restrict the possible publication type values.')
+      smf.push(vtf)
+
       let issued = fields.getField('date-edtf')
       issued.mainSubmitDate = true // we need to find this field again when changing predicates
       issued.picker = true
@@ -1779,10 +1787,13 @@ export default {
       otf.vocabulary = this.irObjectTypeVocabulary
       otf.multiplicable = false
       otf.label = 'Type of publication'
-      otf.hint = self.$t('The publication type you choose can restrict the possible version type values.')
       otf.showValueDefinition = true
       if (doiImportData && doiImportData.publicationTypeId) {
         otf.value = doiImportData.publicationTypeId
+      }
+      if (this.submitformparam === 'book') {
+        otf.value = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
+        otf.disabled = true
       }
       if (this.submitformparam === 'book-part') {
         otf.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
@@ -1794,6 +1805,8 @@ export default {
         let sf = fields.getField('contained-in')
         sf.label = 'Appeared in'
         sf.multilingual = false
+        sf.hideSeriesIssn = true
+        sf.collapseSeries = true
         smf.push(sf)
       }
 
@@ -1809,10 +1822,6 @@ export default {
         }
         smf.push(pf)
       }
-
-      let vtf = fields.getField('version-type')
-      vtf.showValueDefinition = true
-      smf.push(vtf)
 
       let arf = fields.getField('access-right')
       arf.vocabulary = 'iraccessright'
@@ -2120,7 +2129,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
-      self.step = 6
+      self.step = 5
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
