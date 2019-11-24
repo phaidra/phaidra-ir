@@ -34,7 +34,7 @@
         filled
       ></v-text-field>
     </v-col>
-    <v-col cols="12" :md="funderIdentifier === 'other' ? 4 : 6">
+    <v-col cols="12" :md="funderIdentifier === 'other' ? 2 : 4">
       <v-text-field
         :value="identifier"
         :label="$t('Project identifier')"

@@ -564,17 +564,15 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-project'">
-                    <v-col cols="10">
-                      <submit-ir-funding-field
-                        v-bind.sync="f"
-                        v-on:select-funder="setFunder(f, $event)"
-                        v-on:input-funder-name="f.funderName=$event"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></submit-ir-funding-field>
-                    </v-col>
+                    <submit-ir-funding-field
+                      v-bind.sync="f"
+                      v-on:select-funder="setFunder(f, $event)"
+                      v-on:input-funder-name="f.funderName=$event"
+                      v-on:input-identifier="f.identifier=$event"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      class="my-2"
+                    ></submit-ir-funding-field>
                   </template>
 
                   <template v-else-if="f.component === 'p-file'">
@@ -1779,6 +1777,7 @@ export default {
 
       let otf = fields.getField('object-type')
       otf.vocabulary = this.irObjectTypeVocabulary
+      otf.multiplicable = false
       otf.label = 'Type of publication'
       otf.hint = self.$t('The publication type you choose can restrict the possible version type values.')
       otf.showValueDefinition = true
@@ -1841,10 +1840,13 @@ export default {
       let sof = []
 
       let dof = fields.getField('abstract')
+      dof.multiplicable = false
       dof.multilingual = false
       sof.push(dof)
 
-      sof.push(fields.getField('project'))
+      let pof = fields.getField('project')
+      pof.multiplicable = true
+      sof.push(pof)
 
       let aif = fields.getField('alternate-identifier')
       aif.identifierLabel = 'Identifier'
@@ -1864,6 +1866,7 @@ export default {
       }
 
       let kof = fields.getField('keyword')
+      kof.multiplicable = false
       kof.multilingual = false
       sof.push(kof)
 
@@ -2117,7 +2120,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages')
-      self.step = 1
+      self.step = 6
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []

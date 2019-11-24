@@ -21,7 +21,7 @@
                 <v-spacer></v-spacer>
                 <v-col cols="2" class="text-right"><span v-if="doc.created" class="grey--text">{{ doc.created | date }}</span></v-col>
               </v-row>
-              <v-row no-gutters class="my-4 mr-2">
+              <v-row no-gutters class="my-4 mr-2" :key="'role'+i" v-if="doc.bib_roles_pers_aut">
                 <v-col>
                   <span class="grey--text text--darken-4">
                     <span v-for="(aut,i) in doc.bib_roles_pers_aut" :key="'aut'+i">
@@ -30,6 +30,18 @@
                       </template>
                     </span>
                     <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_aut.length > 3 && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
+                  </span>
+                </v-col>
+              </v-row>
+              <v-row no-gutters class="my-4 mr-2" :key="'role'+i" v-else-if="doc.bib_roles_pers_edt">
+                <v-col>
+                  <span class="grey--text text--darken-4">
+                    <span v-for="(aut,i) in doc.bib_roles_pers_edt" :key="'aut'+i">
+                      <template v-if="(i < 3) || doc.showAllAuthors">
+                      {{aut}}<span v-if="(i+1) < doc.bib_roles_pers_edt.length">; </span>
+                      </template>
+                    </span>
+                    <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_edt.length > 3 && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
                   </span>
                 </v-col>
               </v-row>
