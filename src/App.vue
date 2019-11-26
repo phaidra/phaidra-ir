@@ -36,9 +36,6 @@
                         <v-list-item @click="$i18n.locale='deu'">
                           <v-list-item-title>Deutsch</v-list-item-title>
                         </v-list-item>
-                        <v-list-item @click="$i18n.locale='ita'">
-                          <v-list-item-title>Italiano</v-list-item-title>
-                        </v-list-item>
                       </v-list>
                     </v-menu>
 

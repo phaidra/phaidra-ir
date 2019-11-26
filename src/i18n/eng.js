@@ -452,7 +452,7 @@ export default {
   'SUBMIT_TOU_4': 'I have read and accepted the Terms of Use, which are based those of the system {0}.',
   'PUBLISHER_HERAUSGEBERIN': 'Publisher',
   'PUBLISHER_VERLAG': 'Publisher',
-  'JOURNAL_ERCHIENENIN': 'Journal',
+  'JOURNAL_ERSCHIENENIN': 'Journal',
   'AUTHOR_PREPRINT': 'Author\'s preprint',
   'AUTHOR_POSTPRINT': 'Author\'s postprint',
   'PUBLISHER_PDF': 'Publisher\'s Version/PDF',

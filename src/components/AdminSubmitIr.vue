@@ -290,6 +290,7 @@
                         v-on:input-organization-other="f.organizationText = $event"
                         v-on:input-role="roleInput(f, $event)"
                         v-on:add="addField(s.fields, f)"
+                        v-on:add-clear="addEntityClear(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         v-on:up="sortFieldUp(s.fields, f)"
                         v-on:down="sortFieldDown(s.fields, f)"
@@ -332,6 +333,7 @@
                       v-on:input-identifier="f.value=$event"
                       v-on:input-identifier-type="setSelected(f, 'type', $event)"
                       v-on:add="addField(s.fields, f)"
+                      v-on:add-clear="addIdentifierClear(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
                       class="my-2"
                     ></p-i-alternate-identifier>
@@ -868,7 +870,39 @@ export default {
       var newField = arrays.duplicate(arr, f)
       if (newField) {
         newField.id = (new Date()).getTime()
+        newField.firstname = ''
+        newField.lastname = ''
+        newField.identifierText = ''
         newField.removable = true
+      }
+    },
+    addEntityClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.role = ''
+        newField.name = ''
+        newField.firstname = ''
+        newField.lastname = ''
+        newField.identifierText = ''
+        newField.affiliation = ''
+        newField.affiliationText = ''
+        newField.affiliationType = 'select'
+        newField.organization = ''
+        newField.organizationText = ''
+        newField.organizationType = 'select'
+        newField.type = 'schema:Person'
+        newField.removable = true
+      }
+    },
+    addIdentifierClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.value = ''
+        newField.removable = true
+        newField.addOnly = false
+        newField.removeOnly = true
       }
     },
     removeField: function (arr, f) {
@@ -1243,6 +1277,7 @@ export default {
       }
 
       let kof = fields.getField('keyword')
+      kof.disableSuggest = true
       kof.multilingual = false
       sof.push(kof)
 
@@ -1454,7 +1489,7 @@ export default {
       }
       self.license = null
       self.submitResponse = null
-      self.$store.dispatch('loadLanguages')
+      self.$store.dispatch('loadLanguages', this.$i18n.locale)
       self.step = 3
       self.doiImportInput = null
       self.doiImportData = null

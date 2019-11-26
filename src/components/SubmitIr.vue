@@ -62,7 +62,9 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <p>{{ $t('SUBMIT_START_4') }}</p>
+            <i18n path="SUBMIT_START_4" tag="p">
+              <a :href="'/info/about'" target="_blank">{{ $t('Über u:scholar') }}</a>
+            </i18n>
           </v-row>
           <v-row no-gutters>
             <i18n path="SUBMIT_START_5" tag="p">
@@ -250,7 +252,7 @@
                   <v-list-item-content>
                     <v-list-item-title>{{ item.title }}</v-list-item-title>
                     <v-list-item-subtitle>{{ $t('ISSN') + ': ' + item.issn }}</v-list-item-subtitle>
-                    <v-list-item-subtitle v-if="romeopub">{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
+                    <v-list-item-subtitle v-if="item.romeopub">{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
                 <template slot="selection" slot-scope="{ item }">
@@ -265,88 +267,96 @@
           <v-row no-gutters v-if="rightsCheckData" justify="center">
             <v-col cols="12" md="8">
               <v-row v-if="rightsCheckData.journal">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERCHIENENIN') }}</v-col>
+                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERSCHIENENIN') }}</v-col>
                 <v-col md="9" cols="12">{{ rightsCheckData.journal.title }}</v-col>
               </v-row>
-              <v-row v-if="rightsCheckData.publisher">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                <v-col md="9" cols="12">
-                  <template v-if="rightsCheckData.publisher.homeurl">
-                    <a target="_blank" :href="rightsCheckData.publisher.homeurl">{{ rightsCheckData.publisher.name }}</a>
-                  </template>
-                  <template v-else>{{ rightsCheckData.publisher.name }}</template>
-                </v-col>
+              <v-row v-else>
+                <v-col offset-md="3" md="9">{{ $t('Journal data not available') }}</v-col>
               </v-row>
-              <v-row v-if="rightsCheckData.publisher.prearchiving">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
-                <v-col md="9" cols="12">
-                  <v-icon v-if="rightsCheckData.publisher.prearchiving === 'can'" left color="green">mdi-check</v-icon>
-                  <v-icon v-if="rightsCheckData.publisher.prearchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                  <v-icon v-if="rightsCheckData.publisher.prearchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                  {{ rightsCheckData.publisher.prearchiving }}
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.publisher.prerestrictions && (rightsCheckData.publisher.prerestrictions.length > 0)">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                <v-col md="9" cols="12">
-                  <ul>
-                    <li v-for="(r, i) in rightsCheckData.publisher.prerestrictions" :key="i">
-                      {{ r }}
-                    </li>
-                  </ul>
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.publisher.postarchiving">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
-                <v-col md="9" cols="12">
-                  <v-icon v-if="rightsCheckData.publisher.postarchiving === 'can'" left color="green">mdi-check</v-icon>
-                  <v-icon v-if="rightsCheckData.publisher.postarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                  <v-icon v-if="rightsCheckData.publisher.postarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                  {{ rightsCheckData.publisher.postarchiving }}
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.publisher.postrestrictions && (rightsCheckData.publisher.postrestrictions.length > 0)">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                <v-col md="9" cols="12">
-                  <ul>
-                    <li v-for="(r, i) in rightsCheckData.publisher.postrestrictions" :key="i">
-                      {{ r }}
-                    </li>
-                  </ul>
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.publisher.pdfarchiving">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
-                <v-col md="9" cols="12">
-                  <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'can'" left color="green">mdi-check</v-icon>
-                  <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                  <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                  {{ rightsCheckData.publisher.pdfarchiving }}
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.publisher.pdfrestrictions && (rightsCheckData.publisher.pdfrestrictions.length > 0)">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                <v-col md="9" cols="12">
-                  <ul>
-                    <li v-for="(r, i) in rightsCheckData.publisher.pdfrestrictions" :key="i">
-                      {{ r }}
-                    </li>
-                  </ul>
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.publisher.conditions">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
-                <v-col md="9" cols="12">
-                  <ul>
-                    <li v-for="(r, i) in rightsCheckData.publisher.conditions" :key="i">
-                      {{ r }}
-                    </li>
-                  </ul>
-                </v-col>
-              </v-row>
-              <v-row v-if="rightsCheckData.disclaimer">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
-                <v-col md="9" cols="12">{{rightsCheckData.disclaimer}}</v-col>
+              <template v-if="rightsCheckData.publisher">
+                <v-row v-if="rightsCheckData.publisher">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <template v-if="rightsCheckData.publisher.homeurl">
+                      <a target="_blank" :href="rightsCheckData.publisher.homeurl">{{ rightsCheckData.publisher.name }}</a>
+                    </template>
+                    <template v-else>{{ rightsCheckData.publisher.name }}</template>
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.prearchiving">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <v-icon v-if="rightsCheckData.publisher.prearchiving === 'can'" left color="green">mdi-check</v-icon>
+                    <v-icon v-if="rightsCheckData.publisher.prearchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
+                    <v-icon v-if="rightsCheckData.publisher.prearchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
+                    {{ rightsCheckData.publisher.prearchiving }}
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.prerestrictions && (rightsCheckData.publisher.prerestrictions.length > 0)">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <ul>
+                      <li v-for="(r, i) in rightsCheckData.publisher.prerestrictions" :key="i">
+                        {{ r }}
+                      </li>
+                    </ul>
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.postarchiving">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <v-icon v-if="rightsCheckData.publisher.postarchiving === 'can'" left color="green">mdi-check</v-icon>
+                    <v-icon v-if="rightsCheckData.publisher.postarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
+                    <v-icon v-if="rightsCheckData.publisher.postarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
+                    {{ rightsCheckData.publisher.postarchiving }}
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.postrestrictions && (rightsCheckData.publisher.postrestrictions.length > 0)">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <ul>
+                      <li v-for="(r, i) in rightsCheckData.publisher.postrestrictions" :key="i">
+                        {{ r }}
+                      </li>
+                    </ul>
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.pdfarchiving">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'can'" left color="green">mdi-check</v-icon>
+                    <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
+                    <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
+                    {{ rightsCheckData.publisher.pdfarchiving }}
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.pdfrestrictions && (rightsCheckData.publisher.pdfrestrictions.length > 0)">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <ul>
+                      <li v-for="(r, i) in rightsCheckData.publisher.pdfrestrictions" :key="i">
+                        {{ r }}
+                      </li>
+                    </ul>
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.publisher.conditions">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
+                  <v-col md="9" cols="12">
+                    <ul>
+                      <li v-for="(r, i) in rightsCheckData.publisher.conditions" :key="i">
+                        {{ r }}
+                      </li>
+                    </ul>
+                  </v-col>
+                </v-row>
+                <v-row v-if="rightsCheckData.disclaimer">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
+                  <v-col md="9" cols="12">{{rightsCheckData.disclaimer}}</v-col>
+                </v-row>
+              </template>
+              <v-row v-else>
+                <v-col offset-md="3" md="9">{{ $t('Publisher data not available') }}</v-col>
               </v-row>
             </v-col>
           </v-row>
@@ -517,6 +527,7 @@
                         v-on:input-organization-select="organizationSelectInput(f, $event)"
                         v-on:input-organization-other="f.organizationText = $event"
                         v-on:input-role="roleInput(f, $event)"
+                        v-on:add-clear="addEntityClear(s.fields, f)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         v-on:up="sortFieldUp(s.fields, f)"
@@ -560,6 +571,7 @@
                       v-on:input-identifier="f.value=$event"
                       v-on:input-identifier-type="setSelected(f, 'type', $event)"
                       v-on:add="addField(s.fields, f)"
+                      v-on:add-clear="addIdentifierClear(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
                       class="my-2"
                     ></p-i-alternate-identifier>
@@ -1023,42 +1035,48 @@ export default {
         let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
         let disclaimer = obj.romeoapi[1].header.disclaimer['#text']
         let j = obj.romeoapi[1].journals.journal
-        let journal = {
-          title: j.jtitle['#text'],
-          issn: j.issn['#text'],
-          romeopub: j.romeopub['#text']
+        let journal = null
+        if (j) {
+          journal = {
+            title: j.jtitle['#text'],
+            issn: j.issn['#text'],
+            romeopub: j.romeopub['#text']
+          }
         }
         let p = obj.romeoapi[1].publishers.publisher
-        let publisher = {
-          name: p.name['#text'],
-          homeurl: p.homeurl['#text'],
-          color: p.romeocolour['#text']
-        }
-        publisher['prearchiving'] = p.preprints.prearchiving['#text']
-        publisher['prerestrictions'] = []
-        if (p.preprints.prerestrictions.prerestriction) {
-          for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
-            publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
+        let publisher = null
+        if (p) {
+          publisher = {
+            name: p.name['#text'],
+            homeurl: p.homeurl['#text'],
+            color: p.romeocolour['#text']
           }
-        }
-        publisher['postarchiving'] = p.postprints.postarchiving['#text']
-        publisher['postrestrictions'] = []
-        if (p.postprints.postrestrictions.postrestriction) {
-          for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
-            publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
+          publisher['prearchiving'] = p.preprints.prearchiving['#text']
+          publisher['prerestrictions'] = []
+          if (p.preprints.prerestrictions.prerestriction) {
+            for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
+              publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
+            }
           }
-        }
-        publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
-        publisher['pdfrestrictions'] = []
-        if (p.pdfversion.pdfrestrictions.pdfrestriction) {
-          for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
-            publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
+          publisher['postarchiving'] = p.postprints.postarchiving['#text']
+          publisher['postrestrictions'] = []
+          if (p.postprints.postrestrictions.postrestriction) {
+            for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
+              publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
+            }
           }
-        }
-        publisher['conditions'] = []
-        if (p.conditions.condition) {
-          for (let condition of p.conditions.condition) {
-            publisher['conditions'].push(condition['#text'])
+          publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
+          publisher['pdfrestrictions'] = []
+          if (p.pdfversion.pdfrestrictions.pdfrestriction) {
+            for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
+              publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
+            }
+          }
+          publisher['conditions'] = []
+          if (p.conditions.condition) {
+            for (let condition of p.conditions.condition) {
+              publisher['conditions'].push(this.stripTags(condition['#text']))
+            }
           }
         }
         this.rightsCheckData = {
@@ -1324,7 +1342,39 @@ export default {
       var newField = arrays.duplicate(arr, f)
       if (newField) {
         newField.id = (new Date()).getTime()
+        newField.firstname = ''
+        newField.lastname = ''
+        newField.identifierText = ''
         newField.removable = true
+      }
+    },
+    addEntityClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.role = ''
+        newField.name = ''
+        newField.firstname = ''
+        newField.lastname = ''
+        newField.identifierText = ''
+        newField.affiliation = ''
+        newField.affiliationText = ''
+        newField.affiliationType = 'select'
+        newField.organization = ''
+        newField.organizationText = ''
+        newField.organizationType = 'select'
+        newField.type = 'schema:Person'
+        newField.removable = true
+      }
+    },
+    addIdentifierClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.value = ''
+        newField.removable = true
+        newField.addOnly = false
+        newField.removeOnly = true
       }
     },
     removeField: function (arr, f) {
@@ -1861,6 +1911,7 @@ export default {
       aif.identifierLabel = 'Identifier'
       aif.vocabulary = 'irobjectidentifiertype'
       aif.multiplicable = true
+      aif.addOnly = true
       if (doiImportData && doiImportData.doi) {
         aif.type = 'ids:doi'
         aif.value = doiImportData.doi
@@ -1877,6 +1928,7 @@ export default {
       let kof = fields.getField('keyword')
       kof.multiplicable = false
       kof.multilingual = false
+      kof.disableSuggest = true
       sof.push(kof)
 
       if (this.submitformparam === 'journal-article') {
@@ -2128,8 +2180,8 @@ export default {
       }
       self.license = null
       self.submitResponse = null
-      self.$store.dispatch('loadLanguages')
-      self.step = 5
+      self.$store.dispatch('loadLanguages', this.$i18n.locale)
+      self.step = 6
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
