@@ -2181,7 +2181,7 @@ export default {
       self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages', this.$i18n.locale)
-      self.step = 6
+      self.step = 1
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
