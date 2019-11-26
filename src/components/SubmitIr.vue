@@ -1816,7 +1816,9 @@ export default {
 
       let vtf = fields.getField('version-type')
       vtf.showValueDefinition = true
-      vtf.hint = self.$t('The version type you choose can restrict the possible publication type values.')
+      if (this.submitformparam === 'journal-article') {
+        vtf.hint = self.$t('The version type you choose can restrict the possible publication type values.')
+      }
       smf.push(vtf)
 
       let issued = fields.getField('date-edtf')
