@@ -1793,10 +1793,10 @@ export default {
       if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
         let isbn = fields.getField('alternate-identifier')
         isbn.label = 'ISBN'
-        aif.vocabulary = 'irobjectidentifiertype'
+        isbn.vocabulary = 'irobjectidentifiertype'
         isbn.type = 'ids:isbn'
-        aif.multiplicable = true
-        aif.addOnly = true
+        isbn.multiplicable = true
+        isbn.addOnly = true
         sof.push(isbn)
       }
 
