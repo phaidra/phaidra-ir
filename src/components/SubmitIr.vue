@@ -1559,61 +1559,6 @@ export default {
           this.showEmbargoDate = f.value === 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
         }
 
-        this.$store.commit('enableAllVocabularyTerms', 'versiontypes')
-        this.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
-
-        if (this.submitformparam !== 'book') {
-          if (f.predicate === 'edm:hasType') {
-            this.filterVocabulary(
-              'versiontypes',
-              'oaire:version',
-              fields,
-              f.value,
-              [
-                {
-                  // if object is dataset
-                  conditionIds: [
-                    'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                  ],
-                  // disable version AO and AM
-                  disableIds: [
-                    'https://pid.phaidra.org/vocabulary/TV31-080M',
-                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
-                  ]
-                },
-                {
-                  // if object is 'dissertation' or 'book' or 'book part' or 'journal article'
-                  conditionIds: [
-                    'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
-                    'https://pid.phaidra.org/vocabulary/47QB-8QF1',
-                    'https://pid.phaidra.org/vocabulary/XA52-09WA',
-                    'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                  ],
-                  // disable version AO and SMUR
-                  disableIds: [
-                    'https://pid.phaidra.org/vocabulary/TV31-080M',
-                    'https://pid.phaidra.org/vocabulary/JTD4-R26P'
-                  ]
-                },
-                {
-                  // if object is 'preprint' or 'working paper'
-                  conditionIds: [
-                    'https://pid.phaidra.org/vocabulary/T023-BGTD',
-                    'https://pid.phaidra.org/vocabulary/489N-Y6VX'
-                  ],
-                  // disable version AM and VoR and CVoR and EVoR
-                  disableIds: [
-                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
-                    'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
-                    'https://pid.phaidra.org/vocabulary/MT1G-APSB',
-                    'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
-                  ]
-                }
-              ]
-            )
-          }
-        }
-
         if (f.predicate === 'oaire:version') {
           let dateType = null
           let dateLabel = null
@@ -1645,57 +1590,6 @@ export default {
               dateLabel = 'Date'
               break
           }
-
-          if (this.submitformparam !== 'book') {
-            this.filterVocabulary(
-              this.irObjectTypeVocabulary,
-              'edm:hasType',
-              fields,
-              f.value,
-              [
-                {
-                  // if version is AO or AM
-                  conditionIds: [
-                    'https://pid.phaidra.org/vocabulary/TV31-080M',
-                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
-                  ],
-                  // disable type dataset
-                  disableIds: [
-                    'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                  ]
-                },
-                {
-                  // if version is AO or SMUR
-                  conditionIds: [
-                    'https://pid.phaidra.org/vocabulary/TV31-080M',
-                    'https://pid.phaidra.org/vocabulary/JTD4-R26P'
-                  ],
-                  // disable object 'dissertation' and 'book' and 'book part' and 'journal article'
-                  disableIds: [
-                    'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
-                    'https://pid.phaidra.org/vocabulary/47QB-8QF1',
-                    'https://pid.phaidra.org/vocabulary/XA52-09WA',
-                    'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                  ]
-                },
-                {
-                  // if version is AM or VoR or CVoR or EVoR
-                  conditionIds: [
-                    'https://pid.phaidra.org/vocabulary/PHXV-R6B3',
-                    'https://pid.phaidra.org/vocabulary/PMR8-3C8D',
-                    'https://pid.phaidra.org/vocabulary/MT1G-APSB',
-                    'https://pid.phaidra.org/vocabulary/SSQW-AP1S'
-
-                  ],
-                  // disable object 'preprint' and 'working paper'
-                  disableIds: [
-                    'https://pid.phaidra.org/vocabulary/T023-BGTD',
-                    'https://pid.phaidra.org/vocabulary/489N-Y6VX'
-                  ]
-                }
-              ]
-            )
-          }
           if (dateType) {
             for (let formfield of fields) {
               if (formfield.mainSubmitDate) {
@@ -1712,27 +1606,6 @@ export default {
         f['skos:notation'] = []
       }
       this.$emit('form-input-' + f.component, f)
-    },
-    filterVocabulary: function (vocabulary, predicate, fields, selectedValue, filter) {
-      for (let f of filter) {
-        for (let conditionId of f.conditionIds) {
-          if (selectedValue === conditionId) {
-            for (let formfield of fields) {
-              if (formfield.predicate === predicate) {
-                for (let toDisable of f.disableIds) {
-                  if (formfield.value === toDisable) {
-                    formfield.value = null
-                  }
-                }
-              }
-            }
-            this.$store.commit('disableVocabularyTerms', {
-              vocabulary: vocabulary,
-              termids: f.disableIds
-            })
-          }
-        }
-      }
     },
     roleInput: function (f, event) {
       if (event) {
@@ -1816,9 +1689,6 @@ export default {
 
       let vtf = fields.getField('version-type')
       vtf.showValueDefinition = true
-      if (this.submitformparam === 'journal-article') {
-        vtf.hint = self.$t('The version type you choose can restrict the possible publication type values.')
-      }
       smf.push(vtf)
 
       let issued = fields.getField('date-edtf')
@@ -1923,7 +1793,10 @@ export default {
       if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
         let isbn = fields.getField('alternate-identifier')
         isbn.label = 'ISBN'
-        isbn.multiplicable = true
+        aif.vocabulary = 'irobjectidentifiertype'
+        isbn.type = 'ids:isbn'
+        aif.multiplicable = true
+        aif.addOnly = true
         sof.push(isbn)
       }
 
