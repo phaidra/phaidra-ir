@@ -584,6 +584,7 @@
                       v-on:input-funder-name="f.funderName=$event"
                       v-on:input-identifier="f.identifier=$event"
                       v-on:add="addField(s.fields, f)"
+                      v-on:add-clear="addProjectClear(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
                       class="my-2"
                     ></submit-ir-funding-field>
@@ -1377,6 +1378,16 @@ export default {
         newField.removeOnly = true
       }
     },
+    addProjectClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.removable = true
+        newField.identifier = ''
+        newField.funderIdentifier = ''
+        newField.funderName = ''
+      }
+    },
     removeField: function (arr, f) {
       arrays.remove(arr, f)
     },
@@ -1777,6 +1788,7 @@ export default {
 
       let pof = fields.getField('project')
       pof.multiplicable = true
+      pof.multiplicableCleared = true
       sof.push(pof)
 
       let aif = fields.getField('alternate-identifier')

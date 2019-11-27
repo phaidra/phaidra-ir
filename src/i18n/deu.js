@@ -51,6 +51,7 @@ export default {
   'All rights reserved': 'alle Rechte vorbehalten',
   'Public Domain Mark': 'Public Domain Marke',
 
+  'Add': 'Hinzufügen',
   'More': 'Mehr',
   'Contact': 'Kontakt',
   'Add owner': 'Owner auswählen',
