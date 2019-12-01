@@ -17,7 +17,10 @@ import axios from 'axios'
 import PhaidraVueComponents from 'phaidra-vue-components/src/components'
 import vuetify from './plugins/vuetify'
 
-export function createApp () {
+export async function createApp ({
+  beforeApp = () => {},
+  afterApp = () => {}
+} = {}) {
   Vue.config.productionTip = false
 
   Vue.use(Vuetify)
@@ -108,7 +111,13 @@ export function createApp () {
   // sync so that route state is available as part of the store
   sync(store, router)
 
-  /* eslint-disable no-new */
+  await beforeApp({
+    router,
+    store,
+    i18n,
+    vuetify
+  })
+
   const app = new Vue({
     router,
     store,
@@ -117,6 +126,15 @@ export function createApp () {
     render: h => h(App)
   })
 
-  // expose the app, the router and the store.
-  return { app, router, store }
+  const result = {
+    app,
+    router,
+    store,
+    i18n,
+    vuetify
+  }
+
+  await afterApp(result)
+
+  return result
 }
