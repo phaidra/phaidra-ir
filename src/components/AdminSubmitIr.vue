@@ -471,7 +471,6 @@ import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 import qs from 'qs'
-import axios from 'axios'
 var iconv = require('iconv-lite')
 
 export default {
@@ -590,7 +589,7 @@ export default {
       var query = qs.stringify(params)
 
       try {
-        let response = await axios.request({
+        let response = await this.$http.request({
           method: 'GET',
           url: this.config.apis.sherparomeo.url + '?' + query,
           responseType: 'arraybuffer'
@@ -637,27 +636,27 @@ export default {
             q: 'dc_identifier:"' + this.doiToImport + '"'
           }
 
-          let query = qs.stringify(params)
-
-          let solrResponse = await fetch(this.config.solr + '/select?' + query, {
+          let solrResponse = await this.$http.request({
             method: 'GET',
-            mode: 'cors'
+            url: this.config.solr + '/select',
+            params: params
           })
-          let solrJson = await solrResponse.json()
-          if (solrJson.response.numFound > 0) {
+
+          if (solrResponse.data.response.numFound > 0) {
             this.doiDuplicate = {
-              pid: solrJson.response.docs[0].pid,
-              title: solrJson.response.docs[0].dc_title[0]
+              pid: solrResponse.data.response.docs[0].pid,
+              title: solrResponse.data.response.docs[0].dc_title[0]
             }
           } else {
-            let response = await fetch('https://' + this.config.apis.doi.baseurl + '/' + this.doiToImport, {
+            let response = await this.$http.request({
               method: 'GET',
-              mode: 'cors',
+              url: 'https://' + this.config.apis.doi.baseurl + '/' + this.doiToImport,
               headers: {
                 'Accept': this.config.apis.doi.accept
               }
             })
-            let crossrefData = await response.json()
+
+            let crossrefData = response.data
 
             this.doiImportData = {
               doi: this.doiToImport,
@@ -836,28 +835,27 @@ export default {
       httpFormData.append('metadata', JSON.stringify(this.getMetadata()))
 
       try {
-        let response = await fetch(this.$store.state.config.api + '/ir/submit', {
+        let response = await this.$http.request({
           method: 'POST',
-          mode: 'cors',
+          url: this.$store.state.config.api + '/ir/submit',
           headers: {
+            'Content-Type': 'multipart/form-data',
             'X-XSRF-TOKEN': this.$store.state.user.token
           },
-          body: httpFormData
+          data: httpFormData
         })
 
-        let json = await response.json()
-
-        if (json.status === 200) {
-          this.submitResponse = json
+        if (response.data.status === 200) {
+          this.submitResponse = response.data
           let alerts = []
-          if (json.alerts && json.alerts.length > 0) {
-            alerts = json.alerts
+          if (response.data.alerts && response.data.alerts.length > 0) {
+            alerts = response.data.alerts
           }
           alerts.push({ type: 'success', msg: this.$t('Submit successful') + ' ' + this.submitResponse.pid })
           this.$store.commit('setAlerts', alerts)
         } else {
-          if (json.alerts && json.alerts.length > 0) {
-            this.$store.commit('setAlerts', json.alerts)
+          if (response.data.alerts && response.data.alerts.length > 0) {
+            this.$store.commit('setAlerts', response.data.alerts)
           }
         }
       } catch (error) {

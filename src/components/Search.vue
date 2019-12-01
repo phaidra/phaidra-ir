@@ -48,7 +48,6 @@
 
 <script>
 import qs from 'qs'
-import axios from 'axios'
 import Autocomplete from './Autocomplete'
 import SearchResults from './SearchResults'
 import SearchFilters from './SearchFilters'
@@ -122,15 +121,23 @@ export default {
         window.history.replaceState(null, this.$t('Search results'), this.link)
       }
 
-      let response = await axios.post(this.config.solr + '/select',
-        {
-          params: params
-        }
-      )
-      this.docs = response.data.response.docs
-      this.total = response.data.response.numFound
-      this.facet_counts = response.data.facet_counts
-      updateFacetQueries(response.data.facet_counts.facet_queries, facetQueries)
+      try {
+        let response = await this.$http.request({
+          method: 'POST',
+          url: this.config.solr + '/select',
+          params: params,
+          paramsSerializer: function (params) {
+            return qs.stringify(params, { arrayFormat: 'repeat' })
+          }
+        })
+        this.docs = response.data.response.docs
+        this.total = response.data.response.numFound
+        this.facet_counts = response.data.facet_counts
+        updateFacetQueries(response.data.facet_counts.facet_queries, facetQueries)
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      }
     },
     handleSelect: function ({ term, payload }) {
       // called from Autocomplete
@@ -148,18 +155,20 @@ export default {
         params.page = 0
         params.rows = this.total
         params.fl = [ 'pid', 'dc_title' ]
-        let query = qs.stringify(params, { encodeValuesOnly: true, indices: false })
-        let url = this.config.solr + '/select'
-        let response = await fetch(url, {
-          method: 'POST',
-          mode: 'cors',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: query
-        })
-        let json = await response.json()
-        return json.response.docs
+        try {
+          let response = await this.$http.request({
+            method: 'POST',
+            url: this.config.solr + '/select',
+            params: params,
+            paramsSerializer: function (params) {
+              return qs.stringify(params, { arrayFormat: 'repeat' })
+            }
+          })
+          return response.data.response.docs
+        } catch (error) {
+          console.log(error)
+          this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+        }
       }
     },
     setSort: function (sort) {

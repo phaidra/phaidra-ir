@@ -35,27 +35,26 @@ export default {
       this.$router.push({ name: 'detail', params: { pid: event } })
       this.$vuetify.goTo(0)
     },
-    loadJsonld (self, pid) {
-      var url = self.config.api + '/object/' + pid + '/metadata?mode=resolved'
-      var promise = fetch(url, {
-        method: 'GET',
-        mode: 'cors'
-      })
-        .then(function (response) { return response.json() })
-        .then(function (json) {
-          self.editform = self.json2form(json.metadata['JSON-LD'])
-          for (let f of self.editform.sections[0].fields) {
-            if (f.predicate === 'edm:rights') {
-              f.vocabulary = 'alllicenses'
-            }
+    loadJsonld: async function (self, pid) {
+      try {
+        let response = await this.$http.request({
+          method: 'GET',
+          url: self.config.api + '/object/' + pid + '/metadata',
+          params: {
+            mode: 'resolved'
           }
-          self.editform.sections[0].fields.push(fields.getField('rights'))
         })
-        .catch(function (error) {
-          console.log(error)
-        })
-
-      return promise
+        self.editform = self.json2form(response.data.metadata['JSON-LD'])
+        for (let f of self.editform.sections[0].fields) {
+          if (f.predicate === 'edm:rights') {
+            f.vocabulary = 'alllicenses'
+          }
+        }
+        self.editform.sections[0].fields.push(fields.getField('rights'))
+      } catch (error) {
+        console.log(error)
+        self.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      }
     },
     json2form: function (jsonld) {
       return jsonLd.json2form(jsonld)

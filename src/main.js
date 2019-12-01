@@ -3,7 +3,6 @@
 import 'core-js'
 
 import Vue from 'vue'
-
 import Vuetify from 'vuetify/lib'
 import VueI18n from 'vue-i18n'
 import App from './App'

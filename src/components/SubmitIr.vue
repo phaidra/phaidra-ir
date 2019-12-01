@@ -1104,27 +1104,42 @@ export default {
             q: 'dc_identifier:"' + this.doiToImport + '"'
           }
 
-          let query = qs.stringify(params)
-
-          let solrResponse = await fetch(this.config.solr + '/select?' + query, {
+          let solrResponse = await this.$http.request({
             method: 'GET',
-            mode: 'cors'
+            url: this.config.solr + '/select',
+            params: params
           })
-          let solrJson = await solrResponse.json()
-          if (solrJson.response.numFound > 0) {
+
+          if (solrResponse.data.response.numFound > 0) {
             this.doiDuplicate = {
-              pid: solrJson.response.docs[0].pid,
-              title: solrJson.response.docs[0].dc_title[0]
+              pid: solrResponse.data.response.docs[0].pid,
+              title: solrResponse.data.response.docs[0].dc_title[0]
             }
           } else {
-            let response = await fetch('https://' + this.config.apis.doi.baseurl + '/' + this.doiToImport, {
+            let response = await this.$http.request({
               method: 'GET',
-              mode: 'cors',
+              url: 'https://' + this.config.apis.doi.baseurl + '/' + this.doiToImport,
               headers: {
                 'Accept': this.config.apis.doi.accept
               }
             })
-            let crossrefData = await response.json()
+
+            let crossrefData = response.data
+
+            this.doiImportData = {
+              doi: this.doiToImport,
+              title: '',
+              dateIssued: '',
+              authors: [],
+              publicationType: '',
+              publisher: '',
+              journalTitle: '',
+              journalISSN: '',
+              journalVolume: '',
+              journalIssue: '',
+              pageStart: '',
+              pageEnd: ''
+            }
 
             this.doiImportData = {
               doi: this.doiToImport,
@@ -1313,23 +1328,22 @@ export default {
       httpFormData.append('metadata', JSON.stringify(this.getMetadata()))
 
       try {
-        let response = await fetch(this.$store.state.config.api + '/ir/submit', {
+        let response = await this.$http.request({
           method: 'POST',
-          mode: 'cors',
+          url: this.$store.state.config.api + '/ir/submit',
           headers: {
+            'Content-Type': 'multipart/form-data',
             'X-XSRF-TOKEN': this.$store.state.user.token
           },
-          body: httpFormData
+          data: httpFormData
         })
 
-        let json = await response.json()
-
-        if (json.alerts && json.alerts.length > 0) {
-          this.$store.commit('setAlerts', json.alerts)
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
         }
 
-        if (json.status === 200) {
-          this.submitResponse = json
+        if (response.data.status === 200) {
+          this.submitResponse = response.data
           this.step = 8
         }
       } catch (error) {
@@ -2037,22 +2051,21 @@ export default {
           httpFormData.append('embargonotification', this.embargoNotificationCheckbox)
         }
 
-        let response = await fetch(this.$store.state.config.api + '/ir/notifications', {
+        let response = await this.$http.request({
           method: 'POST',
-          mode: 'cors',
+          url: this.$store.state.config.api + '/ir/notifications',
           headers: {
+            'Content-Type': 'multipart/form-data',
             'X-XSRF-TOKEN': this.$store.state.user.token
           },
-          body: httpFormData
+          data: httpFormData
         })
 
-        let json = await response.json()
-
-        if (json.alerts && json.alerts.length > 0) {
-          this.$store.commit('setAlerts', json.alerts)
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          this.$store.commit('setAlerts', response.data.alerts)
         }
 
-        if (json.status === 200) {
+        if (response.data.status === 200) {
           this.$router.push('/search')
         }
       } catch (error) {
