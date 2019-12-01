@@ -5,8 +5,9 @@ const path = require('path')
 module.exports = {
   pluginOptions: {
     ssr: {
-      defaultTitle: 'phaidra-ir-ssr',
-      favicon: './static/favicon.ico'
+      defaultTitle: 'phaidra-ui-ssr',
+      favicon: './static/favicon.ico',
+      clustered: true
     }
   },
   transpileDependencies: [
