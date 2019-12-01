@@ -1003,12 +1003,12 @@ export default {
           } else {
             this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
           }
+        } catch (error) {
+          console.error(error)
+          this.rightsCheckErrors.push(error)
+        } finally {
+          this.rightsCheckLoading = false
         }
-      } catch (error) {
-        console.error(error)
-        this.rightsCheckErrors.push(error)
-      } finally {
-        this.rightsCheckLoading = false
       }
     },
     stripTags (text) {
