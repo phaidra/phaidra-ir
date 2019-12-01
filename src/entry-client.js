@@ -14,7 +14,9 @@ createApp({
     router,
     store
   }) {
-    store.replaceState(window.__INITIAL_STATE__)
+    if (process.browser) {
+      store.replaceState(window.__INITIAL_STATE__)
+    }
     router.onReady(() => {
       app.$mount('#app')
     })

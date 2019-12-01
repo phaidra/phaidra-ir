@@ -961,46 +961,48 @@ export default {
       }
     },
     async suggestJournals (q) {
-      if (q.length < this.rightsCheckMinLetters || !this.config.apis.sherparomeo) return
+      if (process.browser) {
+        if (q.length < this.rightsCheckMinLetters || !this.config.apis.sherparomeo) return
 
-      this.rightsCheckLoading = true
-      this.rightsCheckItems = []
-      this.rightsCheckErrors = []
+        this.rightsCheckLoading = true
+        this.rightsCheckItems = []
+        this.rightsCheckErrors = []
 
-      var params = {
-        ak: this.config.apis.sherparomeo.key,
-        versions: 'all',
-        qtype: 'contains',
-        jtitle: q
-      }
-
-      var query = qs.stringify(params)
-
-      try {
-        let response = await axios.request({
-          method: 'GET',
-          url: this.config.apis.sherparomeo.url + '?' + query,
-          responseType: 'arraybuffer'
-        })
-        let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
-        let dp = new window.DOMParser()
-        let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
-        if (!obj.romeoapi[1].journals.journal) {
-          this.rightsCheckErrors.push(this.$t('No journals found'))
-          return
+        var params = {
+          ak: this.config.apis.sherparomeo.key,
+          versions: 'all',
+          qtype: 'contains',
+          jtitle: q
         }
-        if (Array.isArray(obj.romeoapi[1].journals.journal)) {
-          for (let j of obj.romeoapi[1].journals.journal) {
-            this.rightsCheckItems.push(
-              {
-                title: j.jtitle['#text'],
-                issn: j.issn['#text'],
-                romeopub: j.romeopub['#text']
-              }
-            )
+
+        var query = qs.stringify(params)
+
+        try {
+          let response = await axios.request({
+            method: 'GET',
+            url: this.config.apis.sherparomeo.url + '?' + query,
+            responseType: 'arraybuffer'
+          })
+          let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
+          let dp = new window.DOMParser()
+          let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
+          if (!obj.romeoapi[1].journals.journal) {
+            this.rightsCheckErrors.push(this.$t('No journals found'))
+            return
           }
-        } else {
-          this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
+          if (Array.isArray(obj.romeoapi[1].journals.journal)) {
+            for (let j of obj.romeoapi[1].journals.journal) {
+              this.rightsCheckItems.push(
+                {
+                  title: j.jtitle['#text'],
+                  issn: j.issn['#text'],
+                  romeopub: j.romeopub['#text']
+                }
+              )
+            }
+          } else {
+            this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
+          }
         }
       } catch (error) {
         console.error(error)
@@ -1013,83 +1015,85 @@ export default {
       return text.replace(/<\/?[^>]+(>|$)/g, '')
     },
     async queryRightsCheckJournal (issn) {
-      if (!issn || !this.config.apis.sherparomeo) return
+      if (process.browser) {
+        if (!issn || !this.config.apis.sherparomeo) return
 
-      this.rightsCheckLoading = true
+        this.rightsCheckLoading = true
 
-      var params = {
-        ak: this.config.apis.sherparomeo.key,
-        versions: 'all',
-        issn: issn
-      }
-
-      var query = qs.stringify(params)
-
-      try {
-        let response = await axios.request({
-          method: 'GET',
-          url: this.config.apis.sherparomeo.url + '?' + query,
-          responseType: 'arraybuffer'
-        })
-        let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
-        let dp = new window.DOMParser()
-        let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
-        let disclaimer = obj.romeoapi[1].header.disclaimer['#text']
-        let j = obj.romeoapi[1].journals.journal
-        let journal = null
-        if (j) {
-          journal = {
-            title: j.jtitle['#text'],
-            issn: j.issn['#text'],
-            romeopub: j.romeopub['#text']
-          }
+        var params = {
+          ak: this.config.apis.sherparomeo.key,
+          versions: 'all',
+          issn: issn
         }
-        let p = obj.romeoapi[1].publishers.publisher
-        let publisher = null
-        if (p) {
-          publisher = {
-            name: p.name['#text'],
-            homeurl: p.homeurl['#text'],
-            color: p.romeocolour['#text']
-          }
-          publisher['prearchiving'] = p.preprints.prearchiving['#text']
-          publisher['prerestrictions'] = []
-          if (p.preprints.prerestrictions.prerestriction) {
-            for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
-              publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
+
+        var query = qs.stringify(params)
+
+        try {
+          let response = await axios.request({
+            method: 'GET',
+            url: this.config.apis.sherparomeo.url + '?' + query,
+            responseType: 'arraybuffer'
+          })
+          let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
+          let dp = new window.DOMParser()
+          let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
+          let disclaimer = obj.romeoapi[1].header.disclaimer['#text']
+          let j = obj.romeoapi[1].journals.journal
+          let journal = null
+          if (j) {
+            journal = {
+              title: j.jtitle['#text'],
+              issn: j.issn['#text'],
+              romeopub: j.romeopub['#text']
             }
           }
-          publisher['postarchiving'] = p.postprints.postarchiving['#text']
-          publisher['postrestrictions'] = []
-          if (p.postprints.postrestrictions.postrestriction) {
-            for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
-              publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
+          let p = obj.romeoapi[1].publishers.publisher
+          let publisher = null
+          if (p) {
+            publisher = {
+              name: p.name['#text'],
+              homeurl: p.homeurl['#text'],
+              color: p.romeocolour['#text']
+            }
+            publisher['prearchiving'] = p.preprints.prearchiving['#text']
+            publisher['prerestrictions'] = []
+            if (p.preprints.prerestrictions.prerestriction) {
+              for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
+                publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
+              }
+            }
+            publisher['postarchiving'] = p.postprints.postarchiving['#text']
+            publisher['postrestrictions'] = []
+            if (p.postprints.postrestrictions.postrestriction) {
+              for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
+                publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
+              }
+            }
+            publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
+            publisher['pdfrestrictions'] = []
+            if (p.pdfversion.pdfrestrictions.pdfrestriction) {
+              for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
+                publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
+              }
+            }
+            publisher['conditions'] = []
+            if (p.conditions.condition) {
+              for (let condition of p.conditions.condition) {
+                publisher['conditions'].push(this.stripTags(condition['#text']))
+              }
             }
           }
-          publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
-          publisher['pdfrestrictions'] = []
-          if (p.pdfversion.pdfrestrictions.pdfrestriction) {
-            for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
-              publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
-            }
+          this.rightsCheckData = {
+            disclaimer: disclaimer,
+            journal: journal,
+            publisher: publisher
           }
-          publisher['conditions'] = []
-          if (p.conditions.condition) {
-            for (let condition of p.conditions.condition) {
-              publisher['conditions'].push(this.stripTags(condition['#text']))
-            }
-          }
+        } catch (error) {
+          console.error(error)
+          this.rightsCheckErrors.push(error)
+        } finally {
+          this.rightsCheckLoading = false
         }
-        this.rightsCheckData = {
-          disclaimer: disclaimer,
-          journal: journal,
-          publisher: publisher
-        }
-      } catch (error) {
-        console.error(error)
-        this.rightsCheckErrors.push(error)
-      } finally {
-        this.rightsCheckLoading = false
       }
     },
     importDOI: async function () {

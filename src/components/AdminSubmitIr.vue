@@ -573,46 +573,48 @@ export default {
       }
     },
     async suggestJournals (q) {
-      if (q.length < this.rightsCheckMinLetters || !this.config.apis.sherparomeo) return
+      if (process.browser) {
+        if (q.length < this.rightsCheckMinLetters || !this.config.apis.sherparomeo) return
 
-      this.rightsCheckLoading = true
-      this.rightsCheckItems = []
-      this.rightsCheckErrors = []
+        this.rightsCheckLoading = true
+        this.rightsCheckItems = []
+        this.rightsCheckErrors = []
 
-      var params = {
-        ak: this.config.apis.sherparomeo.key,
-        versions: 'all',
-        qtype: 'contains',
-        jtitle: q
-      }
-
-      var query = qs.stringify(params)
-
-      try {
-        let response = await this.$http.request({
-          method: 'GET',
-          url: this.config.apis.sherparomeo.url + '?' + query,
-          responseType: 'arraybuffer'
-        })
-        let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
-        let dp = new window.DOMParser()
-        let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
-        if (!obj.romeoapi[1].journals.journal) {
-          this.rightsCheckErrors.push(this.$t('No journals found'))
-          return
+        var params = {
+          ak: this.config.apis.sherparomeo.key,
+          versions: 'all',
+          qtype: 'contains',
+          jtitle: q
         }
-        if (Array.isArray(obj.romeoapi[1].journals.journal)) {
-          for (let j of obj.romeoapi[1].journals.journal) {
-            this.rightsCheckItems.push(
-              {
-                title: j.jtitle['#text'],
-                issn: j.issn['#text'],
-                romeopub: j.romeopub['#text']
-              }
-            )
+
+        var query = qs.stringify(params)
+
+        try {
+          let response = await this.$http.request({
+            method: 'GET',
+            url: this.config.apis.sherparomeo.url + '?' + query,
+            responseType: 'arraybuffer'
+          })
+          let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
+          let dp = new window.DOMParser()
+          let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
+          if (!obj.romeoapi[1].journals.journal) {
+            this.rightsCheckErrors.push(this.$t('No journals found'))
+            return
           }
-        } else {
-          this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
+          if (Array.isArray(obj.romeoapi[1].journals.journal)) {
+            for (let j of obj.romeoapi[1].journals.journal) {
+              this.rightsCheckItems.push(
+                {
+                  title: j.jtitle['#text'],
+                  issn: j.issn['#text'],
+                  romeopub: j.romeopub['#text']
+                }
+              )
+            }
+          } else {
+            this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
+          }
         }
       } catch (error) {
         console.error(error)

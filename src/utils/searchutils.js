@@ -3,12 +3,12 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
 
   for (let i = 0; i < sortdef.length; i++) {
     if (sortdef[i].active) {
-      searchdefarr.push('sortdef=' + window.encodeURIComponent(sortdef[i].id))
+      searchdefarr.push('sortdef=' + encodeURIComponent(sortdef[i].id))
     }
   }
 
   if (q) {
-    searchdefarr.push('q=' + window.encodeURIComponent(q))
+    searchdefarr.push('q=' + encodeURIComponent(q))
   }
   searchdefarr.push('page=' + page)
   if (pagesize) {
@@ -69,7 +69,7 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
     let v = persAuthors.values[j]
     if (v !== '') {
       ands.push('(' + persAuthors.field + ':"' + v + '")')
-      searchdefarr.push('fr=' + persAuthors.field + '_' + window.encodeURIComponent(v))
+      searchdefarr.push('fr=' + persAuthors.field + '_' + encodeURIComponent(v))
     }
   }
 
@@ -77,13 +77,13 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
     let v = journals.values[j]
     if (v !== '') {
       ands.push('(' + journals.field + ':"' + v + '")')
-      searchdefarr.push('fr=' + journals.field + '_' + window.encodeURIComponent(v))
+      searchdefarr.push('fr=' + journals.field + '_' + encodeURIComponent(v))
     }
   }
 
   if (funder.value && funder.value !== '') {
     ands.push('(' + funder.field + ':"' + funder.value + '")')
-    searchdefarr.push('fr=' + funder.field + '_' + window.encodeURIComponent(funder.value))
+    searchdefarr.push('fr=' + funder.field + '_' + encodeURIComponent(funder.value))
   }
 
   // an object should have at least an owner, else it's garbage
@@ -161,12 +161,12 @@ export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQue
 
   for (let i = 0; i < sortdef.length; i++) {
     if (sortdef[i].active) {
-      searchdefarr.push('sortdef=' + window.encodeURIComponent(sortdef[i].id))
+      searchdefarr.push('sortdef=' + encodeURIComponent(sortdef[i].id))
     }
   }
 
   if (q) {
-    searchdefarr.push('q=' + window.encodeURIComponent(q))
+    searchdefarr.push('q=' + encodeURIComponent(q))
   }
   searchdefarr.push('page=' + page)
   if (pagesize) {

@@ -263,7 +263,10 @@ export default {
       }
     }
     await this.loadTracking()
-    const Matomo = window.Piwik.getTracker('https://' + this.config.stats.trackerbaseurl + '/matomo.php', this.config.stats.siteid)
+    let Matomo
+    if (process.browser) {
+      Matomo = window.Piwik.getTracker('https://' + this.config.stats.trackerbaseurl + '/matomo.php', this.config.stats.siteid)
+    }
     Matomo.trackPageView()
     Matomo.enableLinkTracking()
     Vue.prototype.$matomo = Matomo
