@@ -2103,21 +2103,6 @@ export default {
       this.resetForm(this, null, null)
     }
   },
-  mounted: async function () {
-    var vm = this
-    window.onpopstate = function (event) {
-      // let's assume it's a back button..
-      if (vm.step === 1) {
-        vm.$router.push('/submit')
-      }
-      if (vm.step > 1) {
-        // pushing something so that subsequent clicks on back won't leave submitform
-        window.history.pushState({ step: vm.step }, vm.step, vm.step)
-        vm.step = vm.step - 1
-      }
-      vm.$vuetify.goTo(1)
-    }
-  },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
       await vm.checkAllowSubmit()
@@ -2132,6 +2117,15 @@ export default {
     // setTimeout(function () { this.submitformLoading = false }, 500)
     this.resetSubmission(this)
     next()
+  },
+  beforeRouteLeave: async function (to, from, next) {
+    if (this.step > 1) {
+      this.step = this.step - 1
+      this.$vuetify.goTo(1)
+      next(false)
+    } else {
+      next()
+    }
   }
 }
 </script>

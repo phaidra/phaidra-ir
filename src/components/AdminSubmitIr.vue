@@ -1506,21 +1506,6 @@ export default {
       this.resetForm(this, null, null)
     }
   },
-  mounted: async function () {
-    var vm = this
-    window.onpopstate = function (event) {
-      // let's assume it's a back button..
-      if (vm.step === 1) {
-        vm.$router.push('/admin/submit')
-      }
-      if (vm.step > 1) {
-        // pushing something so that subsequent clicks on back won't leave submitform
-        window.history.pushState({ step: vm.step }, vm.step, vm.step)
-        vm.step = vm.step - 1
-      }
-      vm.$vuetify.goTo(1)
-    }
-  },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
       vm.submitformLoading = true
