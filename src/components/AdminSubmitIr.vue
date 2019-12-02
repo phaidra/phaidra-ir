@@ -1494,6 +1494,8 @@ export default {
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
+      self.validationStatus = ''
+      self.validationErrors = []
       self.resetForm(self, null, null)
     },
     resetDOIImport: function () {
@@ -1505,8 +1507,19 @@ export default {
     }
   },
   mounted: async function () {
-    // this.objectListLoad()
-    // this.resetSubmission(this)
+    var vm = this
+    window.onpopstate = function (event) {
+      // let's assume it's a back button..
+      if (vm.step === 1) {
+        vm.$router.push('/admin/submit')
+      }
+      if (vm.step > 1) {
+        // pushing something so that subsequent clicks on back won't leave submitform
+        window.history.pushState({ step: vm.step }, vm.step, vm.step)
+        vm.step = vm.step - 1
+      }
+      vm.$vuetify.goTo(1)
+    }
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
