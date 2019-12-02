@@ -1518,6 +1518,15 @@ export default {
     setTimeout(function () { this.submitformLoading = false }, 500)
     this.resetSubmission(this)
     next()
+  },
+  beforeRouteLeave: async function (to, from, next) {
+    if (this.step > 1) {
+      this.step = this.step - 1
+      this.$vuetify.goTo(1)
+      next(false)
+    } else {
+      next()
+    }
   }
 }
 </script>
