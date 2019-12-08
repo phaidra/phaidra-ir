@@ -19,7 +19,7 @@
             <template v-for="(q, j) in f.queries">
               <v-col cols="2" align-self="center" :key="'f'+i+'q'+j">
                 <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" class="float-right">
-                  <span :class="{ active: q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
+                  <span :class="{ 'active font-weight-normal': q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
                   <span class="title font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
                 </span>
               </v-col>
@@ -309,7 +309,6 @@ svg {
 }
 
 .active {
-  font-weight: 400;
   text-shadow: rgba(0,0,0,.12) 1px 1px 4px;
 }
 </style>
