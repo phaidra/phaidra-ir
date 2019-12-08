@@ -125,9 +125,9 @@ export default {
         let response = await this.$http.request({
           method: 'POST',
           url: this.config.solr + '/select',
-          params: params,
-          paramsSerializer: function (params) {
-            return qs.stringify(params, { arrayFormat: 'repeat' })
+          data: qs.stringify(params, { arrayFormat: 'repeat' }),
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
           }
         })
         this.docs = response.data.response.docs
@@ -157,11 +157,11 @@ export default {
         params.fl = [ 'pid', 'dc_title' ]
         try {
           let response = await this.$http.request({
-            method: 'POST',
+            method: 'GET',
             url: this.config.solr + '/select',
-            params: params,
-            paramsSerializer: function (params) {
-              return qs.stringify(params, { arrayFormat: 'repeat' })
+            data: qs.stringify(params, { arrayFormat: 'repeat' }),
+            headers: {
+              'content-type': 'application/x-www-form-urlencoded'
             }
           })
           return response.data.response.docs

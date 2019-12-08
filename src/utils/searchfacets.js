@@ -125,6 +125,26 @@ export function buildAssociationFacet (orgUnitsTree) {
 
         if (l2Unit.subunits) {
           for (let l3Unit of l2Unit.subunits) {
+            let l4Facet = {
+              label: 'Subunits of ' + l3Unit['@id'],
+              field: 'association_id',
+              resetable: true,
+              id: 'l3-' + l3Unit['@id'],
+              queries: []
+            }
+
+            if (l3Unit.subunits) {
+              for (let l4Unit of l3Unit.subunits) {
+                l4Facet.queries.push({
+                  query: 'association_id:"' + l4Unit['@id'] + '"',
+                  id: l4Unit['@id'],
+                  label: {
+                    'skos:prefLabel': l4Unit['skos:prefLabel']
+                  }
+                })
+              }
+            }
+
             l3Facet.queries.push({
               query: 'association_id:"' + l3Unit['@id'] + '"',
               id: l3Unit['@id'],
