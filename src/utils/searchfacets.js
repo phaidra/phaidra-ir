@@ -137,6 +137,7 @@ export function buildAssociationFacet (orgUnitsTree) {
               for (let l4Unit of l3Unit.subunits) {
                 l4Facet.queries.push({
                   query: 'association_id:"' + l4Unit['@id'] + '"',
+                  active: false,
                   id: l4Unit['@id'],
                   label: {
                     'skos:prefLabel': l4Unit['skos:prefLabel']
@@ -147,6 +148,7 @@ export function buildAssociationFacet (orgUnitsTree) {
 
             l3Facet.queries.push({
               query: 'association_id:"' + l3Unit['@id'] + '"',
+              active: false,
               id: l3Unit['@id'],
               label: {
                 'skos:prefLabel': l3Unit['skos:prefLabel']
@@ -157,6 +159,7 @@ export function buildAssociationFacet (orgUnitsTree) {
 
         l2Facet.queries.push({
           query: 'association_id:"' + l2Unit['@id'] + '"',
+          active: false,
           id: l2Unit['@id'],
           label: {
             'skos:prefLabel': l2Unit['skos:prefLabel']
@@ -168,6 +171,7 @@ export function buildAssociationFacet (orgUnitsTree) {
 
     associationFacet.queries.push({
       query: 'association_id:"' + l1Unit['@id'] + '"',
+      active: true,
       id: l1Unit['@id'],
       label: {
         'skos:prefLabel': l1Unit['skos:prefLabel']
@@ -276,6 +280,14 @@ export function updateFacetQueries (facetQueriesSolr, facetQueries) {
                 for (let l = 0; l < lvl2.queries.length; l++) {
                   if (lvl2.queries[l].query === key) {
                     Vue.set(lvl2.queries[l], 'count', facetQueriesSolr[key])
+                  }
+                  if (lvl2.queries[l].childFacet) {
+                    let lvl3 = lvl2.queries[l].childFacet
+                    for (let m = 0; m < lvl3.queries.length; m++) {
+                      if (lvl3.queries[m].query === key) {
+                        Vue.set(lvl3.queries[m], 'count', facetQueriesSolr[key])
+                      }
+                    }
                   }
                 }
               }

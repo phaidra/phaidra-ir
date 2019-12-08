@@ -2,15 +2,15 @@
   <v-container>
     <ul class="main-ul">
       <li v-for="(f, i) in facetQueries" :key="i">
-        <icon @click.native="showFacet(f)" v-if="f.show" name="univie-stop2" class="primary--text"></icon>
-        <icon @click.native="showFacet(f)" v-if="!f.show" name="univie-checkbox-unchecked" class="primary--text"></icon>
-        <span @click="showFacet(f)" class="facet-label primary--text" :class="{ active: f.show }">
+        <icon @click.native="showFacetAndSearch(f)" v-if="f.show" name="univie-stop2" class="primary--text"></icon>
+        <icon @click.native="showFacetAndSearch(f)" v-if="!f.show" name="univie-checkbox-unchecked" class="primary--text"></icon>
+        <span @click="showFacetAndSearch(f)" class="facet-label primary--text" :class="{ active: f.show }">
           <template v-if="f.label['skos:prefLabel']">{{ f.label['skos:prefLabel'][$i18n.locale] }}</template>
           <template v-else>{{ $t(f.label) }}</template>
         </span>
         <ul v-if="f.show">
-          <li v-for="(q, j) in f.queries" :key="j">
-            <span @click="toggleFacet(q,f)">
+          <li v-for="(q, j) in f.queries" :key="j+q.id">
+            <span @click="toggleFacetAndSearch(q,f)">
               <icon v-if="q.active" name="univie-stop2" class="primary--text"></icon>
               <icon v-if="!q.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
               <span :class="{ active: q.active }" class="facet-label primary--text">
@@ -19,9 +19,9 @@
               </span>
               <span class="facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
             </span>
-            <ul v-if="q.active && q.childFacet" >
-              <li v-for="(q1, k) in q.childFacet.queries" :key="k">
-                <span @click="toggleFacet(q1,q.childFacet)">
+            <ul v-if="q.active && q.childFacet">
+              <li v-for="(q1, k) in q.childFacet.queries" :key="k+q1.id">
+                <span @click="toggleFacetAndSearch(q1,q.childFacet)">
                   <icon v-if="q1.active" name="univie-stop2" class="primary--text"></icon>
                   <icon v-if="!q1.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                   <span :class="{ active: q1.active }" class="facet-label primary--text">
@@ -31,8 +31,8 @@
                   <span class="facet-count grey--text" v-if="q1.count > 0">({{q1.count}})</span>
                 </span>
                 <ul v-if="q1.active && q1.childFacet" >
-                  <li v-for="(q2, l) in q1.childFacet.queries" :key="l">
-                    <span @click="toggleFacet(q2,q1.childFacet)">
+                  <li v-for="(q2, l) in q1.childFacet.queries" :key="l+q2.id">
+                    <span @click="toggleFacetAndSearch(q2,q1.childFacet)">
                       <icon v-if="q2.active" name="univie-stop2" class="primary--text"></icon>
                       <icon v-if="!q2.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                       <span :class="{ active: q2.active }" class="facet-label primary--text">
@@ -42,8 +42,8 @@
                       <span class="facet-count grey--text" v-if="q2.count>0">({{q2.count}})</span>
                     </span>
                     <ul v-if="q2.active && q2.childFacet" >
-                    <li v-for="(q3, l) in q2.childFacet.queries" :key="l">
-                      <span @click="toggleFacet(q3,q2.childFacet)">
+                    <li v-for="(q3, m) in q2.childFacet.queries" :key="m+q3.id">
+                      <span @click="toggleFacetAndSearch(q3,q2.childFacet)">
                         <icon v-if="q3.active" name="univie-stop2" class="primary--text"></icon>
                         <icon v-if="!q3.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                         <span :class="{ active: q3.active }" class="facet-label primary--text">
@@ -194,11 +194,11 @@ export default {
     }
   },
   methods: {
-    showFacet: function (f) {
+    showFacetAndSearch: function (f) {
       showFacet(f)
       this.search({ facetQueries: this.facetQueries })
     },
-    toggleFacet: function (q, f) {
+    toggleFacetAndSearch: function (q, f) {
       toggleFacet(q, f)
       this.search({ page: 1, facetQueries: this.facetQueries })
     },
