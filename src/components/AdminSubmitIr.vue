@@ -551,7 +551,9 @@ export default {
       for (let s of this.form.sections) {
         for (let f of s.fields) {
           if (f.component === 'p-keyword') {
-            f.value = arr.join(',')
+            for (let a of arr) {
+              f.value.push(a)
+            }
           }
         }
       }
