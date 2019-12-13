@@ -1343,7 +1343,11 @@ export default {
         })
 
         if (response.data.alerts && response.data.alerts.length > 0) {
-          this.$store.commit('setAlerts', response.data.alerts)
+          if ((response.data.alerts.length === 1) && response.data.alerts[0].msg === 'true') {
+            // sometimes api returns just 'true', skip this message
+          } else {
+            this.$store.commit('setAlerts', response.data.alerts)
+          }
         }
 
         if (response.data.status === 200) {
