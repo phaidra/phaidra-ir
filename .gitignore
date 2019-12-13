@@ -1,3 +1,6 @@
+# sitemaps
+public/sitemap*
+
 .DS_Store
 node_modules
 /dist
