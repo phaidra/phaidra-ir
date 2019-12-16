@@ -38,23 +38,25 @@
             </v-col>
 
             <v-col md="9" cols="3" :align-self="'center'">
-              <v-app-bar-nav-icon class="hidden-md-and-up">
-                <v-menu offset-y>
-                  <template v-slot:activator="{ on }">
-                    <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item @click="$router.push({ path: '/info/about' })"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
-                    <v-list-item @click="$router.push({ path: '/info/policy' })"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
-                    <v-list-item @click="$router.push({ path: '/info/contact' })"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
-                    <v-list-item @click="$router.push({ path: '/search' })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
-                    <v-list-item v-if="signedin" @click="$router.push({ path: '/submit' })"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
-                    <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push({ path: '/admin' })"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
-                    <v-list-item v-if="!signedin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
-                    <v-list-item v-if="signedin" @click="logout()"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
-                  </v-list>
-                </v-menu>
-              </v-app-bar-nav-icon>
+              <client-only placeholder-tag="span">
+                <v-app-bar-nav-icon class="hidden-md-and-up">
+                  <v-menu offset-y>
+                    <template v-slot:activator="{ on }">
+                      <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item @click="$router.push({ path: '/info/about' })"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
+                      <v-list-item @click="$router.push({ path: '/info/policy' })"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
+                      <v-list-item @click="$router.push({ path: '/info/contact' })"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
+                      <v-list-item @click="$router.push({ path: '/search' })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
+                      <v-list-item v-if="signedin" @click="$router.push({ path: '/submit' })"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
+                      <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push({ path: '/admin' })"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
+                      <v-list-item v-if="!signedin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
+                      <v-list-item v-if="signedin" @click="logout()"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-app-bar-nav-icon>
+              </client-only>
               <span class="text-left hidden-sm-and-down" v-if="config.title">
                 <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
                 <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
@@ -139,15 +141,11 @@
           </v-row>
 
           <v-row>
-            <v-col cols="12" md="10" offset-md="1">
-              <v-row   class="my-5">
-                <v-col class="text-left" >
-                  <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
-                </v-col>
-                <v-col class="text-right" >
-                  <router-link :to="'/info/impressum'">{{ $t('Impressum') }}</router-link> | <router-link :to="'/info/metadata_policy'">{{ $t('Metadata policy') }}</router-link> | <router-link :to="'/info/terms'">{{ $t('Terms of use') }}</router-link> | powered by <a :href="'https://' + config.phaidrabaseurl">Phaidra</a>
-                </v-col>
-              </v-row>
+            <v-col class="text-left" >
+              <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
+            </v-col>
+            <v-col class="text-right" >
+              <router-link :to="'/info/impressum'">{{ $t('Impressum') }}</router-link> | <router-link :to="'/info/metadata_policy'">{{ $t('Metadata policy') }}</router-link> | <router-link :to="'/info/terms'">{{ $t('Terms of use') }}</router-link> | powered by <a :href="'https://' + config.phaidrabaseurl">Phaidra</a>
             </v-col>
           </v-row>
         </v-col>
@@ -164,6 +162,7 @@ import QuicklinksFooter from '@/components/QuicklinksFooter'
 import '@/compiled-icons/material-social-person'
 import '@/compiled-icons/material-navigation-menu'
 import '@/compiled-icons/univie-sprache'
+import ClientOnly from 'vue-client-only'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
 
@@ -172,7 +171,8 @@ export default {
   mixins: [ context, config ],
   components: {
     Quicklinks,
-    QuicklinksFooter
+    QuicklinksFooter,
+    ClientOnly
   },
   data () {
     return {
