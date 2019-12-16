@@ -14,8 +14,37 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@latest/css/materialdesignicons.min.css">
   </head>
   <body>
+    <noscript>
+      <strong>We're sorry but this webpage doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+    </noscript>
+    <style>
+      .jumbotron-alert {
+        overflow: visible;
+        min-height: 240px;
+        background-color: #dd4814;
+        text-align: center;
+        color: white;
+        padding-top: 50px;
+      }
+      .jumbotron-alert h1 {
+        font-size: 30pt;
+        color: white;
+        margin: 0;
+      }
+      .jumbotron-alert p {
+        font-size: 11pt;
+        margin-top: 15px;
+      }
+    </style>
+    <div id="outdated"></div>
     <!--vue-ssr-outlet-->
     {{{ renderState() }}}
     {{{ renderScripts() }}}
+    <script>
+      if(navigator.userAgent.indexOf('MSIE')!==-1 || navigator.appVersion.indexOf('Trident/') > -1){
+        var outdatedDiv = document.getElementById("outdated");
+        outdatedDiv.innerHTML = '<div class="jumbotron-alert"><h1>Unsupported browser</h1><p>Meldung: Ihr Browser ist nicht un.</p><p>EN version of unsupported browser message</p></div>';
+      }
+    </script>
   </body>
 </html>

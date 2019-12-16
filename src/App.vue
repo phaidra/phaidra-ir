@@ -1,117 +1,110 @@
 <template>
   <v-app>
     <v-container fluid>
+      <quicklinks :showquicklinks="quicklinksenabled"></quicklinks>
       <v-row no-gutters>
-        <v-col>
+        <v-col cols="12" md="10" offset-md="1">
 
-          <quicklinks :showquicklinks="quicklinksenabled"></quicklinks>
+          <v-row justify="end">
+            <icon v-if="signedin" class="personicon mr-2 univie-grey" name="material-social-person" width="24px" height="24px"></icon>
+            <span v-if="signedin" class="subheading displayname univie-grey">{{ user.firstname }} {{ user.lastname }}</span>
+
+            <v-menu bottom transition="slide-y-transition" class="v-align-top">
+              <template v-slot:activator="{ on }">
+                <v-btn text v-on="on" class="top-margin-lang">
+                  <span class="grey--text text--darken-1">{{$i18n.locale}}</span>
+                  <icon name="univie-sprache" class="lang-icon grey--text text--darken-1"></icon>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item @click="$i18n.locale='eng'">
+                  <v-list-item-title>English</v-list-item-title>
+                </v-list-item>
+                <v-list-item @click="$i18n.locale='deu'">
+                  <v-list-item-title>Deutsch</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
+            <a id="quicklinks-button" class="ph-button hidden-sm-and-down" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
+          </v-row>
 
           <v-row no-gutters>
-            <v-col cols="12" md="10" offset-md="1" class="header">
 
-              <v-row no-gutters>
-                <v-col class="text-left" cols="3" >
-                  <router-link :to="'/'">
-                    <img src="./assets/Uni_Logo_2016.png" class="logo" alt="logo" />
-                  </router-link>
-                </v-col>
+            <v-col class="text-left mt-4" md="3" cols="9">
+              <router-link :to="'/'">
+                <img src="./assets/Uni_Logo_2016.png" class="logo" alt="logo" />
+              </router-link>
+            </v-col>
 
-                <v-col cols="9">
-
-                  <v-row justify="end">
-                    <icon v-if="signedin" class="personicon mr-2 univie-grey" name="material-social-person" width="24px" height="24px"></icon>
-                    <span v-if="signedin" class="subheading displayname univie-grey">{{ user.firstname }} {{ user.lastname }}</span>
-
-                    <v-menu bottom transition="slide-y-transition" class="v-align-top">
-                      <template v-slot:activator="{ on }">
-                        <v-btn text v-on="on" class="top-margin-lang">
-                          <span class="grey--text text--darken-1">{{$i18n.locale}}</span>
-                          <icon name="univie-sprache" class="lang-icon grey--text text--darken-1"></icon>
-                        </v-btn>
-                      </template>
-                      <v-list>
-                        <v-list-item @click="$i18n.locale='eng'">
-                          <v-list-item-title>English</v-list-item-title>
-                        </v-list-item>
-                        <v-list-item @click="$i18n.locale='deu'">
-                          <v-list-item-title>Deutsch</v-list-item-title>
-                        </v-list-item>
-                      </v-list>
-                    </v-menu>
-
-                    <a id="quicklinks-button" class="ph-button" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
-
-                  </v-row>
-
-                  <v-row>
-                    <v-col class="text-left" cols="10" offset="1" v-if="config.title">
-                      <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
-                      <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
-                    </v-col>
-                  </v-row>
-
-                  <v-row>
-
-                    <v-toolbar flat color="white" dense>
-                      <client-only placeholder="loading" placeholder-tag="span">
-                        <v-app-bar-nav-icon class="hidden-md-and-up">
-                          <v-menu offset-y>
-                            <template v-slot:activator="{ on }">
-                              <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
-                            </template>
-                            <v-list>
-                              <v-list-item @click="$router.push('about')"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
-                              <v-list-item @click="$router.push('policy')"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
-                              <v-list-item @click="$router.push('contact')"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
-                              <v-list-item @click="$router.push('search')"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
-                              <v-list-item v-if="signedin" @click="$router.push('submit')"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
-                              <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push('admin')"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
-                              <v-list-item v-if="!signedin && config.enablelogin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
-                              <v-list-item v-if="signedin" @click="logout()"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
-                            </v-list>
-                          </v-menu>
-                        </v-app-bar-nav-icon>
-                      </client-only>
-                      <v-spacer></v-spacer>
-                      <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/about' }">{{ $t('ABOUT_LINK', { name: config.title })}}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/policy' }">{{ $t("Policy") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/contact' }">{{ $t("Contact") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" :to="'/submit'">{{ $t("Submit") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin && (user.username === config.iraccount)" :to="'/admin'">{{ $t("Admin") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="!signedin" :to="'/login'">{{ $t("Login") }}</router-link>
-                        </v-hover>
-                        <v-hover v-slot:default="{ hover }">
-                          <a class="flat dark ph-button grey" v-if="signedin" @click="logout()" >{{ $t("Logout") }}</a>
-                        </v-hover>
-                      </v-toolbar-items>
-                    </v-toolbar>
-
-                  </v-row>
-
-                </v-col>
-              </v-row>
-
+            <v-col md="9" cols="3" :align-self="'center'">
+              <v-app-bar-nav-icon class="hidden-md-and-up">
+                <v-menu offset-y>
+                  <template v-slot:activator="{ on }">
+                    <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item @click="$router.push({ path: '/info/about' })"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
+                    <v-list-item @click="$router.push({ path: '/info/policy' })"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
+                    <v-list-item @click="$router.push({ path: '/info/contact' })"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
+                    <v-list-item @click="$router.push({ path: '/search' })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
+                    <v-list-item v-if="signedin" @click="$router.push({ path: '/submit' })"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
+                    <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push({ path: '/admin' })"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
+                    <v-list-item v-if="!signedin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
+                    <v-list-item v-if="signedin" @click="logout()"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-app-bar-nav-icon>
+              <span class="text-left hidden-sm-and-down" v-if="config.title">
+                <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
+                <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
+              </span>
             </v-col>
           </v-row>
 
+          <v-row no-gutters class="hidden-md-and-up">
+            <span class="text-left ml-3 mt-4" v-if="config.title">
+              <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
+              <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
+            </span>
+          </v-row>
+          <v-row no-gutters class="hidden-sm-and-down header">
+
+            <v-toolbar flat color="white" dense>
+              <v-spacer></v-spacer>
+              <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/about' }">{{ $t('ABOUT_LINK', { name: config.title })}}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/policy' }">{{ $t("Policy") }}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/contact' }">{{ $t("Contact") }}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" :to="{ path: '/search' }">{{ $t("Submit") }}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin && (user.username === config.iraccount)" :to="{ path: '/admin' }">{{ $t("Admin") }}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="!signedin" :to="{ path: '/login' }">{{ $t("Login") }}</router-link>
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <a class="flat dark ph-button grey" v-if="signedin" @click="logout()" >{{ $t("Logout") }}</a>
+                </v-hover>
+              </v-toolbar-items>
+            </v-toolbar>
+
+          </v-row>
+
           <v-row>
-            <v-col cols="12" md="10" offset-md="1" class="content">
-              <p-breadcrumbs :items="breadcrumbs"></p-breadcrumbs>
+            <v-col cols="12" class="content">
+              <p-breadcrumbs :items="breadcrumbs" class="ml-1"></p-breadcrumbs>
 
               <v-row justify="center" v-for="(alert, i) in alerts" :key="i">
                 <v-col cols="12">
@@ -171,7 +164,6 @@ import QuicklinksFooter from '@/components/QuicklinksFooter'
 import '@/compiled-icons/material-social-person'
 import '@/compiled-icons/material-navigation-menu'
 import '@/compiled-icons/univie-sprache'
-import ClientOnly from 'vue-client-only'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
 
@@ -180,8 +172,7 @@ export default {
   mixins: [ context, config ],
   components: {
     Quicklinks,
-    QuicklinksFooter,
-    ClientOnly
+    QuicklinksFooter
   },
   data () {
     return {
@@ -355,8 +346,8 @@ a {
 }
 
 .header {
-  -webkit-box-shadow: 48px 0 0 0 white, -48px 0 0 0 white, 0 8px 40px -6px rgba(70, 70, 70, 0.4);
-  box-shadow: 48px 0 0 0 white, -48px 0 0 0 white, 0 8px 40px -6px rgba(70, 70, 70, 0.4);
+  -webkit-box-shadow: 48px 0 0 0 white, -48px 0 0 0 white, 0 30px 30px -16px rgba(70, 70, 70, 0.3);
+  box-shadow: 48px 0 0 0 white, -48px 0 0 0 white, 0 30px 30px -16px rgba(70, 70, 70, 0.3);
   background-color: white;
   z-index: 1;
 }

@@ -4,7 +4,7 @@
       <v-row :key="'doc'+i">
         <v-col :cols="12">
           <v-row :key="'prev'+doc.pid">
-            <v-col cols="2" class="preview-maxwidth">
+            <v-col cols="2" class="preview-maxwidth hidden-sm-and-down">
               <p-img :src="'https://' + config.phaidrabaseurl + '/preview/' + doc.pid + '///120'" class="elevation-1 mt-2">
                 <div class="fill-height ma-0" slot="placeholder" align="center" justify="center">
                   <v-progress-circular indeterminate color="grey lighten-5"></v-progress-circular>

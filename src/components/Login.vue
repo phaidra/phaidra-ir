@@ -2,7 +2,7 @@
 
   <v-container class="mt-5" >
     <v-row>
-      <v-col cols="4" offset="4">
+      <v-col cols="12" md="4" offset-md="4">
         <v-form v-model="valid">
           <v-card>
             <v-card-text>
