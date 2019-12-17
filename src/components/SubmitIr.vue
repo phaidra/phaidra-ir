@@ -1375,7 +1375,11 @@ export default {
       var newField = arrays.duplicate(arr, f)
       if (newField) {
         newField.id = (new Date()).getTime()
-        newField.role = ''
+        if (this.submitformparam === 'journal-article') {
+          newField.role = 'role:aut'
+        } else {
+          newField.role = ''
+        }
         newField.name = ''
         newField.firstname = ''
         newField.lastname = ''
