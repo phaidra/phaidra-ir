@@ -88,7 +88,7 @@
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" :to="{ path: '/search' }">{{ $t("Submit") }}</router-link>
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" :to="{ path: '/submit' }">{{ $t("Submit") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin && (user.username === config.iraccount)" :to="{ path: '/admin' }">{{ $t("Admin") }}</router-link>
