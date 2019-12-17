@@ -1522,7 +1522,7 @@ export default {
     next()
   },
   beforeRouteLeave: async function (to, from, next) {
-    if (this.step > 1) {
+    if ((this.step > 1) && (to.name === 'adminsubmit')) {
       this.step = this.step - 1
       this.$vuetify.goTo(1)
       next(false)
