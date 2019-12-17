@@ -64,7 +64,7 @@
             </v-col>
           </v-row>
 
-          <v-row no-gutters class="hidden-md-and-up">
+          <v-row no-gutters class="hidden-md-and-up header pb-1">
             <span class="text-left ml-3 mt-4" v-if="config.title">
               <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
               <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
