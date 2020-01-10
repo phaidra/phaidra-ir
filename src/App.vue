@@ -157,6 +157,7 @@
 <script>
 import Vue from 'vue'
 import '@/assets/css/material-icons.css'
+import PBreadcrumbs from '@/components/PBreadcrumbs'
 import Quicklinks from '@/components/Quicklinks'
 import QuicklinksFooter from '@/components/QuicklinksFooter'
 import '@/compiled-icons/material-social-person'
@@ -172,7 +173,8 @@ export default {
   components: {
     Quicklinks,
     QuicklinksFooter,
-    ClientOnly
+    ClientOnly,
+    PBreadcrumbs
   },
   data () {
     return {
