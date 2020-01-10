@@ -22,7 +22,8 @@ export function createStore () {
       user: {},
       groups: [],
       breadcrumbs: [],
-      pagetitle: null
+      pagetitle: null,
+      skipsubmitrouteleavehook: false
     }),
     modules: {
       vocabulary

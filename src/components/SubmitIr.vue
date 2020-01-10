@@ -830,12 +830,14 @@ export default {
       }
     },
     showSubmitWarning: function () {
-      for (let s of this.form.sections) {
-        for (let f of s.fields) {
-          if (f.predicate === 'oaire:version') {
-            if (f.value === 'https://pid.phaidra.org/vocabulary/PMR8-3C8D') {
-              if (this.rightsCheckData.publisher.pdfarchiving === 'cannot') {
-                return true
+      if (this.rightsCheckData) {
+        for (let s of this.form.sections) {
+          for (let f of s.fields) {
+            if (f.predicate === 'oaire:version') {
+              if (f.value === 'https://pid.phaidra.org/vocabulary/PMR8-3C8D') {
+                if (this.rightsCheckData.publisher.pdfarchiving === 'cannot') {
+                  return true
+                }
               }
             }
           }
@@ -2113,6 +2115,7 @@ export default {
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
+      vm.$store.commit('setSkipsubmitrouteleavehook', false)
       await vm.checkAllowSubmit()
       // vm.submitformLoading = true
       // setTimeout(function () { vm.submitformLoading = false }, 500)
@@ -2120,6 +2123,7 @@ export default {
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
+    this.$store.commit('setSkipsubmitrouteleavehook', false)
     await this.checkAllowSubmit()
     // this.submitformLoading = true
     // setTimeout(function () { this.submitformLoading = false }, 500)
@@ -2127,7 +2131,7 @@ export default {
     next()
   },
   beforeRouteLeave: async function (to, from, next) {
-    if ((this.step > 1) && (to.name === 'submit')) {
+    if ((this.step > 1) && (to.name === 'submit') && (!this.$store.state.skipsubmitrouteleavehook)) {
       this.step = this.step - 1
       this.$vuetify.goTo(1)
       next(false)

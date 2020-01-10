@@ -198,6 +198,9 @@ export default {
     Vue.set(state.user, 'org_units_l1', logindata.org_units_l1)
     Vue.set(state.user, 'org_units_l2', logindata.org_units_l2)
   },
+  setSkipsubmitrouteleavehook (state, value) {
+    state.skipsubmitrouteleavehook = value
+  },
   clearUser (state) {
     state.user = {}
   },
