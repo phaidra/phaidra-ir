@@ -10,7 +10,7 @@
     </div>
   </v-container>
 
-  <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear>
+  <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" alt-labels>
     <v-stepper-header>
       <v-stepper-step :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
       <v-divider></v-divider>
@@ -146,7 +146,7 @@
             <v-col cols="4">
               <v-text-field :error-messages="doiImportErrors" filled v-model="doiImportInput" label="DOI" :placeholder="$t('please enter')"/>
             </v-col>
-            <v-col cols="2" class="ml-4 mt-2">
+            <v-col cols="3" class="ml-4 mt-2">
               <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="importDOI()">{{ $t('Import') }}</v-btn>
               <v-btn :loading="loading" :disabled="loading" class="mx-2" dark color="grey" @click="resetDOIImport()">{{ $t('Reset') }}</v-btn>
             </v-col>
@@ -374,7 +374,7 @@
             <span v-for="(error, i) of validationErrors" :key="'verr'+i">{{ error }}</span>
           </v-alert>
           <v-row>
-            <v-col cols="11" offset="1">
+            <v-col cols="10" offset="1">
               <template v-for="(f) in s.fields">
                 <v-row no-gutters :key="f.id">
 
@@ -438,103 +438,81 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-series'">
-                    <v-col cols="10">
-                      <p-i-series
-                        v-bind.sync="f"
-                        v-on:input-select-journal="selectJournal(s.fields, f, $event)"
-                        v-on:input-title="f.title=$event"
-                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
-                        v-on:input-volume="f.volume=$event"
-                        v-on:input-issue="f.issue=$event"
-                        v-on:input-issued="f.issued=$event"
-                        v-on:input-issn="f.issn=$event"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-series>
-                    </v-col>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-citation'">
-                    <v-col cols="10">
-                      <p-i-citation
-                        v-bind.sync="f"
-                        v-on:input-citation-type="setSelected(f, 'type', $event)"
-                        v-on:input-citation="f.citation=$event"
-                        v-on:input-citation-language="setSelected(f, 'citationLanguage', $event)"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-citation>
-                    </v-col>
+                    <p-i-series
+                      v-bind.sync="f"
+                      v-on:input-select-journal="selectJournal(s.fields, f, $event)"
+                      v-on:input-title="f.title=$event"
+                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                      v-on:input-volume="f.volume=$event"
+                      v-on:input-issue="f.issue=$event"
+                      v-on:input-issued="f.issued=$event"
+                      v-on:input-issn="f.issn=$event"
+                      v-on:input-identifier="f.identifier=$event"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      class="my-2"
+                    ></p-i-series>
                   </template>
 
                   <template v-else-if="f.component === 'p-bf-publication'">
-                    <v-col cols="10">
-                      <p-i-bf-publication
-                        v-bind.sync="f"
-                        v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
-                        v-on:input-publisher-name="f.publisherName=$event"
-                        v-on:change-type="f.publisherType = $event"
-                        v-on:input-publisher-select="publisherSelectInput(f, $event)"
-                        v-on:input-publishing-place="f.publishingPlace=$event"
-                        v-on:input-publishing-date="f.publishingDate=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-bf-publication>
-                    </v-col>
+                    <p-i-bf-publication
+                      v-bind.sync="f"
+                      v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
+                      v-on:input-publisher-name="f.publisherName=$event"
+                      v-on:change-type="f.publisherType = $event"
+                      v-on:input-publisher-select="publisherSelectInput(f, $event)"
+                      v-on:input-publishing-place="f.publishingPlace=$event"
+                      v-on:input-publishing-date="f.publishingDate=$event"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      class="my-2"
+                    ></p-i-bf-publication>
                   </template>
 
                   <template v-else-if="f.component === 'p-contained-in'">
-                    <v-col cols="10">
-                      <p-i-contained-in
-                        v-bind.sync="f"
-                        v-on:input-title="f.title=$event"
-                        v-on:input-subtitle="f.subtitle=$event"
-                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
-                        v-on:input-role="containedInRoleInput(f, $event)"
-                        v-on:input-series-title="f.seriesTitle=$event"
-                        v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
-                        v-on:input-series-volume="f.seriesVolume=$event"
-                        v-on:input-series-issue="f.seriesIssue=$event"
-                        v-on:input-series-issued="f.seriesIssued=$event"
-                        v-on:input-series-issn="f.seriesIssn=$event"
-                        v-on:input-series-identifier="f.seriesIdentifier=$event"
-                        v-on:add-role="addContainedInRole(f.roles, $event)"
-                        v-on:remove-role="removeContainedInRole(f.roles, $event)"
-                        v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
-                        v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
-                      ></p-i-contained-in>
-                    </v-col>
+                    <p-i-contained-in
+                      v-bind.sync="f"
+                      v-on:input-title="f.title=$event"
+                      v-on:input-subtitle="f.subtitle=$event"
+                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                      v-on:input-role="containedInRoleInput(f, $event)"
+                      v-on:input-series-title="f.seriesTitle=$event"
+                      v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
+                      v-on:input-series-volume="f.seriesVolume=$event"
+                      v-on:input-series-issue="f.seriesIssue=$event"
+                      v-on:input-series-issued="f.seriesIssued=$event"
+                      v-on:input-series-issn="f.seriesIssn=$event"
+                      v-on:input-series-identifier="f.seriesIdentifier=$event"
+                      v-on:add-role="addContainedInRole(f.roles, $event)"
+                      v-on:remove-role="removeContainedInRole(f.roles, $event)"
+                      v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
+                      v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                    ></p-i-contained-in>
                   </template>
 
                   <template v-else-if="f.component === 'p-entity-extended'">
-                    <v-col cols="10" v-show="f.role !== 'role:uploader'">
-                      <p-i-entity-extended
-                        v-bind.sync="f"
-                        v-on:change-type="f.type = $event"
-                        v-on:input-firstname="f.firstname = $event"
-                        v-on:input-lastname="f.lastname = $event"
-                        v-on:input-name="f.name = $event"
-                        v-on:input-identifier="f.identifierText = $event"
-                        v-on:change-affiliation-type="f.affiliationType = $event"
-                        v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
-                        v-on:input-affiliation-other="f.affiliationText = $event"
-                        v-on:change-organization-type="f.organizationType = $event"
-                        v-on:input-organization-select="organizationSelectInput(f, $event)"
-                        v-on:input-organization-other="f.organizationText = $event"
-                        v-on:input-role="roleInput(f, $event)"
-                        v-on:add-clear="addEntityClear(s.fields, f)"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        v-on:up="sortFieldUp(s.fields, f)"
-                        v-on:down="sortFieldDown(s.fields, f)"
-                        class="my-2"
-                      ></p-i-entity-extended>
-                    </v-col>
+                    <p-i-entity-extended
+                      v-show="f.role !== 'role:uploader'"
+                      v-bind.sync="f"
+                      v-on:change-type="f.type = $event"
+                      v-on:input-firstname="f.firstname = $event"
+                      v-on:input-lastname="f.lastname = $event"
+                      v-on:input-name="f.name = $event"
+                      v-on:input-identifier="f.identifierText = $event"
+                      v-on:change-affiliation-type="f.affiliationType = $event"
+                      v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
+                      v-on:input-affiliation-other="f.affiliationText = $event"
+                      v-on:change-organization-type="f.organizationType = $event"
+                      v-on:input-organization-select="organizationSelectInput(f, $event)"
+                      v-on:input-organization-other="f.organizationText = $event"
+                      v-on:input-role="roleInput(f, $event)"
+                      v-on:add-clear="addEntityClear(s.fields, f)"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      v-on:up="sortFieldUp(s.fields, f)"
+                      v-on:down="sortFieldDown(s.fields, f)"
+                      class="my-2"
+                    ></p-i-entity-extended>
                   </template>
 
                   <template v-else-if="f.component === 'p-subject-gnd'">
@@ -1742,7 +1720,9 @@ export default {
       }
       smf.push(issued)
 
-      smf.push(fields.getField('language'))
+      let lmf = fields.getField('language')
+      lmf.multiplicable = false
+      smf.push(lmf)
 
       let otf = fields.getField('object-type')
       otf.vocabulary = this.irObjectTypeVocabulary

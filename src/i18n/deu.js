@@ -673,7 +673,7 @@ export default {
   'Access to full texts and materials is restricted to persons or groups of persons affiliated with the University of Vienna that we can specify as per your instructions. Others may request a copy via e-mail.': 'Der Zugang zu den Volltexten bzw. Materialien ist auf bestimmte Personen(gruppen) der Universität Wien beschränkt, die Sie uns bekannt geben können. Andere InteressentInnen können via E-Mail eine Kopie anfordern.',
   'Access to full texts and materials is restricted to you.': 'Der Zugang zu den Volltexten bzw. Materialien ist nur Ihnen möglich.',
   'Mandatory fields': 'Pflichteingaben',
-  'Optional fields': 'Optionale Angaben',
+  'Optional fields': 'Opt. Angaben',
   'Submit': 'Publizieren',
   'PUBLISHER_HERAUSGEBERIN': 'HerausgeberIn',
   'PUBLISHER_VERLAG': 'Verlag',

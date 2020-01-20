@@ -1,8 +1,8 @@
 <template>
-    <v-row>
+    <v-row no-gutters>
       <v-col md="9" cols="12" class="border-right pr-2">
-        <v-row>
-          <v-col md="5" cols="9">
+        <v-row align="start">
+          <v-col md="6" cols="9">
             <autocomplete
               class="ml-2"
               placeholder="Search..."
@@ -13,11 +13,11 @@
               :classes="{ input: 'form-control', wrapper: 'input-wrapper'}"
               :onSelect="handleSelect"
               solo
+              :messages="[ total + ' ' + $t('objects') ]"
             ></autocomplete>
           </v-col>
-          <v-col cols="3" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
           <v-spacer></v-spacer>
-          <v-col md="4" cols="12" align-self="center">
+          <v-col md="6" cols="12">
             <search-toolbar
               :setSort="setSort"
               :sortIsActive="sortIsActive"

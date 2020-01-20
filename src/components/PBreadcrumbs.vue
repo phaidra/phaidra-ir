@@ -1,6 +1,6 @@
 <template>
-  <v-row>
-    <v-col >
+  <v-row no-gutters>
+    <v-col>
       <span class="youarehere">{{ $t('You are here') }}:</span>
       <template v-for="(item, index) in items">
         <icon :key="'icon'+index" left dark name="univie-right" color="#a4a4a4" width="8px" height="8px" class="mx-1"></icon>

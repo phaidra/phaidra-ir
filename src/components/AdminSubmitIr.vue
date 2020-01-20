@@ -202,54 +202,35 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-series'">
-                    <v-col cols="10">
-                      <p-i-series
-                        v-bind.sync="f"
-                        v-on:input-select-journal="selectJournal(s.fields, f, $event)"
-                        v-on:input-title="f.title=$event"
-                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
-                        v-on:input-volume="f.volume=$event"
-                        v-on:input-issue="f.issue=$event"
-                        v-on:input-issued="f.issued=$event"
-                        v-on:input-issn="f.issn=$event"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-series>
-                    </v-col>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-citation'">
-                    <v-col cols="10">
-                      <p-i-citation
-                        v-bind.sync="f"
-                        v-on:input-citation-type="setSelected(f, 'type', $event)"
-                        v-on:input-citation="f.citation=$event"
-                        v-on:input-citation-language="setSelected(f, 'citationLanguage', $event)"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-citation>
-                    </v-col>
+                    <p-i-series
+                      v-bind.sync="f"
+                      v-on:input-select-journal="selectJournal(s.fields, f, $event)"
+                      v-on:input-title="f.title=$event"
+                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                      v-on:input-volume="f.volume=$event"
+                      v-on:input-issue="f.issue=$event"
+                      v-on:input-issued="f.issued=$event"
+                      v-on:input-issn="f.issn=$event"
+                      v-on:input-identifier="f.identifier=$event"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      class="my-2"
+                    ></p-i-series>
                   </template>
 
                   <template v-else-if="f.component === 'p-bf-publication'">
-                    <v-col cols="10">
-                      <p-i-bf-publication
-                        v-bind.sync="f"
-                        v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
-                        v-on:input-publisher-name="f.publisherName=$event"
-                        v-on:change-type="f.publisherType = $event"
-                        v-on:input-publisher-select="publisherSelectInput(f, $event)"
-                        v-on:input-publishing-place="f.publishingPlace=$event"
-                        v-on:input-publishing-date="f.publishingDate=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></p-i-bf-publication>
-                    </v-col>
+                    <p-i-bf-publication
+                      v-bind.sync="f"
+                      v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
+                      v-on:input-publisher-name="f.publisherName=$event"
+                      v-on:change-type="f.publisherType = $event"
+                      v-on:input-publisher-select="publisherSelectInput(f, $event)"
+                      v-on:input-publishing-place="f.publishingPlace=$event"
+                      v-on:input-publishing-date="f.publishingDate=$event"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      class="my-2"
+                    ></p-i-bf-publication>
                   </template>
 
                   <template v-else-if="f.component === 'p-contained-in'">
@@ -274,29 +255,28 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-entity-extended'">
-                    <v-col cols="10" v-show="f.role !== 'role:uploader'">
-                      <p-i-entity-extended
-                        v-bind.sync="f"
-                        v-on:change-type="f.type = $event"
-                        v-on:input-firstname="f.firstname = $event"
-                        v-on:input-lastname="f.lastname = $event"
-                        v-on:input-name="f.name = $event"
-                        v-on:input-identifier="f.identifierText = $event"
-                        v-on:change-affiliation-type="f.affiliationType = $event"
-                        v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
-                        v-on:input-affiliation-other="f.affiliationText = $event"
-                        v-on:change-organization-type="f.organizationType = $event"
-                        v-on:input-organization-select="organizationSelectInput(f, $event)"
-                        v-on:input-organization-other="f.organizationText = $event"
-                        v-on:input-role="roleInput(f, $event)"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:add-clear="addEntityClear(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        v-on:up="sortFieldUp(s.fields, f)"
-                        v-on:down="sortFieldDown(s.fields, f)"
-                        class="my-2"
-                      ></p-i-entity-extended>
-                    </v-col>
+                    <p-i-entity-extended
+                    v-show="f.role !== 'role:uploader'"
+                      v-bind.sync="f"
+                      v-on:change-type="f.type = $event"
+                      v-on:input-firstname="f.firstname = $event"
+                      v-on:input-lastname="f.lastname = $event"
+                      v-on:input-name="f.name = $event"
+                      v-on:input-identifier="f.identifierText = $event"
+                      v-on:change-affiliation-type="f.affiliationType = $event"
+                      v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
+                      v-on:input-affiliation-other="f.affiliationText = $event"
+                      v-on:change-organization-type="f.organizationType = $event"
+                      v-on:input-organization-select="organizationSelectInput(f, $event)"
+                      v-on:input-organization-other="f.organizationText = $event"
+                      v-on:input-role="roleInput(f, $event)"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:add-clear="addEntityClear(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      v-on:up="sortFieldUp(s.fields, f)"
+                      v-on:down="sortFieldDown(s.fields, f)"
+                      class="my-2"
+                    ></p-i-entity-extended>
                   </template>
 
                   <template v-else-if="f.component === 'p-subject-gnd'">
@@ -340,17 +320,15 @@
                   </template>
 
                   <template v-else-if="f.component === 'p-project'">
-                    <v-col cols="10">
-                      <submit-ir-funding-field
-                        v-bind.sync="f"
-                        v-on:select-funder="setFunder(f, $event)"
-                        v-on:input-funder-name="f.funderName=$event"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        class="my-2"
-                      ></submit-ir-funding-field>
-                    </v-col>
+                    <submit-ir-funding-field
+                      v-bind.sync="f"
+                      v-on:select-funder="setFunder(f, $event)"
+                      v-on:input-funder-name="f.funderName=$event"
+                      v-on:input-identifier="f.identifier=$event"
+                      v-on:add="addField(s.fields, f)"
+                      v-on:remove="removeField(s.fields, f)"
+                      class="my-2"
+                    ></submit-ir-funding-field>
                   </template>
 
                   <template v-else-if="f.component === 'p-file'">
@@ -1187,7 +1165,9 @@ export default {
       }
       smf.push(issued)
 
-      smf.push(fields.getField('language'))
+      let lmf = fields.getField('language')
+      lmf.multiplicable = false
+      smf.push(lmf)
 
       let otf = fields.getField('object-type')
       otf.vocabulary = this.irObjectTypeVocabulary

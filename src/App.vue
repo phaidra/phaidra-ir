@@ -3,7 +3,7 @@
     <v-container fluid>
       <quicklinks :showquicklinks="quicklinksenabled"></quicklinks>
       <v-row no-gutters>
-        <v-col cols="12" md="10" offset-md="1">
+        <v-col cols="12" md="8" offset-md="2">
 
           <v-row justify="end">
             <icon v-if="signedin" class="personicon mr-2 univie-grey" name="material-social-person" width="24px" height="24px"></icon>
@@ -104,9 +104,9 @@
 
           </v-row>
 
-          <v-row>
-            <v-col cols="12" class="content">
-              <p-breadcrumbs :items="breadcrumbs" class="ml-1"></p-breadcrumbs>
+          <v-row no-gutters class="mt-2">
+            <v-col cols="12">
+              <p-breadcrumbs :items="breadcrumbs" class="mt-2"></p-breadcrumbs>
 
               <v-row justify="center" v-for="(alert, i) in alerts" :key="i">
                 <v-col cols="12">
@@ -124,22 +124,28 @@
                   </v-alert>
                 </v-col>
               </v-row>
+            </v-col>
+          </v-row>
 
+          <v-row no-gutters>
+            <v-col cols="12" class="content">
               <transition name="fade" mode="out-in">
                 <keep-alive>
                   <router-view class="mb-3"></router-view>
                 </keep-alive>
               </transition>
-
             </v-col>
           </v-row>
 
-          <v-row>
-            <v-col cols="12">
-              <quicklinks-footer></quicklinks-footer>
-            </v-col>
-          </v-row>
+        </v-col>
+      </v-row>
 
+      <v-row>
+        <quicklinks-footer></quicklinks-footer>
+      </v-row>
+
+      <v-row>
+        <v-col cols="12" md="8" offset-md="2">
           <v-row>
             <v-col class="text-left" >
               <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
@@ -150,6 +156,7 @@
           </v-row>
         </v-col>
       </v-row>
+
     </v-container>
   </v-app>
 </template>
