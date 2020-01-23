@@ -2241,8 +2241,8 @@ export default {
 }
 
 .v-stepper__content {
-  transition: none;
-  -webkit-transition: none;
+  transition: none !important;
+  -webkit-transition: none !important;
 }
 
 .v-stepper__step--editable {
