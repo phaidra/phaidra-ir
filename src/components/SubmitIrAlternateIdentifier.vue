@@ -18,15 +18,15 @@
         <v-divider></v-divider>
         <v-card-text class="mt-4">
           <v-row>
-            <v-col cols="12" :md="funderIdentifier === 'other' ? 4 : 6">
+            <v-col cols="12" md="5" v-if="showType">
               <v-autocomplete
-                :value="getTerm('irfunders', funderIdentifier)"
-                v-on:input="$emit('select-funder', $event)"
-                :items="vocabularies['irfunders'].terms"
+                v-on:input="$emit('input-identifier-type', $event)"
+                :label="$t('Type of identifier')"
+                :items="vocabularies[vocabulary].terms"
                 :item-value="'@id'"
+                :value="getTerm(vocabulary, type)"
                 :filter="autocompleteFilter"
-                hide-no-data
-                :label="$t('Funder')"
+                :disabled="disabletype"
                 :filled="inputStyle==='filled'"
                 :outlined="inputStyle==='outlined'"
                 return-object
@@ -34,32 +34,25 @@
               >
                 <template slot="item" slot-scope="{ item }">
                   <v-list-item-content two-line>
-                    <v-list-item-title  v-html="`${getLocalizedTermLabel('irfunders', item['@id'])}`"></v-list-item-title>
+                    <v-list-item-title  v-html="`${getLocalizedTermLabel(vocabulary, item['@id'])}`"></v-list-item-title>
                     <v-list-item-subtitle v-if="showIds" v-html="`${item['@id']}`"></v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
                 <template slot="selection" slot-scope="{ item }">
                   <v-list-item-content>
-                    <v-list-item-title v-html="`${getLocalizedTermLabel('irfunders', item['@id'])}`"></v-list-item-title>
+                    <v-list-item-title v-html="`${getLocalizedTermLabel(vocabulary, item['@id'])}`"></v-list-item-title>
                   </v-list-item-content>
                 </template>
               </v-autocomplete>
             </v-col>
-            <v-col cols="12" md="4" v-if="funderIdentifier === 'other'">
+            <v-col cols="12" :md="showType ? 7 : 12">
               <v-text-field
-                :value="funderName"
-                :label="$t('Funder name')"
-                v-on:blur="$emit('input-funder-name',$event.target.value)"
-                :filled="inputStyle==='filled'"
-                :outlined="inputStyle==='outlined'"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" :md="funderIdentifier === 'other' ? 4 : 6">
-              <v-text-field
-                :value="identifier"
-                :label="$t('Project identifier')"
-                v-on:blur="$emit('input-identifier',$event.target.value)"
-                homepage
+                :value="value"
+                v-on:input="$emit('input-identifier', $event)"
+                :label="$t(identifierLabel ? identifierLabel : 'Identifier')"
+                :placeholder="placeholder(type)"
+                :required="required"
+                :rules="[validationrules[getIdentifierRuleName(type)]]"
                 :filled="inputStyle==='filled'"
                 :outlined="inputStyle==='outlined'"
               ></v-text-field>
@@ -74,48 +67,56 @@
 <script>
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { fieldproperties } from 'phaidra-vue-components/src/mixins/fieldproperties'
+import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 
 export default {
-  name: 'submit-ir-funding-field',
-  mixins: [vocabulary, fieldproperties],
+  name: 'submit-ir-alternate-identifier',
+  mixins: [vocabulary, fieldproperties, validationrules],
   props: {
-    type: {
-      type: String
+    value: {
+      type: String,
+      required: true
     },
     label: {
       type: String
     },
-    name: {
+    type: {
       type: String
     },
-    nameLanguage: {
+    identifierLabel: {
       type: String
     },
-    funderName: {
-      type: String
+    vocabulary: {
+      type: String,
+      default: 'objectidentifiertype'
     },
-    funderNameLanguage: {
-      type: String
+    required: {
+      type: Boolean
     },
-    identifier: {
-      type: String
+    disabletype: {
+      type: Boolean
     },
-    funderIdentifier: {
-      type: String
-    },
-    description: {
-      type: String
-    },
-    descriptionLanguage: {
-      type: String
-    },
-    homepage: {
-      type: String
+    showType: {
+      type: Boolean
     },
     showIds: {
       type: Boolean,
       default: false
     }
+  },
+  methods: {
+    placeholder: function (type) {
+      for (let i of this.vocabularies[this.vocabulary].terms) {
+        if (i['@id'] === type) {
+          return i['skos:example']
+        }
+      }
+    }
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      this.loading = !this.vocabularies[this.vocabulary].loaded
+    })
   }
 }
 </script>

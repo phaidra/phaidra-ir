@@ -1,5 +1,5 @@
 <template>
-
+  <div>
   <v-container v-if="submitformLoading">
     <div class="text-center">
       <v-progress-circular
@@ -12,21 +12,21 @@
 
   <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" alt-labels>
     <v-stepper-header>
-      <v-stepper-step :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 1) && (step < 8)" :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 2) && (step < 8)" :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :editable="(step > 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step v-if="(submitformparam === 'journal-article')" :editable="(step > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
       <v-divider v-if="(submitformparam === 'journal-article')"></v-divider>
-      <v-stepper-step :editable="(step > 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :editable="(step > 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :complete="step > 7" step="7">{{ $t('Submit') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 7" step="7">{{ $t('Submit') }}</v-stepper-step>
       <v-divider></v-divider>
-      <v-stepper-step :complete="step > 8" step="8">{{ $t('Notifications') }}</v-stepper-step>
+      <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 8" step="8">{{ $t('Notifications') }}</v-stepper-step>
     </v-stepper-header>
 
     <v-stepper-items>
@@ -363,7 +363,10 @@
           <v-divider class="mt-5 mb-7"></v-divider>
           <v-row no-gutters justify="space-between">
             <v-btn dark color="grey" @click="step = 3; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-            <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">{{ $t('Continue') }}</v-btn>
+            <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
+              <template v-if="rightsCheckData">{{ $t('Continue') }}</template>
+              <template v-else>{{ $t('Skip') }}</template>
+            </v-btn>
           </v-row>
         </v-container>
       </v-stepper-content>
@@ -375,29 +378,32 @@
           </v-alert>
           <v-row>
             <v-col cols="10" offset="1">
+
+              <template v-if="s.id === 6">
+                <submit-ir-description-keywords
+                  :label="$t('Details zum Artikel')"
+                  :descriptionLabel="$t('Abstract')"
+                  :keywordsLabel="$t('Keywords')"
+                  v-on:input-description="setDescription(s, $event)"
+                  v-on:input-keywords="setKeywords(s, $event)"
+                  :inputStyle="inputStyle"
+                ></submit-ir-description-keywords>
+              </template>
+
               <template v-for="(f) in s.fields">
+
                 <v-row no-gutters :key="f.id">
 
-                  <template v-if="f.component === 'p-text-field'">
+                  <template v-if="(f.component === 'p-text-field') && (f.type !== 'bf:Summary')">
                     <p-i-text-field
                       v-bind.sync="f"
                       v-on:input="f.value=$event"
                       v-on:input-language="setSelected(f, 'language', $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-text-field>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-keyword'">
-                    <p-i-keyword
-                      v-bind.sync="f"
-                      v-on:input="f.value=$event"
-                      v-on:input-language="setSelected(f, 'language', $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      class="my-2"
-                    ></p-i-keyword>
                   </template>
 
                   <template v-if="f.component === 'p-title'">
@@ -410,6 +416,7 @@
                       v-on:remove="removeField(s.fields, f)"
                       v-on:up="sortFieldUp(s.fields, f)"
                       v-on:down="sortFieldDown(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-title>
                   </template>
@@ -421,6 +428,7 @@
                       v-on:input="selectInput(s.fields, f, $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-select>
                   </template>
@@ -433,6 +441,7 @@
                       v-on:input-date-type="setSelected(f, 'type', $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-date-edtf>
                   </template>
@@ -448,8 +457,11 @@
                       v-on:input-issued="f.issued=$event"
                       v-on:input-issn="f.issn=$event"
                       v-on:input-identifier="f.identifier=$event"
+                      v-on:input-page-start="f.pageStart=$event"
+                      v-on:input-page-end="f.pageEnd=$event"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-series>
                   </template>
@@ -465,6 +477,7 @@
                       v-on:input-publishing-date="f.publishingDate=$event"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-bf-publication>
                   </template>
@@ -483,10 +496,13 @@
                       v-on:input-series-issued="f.seriesIssued=$event"
                       v-on:input-series-issn="f.seriesIssn=$event"
                       v-on:input-series-identifier="f.seriesIdentifier=$event"
+                      v-on:input-page-start="f.pageStart=$event"
+                      v-on:input-page-end="f.pageEnd=$event"
                       v-on:add-role="addContainedInRole(f.roles, $event)"
                       v-on:remove-role="removeContainedInRole(f.roles, $event)"
                       v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
                       v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                      :inputStyle="inputStyle"
                     ></p-i-contained-in>
                   </template>
 
@@ -511,6 +527,7 @@
                       v-on:remove="removeField(s.fields, f)"
                       v-on:up="sortFieldUp(s.fields, f)"
                       v-on:down="sortFieldDown(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-entity-extended>
                   </template>
@@ -522,6 +539,7 @@
                       v-on:resolve="updateSubject(f, $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-subject-gnd>
                   </template>
@@ -530,6 +548,7 @@
                     <p-i-vocab-ext-readonly
                       v-bind.sync="f"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                     ></p-i-vocab-ext-readonly>
                   </template>
 
@@ -539,20 +558,22 @@
                       v-on:input-value="f.value=$event"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></p-i-literal>
                   </template>
 
-                  <template v-else-if="f.component === 'p-alternate-identifier'">
-                    <p-i-alternate-identifier
+                  <template v-else-if="(f.component === 'p-alternate-identifier')">
+                    <submit-ir-alternate-identifier
                       v-bind.sync="f"
                       v-on:input-identifier="f.value=$event"
                       v-on:input-identifier-type="setSelected(f, 'type', $event)"
                       v-on:add="addField(s.fields, f)"
                       v-on:add-clear="addIdentifierClear(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
-                    ></p-i-alternate-identifier>
+                    ></submit-ir-alternate-identifier>
                   </template>
 
                   <template v-else-if="f.component === 'p-project'">
@@ -561,9 +582,10 @@
                       v-on:select-funder="setFunder(f, $event)"
                       v-on:input-funder-name="f.funderName=$event"
                       v-on:input-identifier="f.identifier=$event"
-                      v-on:add="addField(s.fields, f)"
+                      v-on:add="addProject(s.fields, f)"
                       v-on:add-clear="addProjectClear(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
+                      :inputStyle="inputStyle"
                       class="my-2"
                     ></submit-ir-funding-field>
                   </template>
@@ -577,6 +599,7 @@
                           v-on:input-mimetype="setSelected(f, 'mimetype', $event)"
                           v-on:add="addField(s.fields, f)"
                           v-on:remove="removeField(s.fields, f)"
+                          :inputStyle="inputStyle"
                           class="my-2"
                         ></p-i-file>
                       </v-row>
@@ -586,7 +609,8 @@
                 </v-row>
 
               </template>
-              <v-row>
+
+              <v-row v-if="license" no-gutters>
                  <v-col cols="12" md="10">
                   <submit-ir-license-info v-if="s.id === 5" :license="license"></submit-ir-license-info>
                  </v-col>
@@ -756,18 +780,29 @@
     </v-stepper-items>
 
   </v-stepper>
+  
+  <v-col cols="1">
+    <v-switch
+      v-model="outlinedSwitch"
+      :label="'Outlined'"
+    ></v-switch>
+  </v-col>
+  </div>
 
 </template>
 
 <script>
 import SubmitIrLicenseInfo from '@/components/SubmitIrLicenseInfo'
 import SubmitIrFundingField from '@/components/SubmitIrFundingField'
+import SubmitIrAlternateIdentifier from '@/components/SubmitIrAlternateIdentifier'
+import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeywords'
 import xmlUtils from 'phaidra-vue-components/src/utils/xml'
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
 import fields from 'phaidra-vue-components/src/utils/fields'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
+import { vocabulary } from 'phaidra-vue-components/src//mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 import qs from 'qs'
 import axios from 'axios'
@@ -775,10 +810,12 @@ var iconv = require('iconv-lite')
 
 export default {
   name: 'submit-ir',
-  mixins: [ context, config, validationrules ],
+  mixins: [ context, config, validationrules, vocabulary ],
   components: {
     SubmitIrLicenseInfo,
-    SubmitIrFundingField
+    SubmitIrFundingField,
+    SubmitIrDescriptionKeywords,
+    SubmitIrAlternateIdentifier
   },
   computed: {
     doiToImport: function () {
@@ -822,6 +859,9 @@ export default {
         }
       }
       return false
+    },
+    inputStyle: function () {
+      return this.outlinedSwitch ? 'outlined' : 'filled'
     }
   },
   data () {
@@ -830,6 +870,7 @@ export default {
         sections: []
       },
       step: 1,
+      maxStep: 0,
       loadedMetadata: [],
       loading: false,
       discardDialog: false,
@@ -870,7 +911,8 @@ export default {
         candobulkupload: null,
         nrdays: null,
         nruploads: null
-      }
+      },
+      outlinedSwitch: false
     }
   },
   watch: {
@@ -879,6 +921,11 @@ export default {
     },
     rightsCheckModel (val) {
       val && val.issn && this.queryRightsCheckJournal(val.issn)
+    },
+    step (val) {
+      if (val > this.maxStep) {
+        this.maxStep = val
+      }
     }
   },
   methods: {
@@ -1379,6 +1426,7 @@ export default {
       if (newField) {
         newField.id = (new Date()).getTime()
         newField.value = ''
+        newField.type = ''
         newField.removable = true
         newField.addOnly = false
         newField.removeOnly = true
@@ -1394,8 +1442,40 @@ export default {
         newField.funderName = ''
       }
     },
+    addProject: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.removable = true
+        newField.identifier = ''
+      }
+    },
     removeField: function (arr, f) {
-      arrays.remove(arr, f)
+      switch (f.component) {
+        case 'p-entity-extended':
+          let nrRoles = 0
+          for (let e of arr) {
+            if (e.component === 'p-entity-extended') {
+              nrRoles++
+            }
+          }
+          // uploader + 1 author => min 2 roles must stay
+          if (nrRoles > 2) {
+            arrays.remove(arr, f)
+          }
+          break
+        default:
+          let nrFields = 0
+          for (let e of arr) {
+            if (e.component === f.component) {
+              nrFields++
+            }
+          }
+          if (nrFields > 1) {
+            arrays.remove(arr, f)
+          }
+          break
+      }
     },
     sortFieldUp: function (arr, f) {
       var i = arr.indexOf(f)
@@ -1637,6 +1717,20 @@ export default {
       }
       this.$emit('form-input-' + f.component, f)
     },
+    setDescription: function (section, value) {
+      for (let f of section.fields) {
+        if ((f.component === 'p-text-field') && (f.type === 'bf:Summary')) {
+          f.value = value
+        }
+      }
+    },
+    setKeywords: function (section, value) {
+      for (let f of section.fields) {
+        if ((f.component === 'p-keyword')) {
+          f.value = value
+        }
+      }
+    },
     resetForm: function (self, doiImportData, importedComponents) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
       self.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
@@ -1685,6 +1779,7 @@ export default {
           role.showIdentifierType = false
           role.identifierType = 'ids:orcid'
           role.identifierLabel = 'ORCID'
+          role.affiliationType = ''
           smf.push(role)
         }
       } else {
@@ -1701,6 +1796,7 @@ export default {
         role.showIdentifierType = false
         role.identifierType = 'ids:orcid'
         role.identifierLabel = 'ORCID'
+        role.affiliationType = ''
         smf.push(role)
       }
 
@@ -1748,6 +1844,15 @@ export default {
         sf.multilingual = false
         sf.hideSeriesIssn = true
         sf.collapseSeries = true
+        sf.hidePages = false
+        if (doiImportData) {
+          if (doiImportData.pageStart) {
+            sf.pageStart = doiImportData.pageStart
+          }
+          if (doiImportData.pageEnd) {
+            sf.pageEnd = doiImportData.pageEnd
+          }
+        }
         smf.push(sf)
       }
 
@@ -1789,19 +1894,21 @@ export default {
 
       let sof = []
 
-      let dof = fields.getField('abstract')
-      dof.multiplicable = false
-      dof.multilingual = false
-      sof.push(dof)
+      // handled by submit-ir-description-keyword component
+      sof.push(fields.getField('abstract'))
+      sof.push(fields.getField('keyword'))
 
+      // handled by submit-ir-funding-field component
       let pof = fields.getField('project')
+      pof.label = 'Funder/Project'
       pof.multiplicable = true
       pof.multiplicableCleared = true
       sof.push(pof)
 
       let aif = fields.getField('alternate-identifier')
+      aif.label = 'Identifier'
       aif.identifierLabel = 'Identifier'
-      aif.vocabulary = 'irobjectidentifiertype'
+      aif.vocabulary = 'irobjectidentifiertypenoisbn'
       aif.multiplicable = true
       aif.addOnly = true
       if (doiImportData && doiImportData.doi) {
@@ -1812,7 +1919,7 @@ export default {
 
       if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
         let isbn = fields.getField('alternate-identifier')
-        isbn.label = 'ISBN'
+        isbn.label = 'Identifier'
         isbn.vocabulary = 'irobjectidentifiertype'
         isbn.type = 'ids:isbn'
         isbn.multiplicable = true
@@ -1820,17 +1927,18 @@ export default {
         sof.push(isbn)
       }
 
-      let kof = fields.getField('keyword')
-      kof.multiplicable = false
-      kof.multilingual = false
-      kof.disableSuggest = true
-      sof.push(kof)
+      if (this.submitformparam === 'book') {
+        let nop = fields.getField('number-of-pages')
+        nop.multiplicable = false
+        sof.push(nop)
+      }
 
       if (this.submitformparam === 'journal-article') {
         let sf = fields.getField('series')
         sf.multilingual = false
         sf.journalSuggest = true
         sf.hideIdentifier = true
+        sf.hidePages = false
         sf.issuedDatePicker = true
         if (doiImportData) {
           if (doiImportData.journalTitle) {
@@ -1845,23 +1953,15 @@ export default {
           if (doiImportData.journalIssue) {
             sf.issue = doiImportData.journalIssue
           }
+          if (doiImportData.pageStart) {
+            sf.pageStart = doiImportData.pageStart
+          }
+          if (doiImportData.pageEnd) {
+            sf.pageEnd = doiImportData.pageEnd
+          }
         }
         sof.push(sf)
       }
-
-      if (this.submitformparam !== 'book') {
-        let ps = fields.getField('page-start')
-        if (doiImportData && doiImportData.pageStart) {
-          ps.value = doiImportData.pageStart
-        }
-        sof.push(ps)
-      }
-
-      let pe = fields.getField('page-end')
-      if (doiImportData && doiImportData.pageEnd) {
-        pe.value = doiImportData.pageEnd
-      }
-      sof.push(pe)
 
       if (this.submitformparam === 'journal-article') {
         let pf = fields.getField('bf-publication')
@@ -1929,11 +2029,15 @@ export default {
                     f.lastnameErrorMessages.push(this.$t('Missing lastname'))
                     this.validationStatus = 'error'
                   }
+                  if (f.affiliationType === '') {
+                    f.affiliationErrorMessages.push(this.$t('Missing affiliation'))
+                    f.affiliationTextErrorMessages.push(this.$t('Missing affiliation'))
+                    this.validationStatus = 'error'
+                  }
                   if (f.affiliationType === 'select') {
-                    if (f.affiliation.length < 1) {
-                      f.affiliationErrorMessages.push(this.$t('Missing affiliation'))
-                      this.validationStatus = 'error'
-                    } else {
+                    if (!f.affiliation || (f.affiliation === '') || (f.affiliation.length < 1)) {
+                      let event = this.getTerm('orgunits', 'https://pid.phaidra.org/univie-org/1MPF-FAME')
+                      this.affiliationSelectInput(f, event)
                       hasLocalAffiliation = true
                     }
                   }
@@ -2076,6 +2180,7 @@ export default {
       self.submitResponse = null
       self.$store.dispatch('loadLanguages', this.$i18n.locale)
       self.step = 1
+      self.maxStep = 0
       self.doiImportInput = null
       self.doiImportData = null
       self.doiImportErrors = []
@@ -2138,5 +2243,10 @@ export default {
 .v-stepper__content {
   transition: none;
   -webkit-transition: none;
+}
+
+.v-stepper__step--editable {
+  border-bottom: 3px solid;
+  border-color: #9e9e9e;
 }
 </style>

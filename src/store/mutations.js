@@ -61,7 +61,7 @@ export default {
       )
     }
     if (transition.to.name === 'submit') {
-      pagetitle = 'Submit'
+      pagetitle = 'Upload'
       state.breadcrumbs.push(
         {
           text: pagetitle,
@@ -70,10 +70,10 @@ export default {
       )
     }
     if (transition.to.name === 'submit-ir') {
-      pagetitle = 'Submit ' + transition.to.params.submitform
+      pagetitle = 'Upload ' + transition.to.params.submitform
       state.breadcrumbs.push(
         {
-          text: 'Submit',
+          text: 'Upload',
           to: '/submit'
         }
       )

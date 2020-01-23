@@ -49,7 +49,7 @@
                       <v-list-item @click="$router.push({ path: '/info/policy' })"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/info/contact' })"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/search' })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
-                      <v-list-item v-if="signedin" @click="$router.push({ path: '/submit' })"><v-list-item-title>{{ $t("Submit") }}</v-list-item-title></v-list-item>
+                      <v-list-item v-if="signedin" @click="$router.push({ path: '/submit' })"><v-list-item-title>{{ $t("Upload") }}</v-list-item-title></v-list-item>
                       <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push({ path: '/admin' })"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
                       <v-list-item v-if="!signedin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
                       <v-list-item v-if="signedin" @click="logout()"><v-list-item-title>{{ $t("Logout") }}</v-list-item-title></v-list-item>
@@ -67,7 +67,7 @@
           <v-row no-gutters class="hidden-md-and-up header pb-1">
             <span class="text-left ml-3 mt-4" v-if="config.title">
               <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
-              <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
+              <router-link class="name primary--text ma-3" :to="'/'">{{ config.title }}</router-link>
             </span>
           </v-row>
           <v-row no-gutters class="hidden-sm-and-down header">
@@ -88,7 +88,7 @@
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <a :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" @click="goToSubmit()">{{ $t("Submit") }}</a>
+                  <a :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" @click="goToSubmit()">{{ $t("Upload") }}</a>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin && (user.username === config.iraccount)" :to="{ path: '/admin' }">{{ $t("Admin") }}</router-link>
@@ -363,6 +363,14 @@ a {
   box-shadow: 48px 0 0 0 white, -48px 0 0 0 white, 0 30px 30px -16px rgba(70, 70, 70, 0.3);
   background-color: white;
   z-index: 1;
+}
+
+.name {
+  font-size: 18.6667px;
+  font-weight: 400;
+}
+.name:hover {
+  text-decoration: underline;
 }
 
 address {

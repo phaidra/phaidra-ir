@@ -547,7 +547,7 @@ export default {
   'bf:ParallelTitle': 'Parallel titel',
 
   'bf:Note': 'Beschreibung',
-  'bf:Summary': 'Abstrakt',
+  'bf:Summary': 'Abstract',
   'phaidra:Remark': 'Anmerkung',
   'phaidra:ConditionNote': 'Zustand',
   'phaidra:ReproductionNote': 'Reproduction note',
@@ -567,7 +567,7 @@ export default {
   'edm:rights': 'Lizenz',
   'dce:rights': 'Rights statement',
   'oaire:version': 'Version type',
-  'dcterms:accessRights': 'Access right',
+  'dcterms:accessRights': 'Access rights',
 
   'schema:pageStart': 'Seitenanfang',
   'schema:pageEnd': 'Seitenende',
@@ -618,6 +618,7 @@ export default {
 
   'Page start': 'Seitenanfang',
   'Page end': 'Seitenende',
+  'Number of pages': 'Seitenanzahl',
 
   'Metadata editor': 'Metadateneditor',
   'Metadata preview': 'Metadatenansicht',
@@ -674,7 +675,7 @@ export default {
   'Access to full texts and materials is restricted to you.': 'Der Zugang zu den Volltexten bzw. Materialien ist nur Ihnen möglich.',
   'Mandatory fields': 'Pflichteingaben',
   'Optional fields': 'Opt. Angaben',
-  'Submit': 'Publizieren',
+  'Upload': 'Upload',
   'PUBLISHER_HERAUSGEBERIN': 'HerausgeberIn',
   'PUBLISHER_VERLAG': 'Verlag',
   'JOURNAL_ERSCHIENENIN': 'Erschienen in',
@@ -698,5 +699,8 @@ export default {
   'OTHER_FEMININE': 'Andere',
   'Policy': 'Leitlinien',
   'ABOUT_LINK': 'Über {name}',
-  'Metadata policy': 'Metadaten-Leitlinie'
+  'Metadata policy': 'Metadaten-Leitlinie',
+  'What do you want to upload?': 'Was möchten Sie hochladen?',
+  'Journal article': 'Beitrag in Zeitschrift',
+  'Book chapter': 'Buchkapitel'
 }

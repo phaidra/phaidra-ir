@@ -1,15 +1,29 @@
 <template>
-  <v-container class="mt-4">
+  <v-container fluid>
+    <v-row>
+      <v-col>
+       <h3 class="title font-weight-light primary--text pt-1">{{ $t('What do you want to upload?') }}</h3>
+      </v-col>
+    </v-row>
+
     <v-row>
       <v-col>
         <v-btn raised color="primary mr-2" :to="{ name: 'submit-ir', params: { submitform: 'journal-article' } }">
           {{$t('Journal article')}}
         </v-btn>
-        <v-divider class="my-4"></v-divider>
+      </v-col>
+    </v-row>
+    <v-divider class="my-2"></v-divider>
+    <v-row>
+      <v-col>
         <v-btn raised color="primary mr-2" :to="{ name: 'submit-ir', params: { submitform: 'book-part' } }">
           {{$t('Book chapter')}}
         </v-btn>
-        <v-divider class="my-4"></v-divider>
+      </v-col>
+    </v-row>
+    <v-divider class="my-2"></v-divider>
+    <v-row>
+      <v-col>
         <v-btn raised color="primary mr-2" :to="{ name: 'submit-ir', params: { submitform: 'book' } }">
           {{$t('Book')}}
         </v-btn>

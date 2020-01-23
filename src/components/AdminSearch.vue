@@ -1,5 +1,5 @@
 <template>
-    <v-row>
+    <v-row no-gutters>
       <v-col cols="12">
         <v-row justify="space-between">
           <v-col cols="3">
@@ -12,22 +12,22 @@
               :classes="{ input: 'form-control', wrapper: 'input-wrapper' }"
               :onSelect="handleSelect"
               solo
+              :messages="[ total + ' ' + $t('objects') ]"
             ></autocomplete>
           </v-col>
-          <v-col cols="1" align-self="center"><span>{{ total }} {{ $t('objects') }}</span></v-col>
           <template v-for="(f, i) in adminFacetQueries">
             <template v-for="(q, j) in f.queries">
-              <v-col cols="2" align-self="center" :key="'f'+i+'q'+j">
-                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" class="float-right">
+              <v-col cols="2" :key="'f'+i+'q'+j">
+                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" >
                   <span :class="{ 'active font-weight-medium': q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
-                  <span class="title font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
+                  <span class="font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
                 </span>
               </v-col>
             </template>
           </template>
-          <v-col cols="2" align-self="center">
-            <v-btn raised color="primary mr-2 float-right" :to="'/admin/submit'">
-              <v-icon dark left>mdi-plus</v-icon> {{$t('Add publication')}}
+          <v-col cols="2">
+            <v-btn raised color="primary float-right" :to="'/admin/submit'">
+              <v-icon dark left>mdi-plus</v-icon> {{$t('Upload')}}
             </v-btn>
           </v-col>
         </v-row>

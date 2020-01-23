@@ -212,6 +212,8 @@
                       v-on:input-issued="f.issued=$event"
                       v-on:input-issn="f.issn=$event"
                       v-on:input-identifier="f.identifier=$event"
+                      v-on:input-page-start="f.pageStart=$event"
+                      v-on:input-page-end="f.pageEnd=$event"
                       v-on:add="addField(s.fields, f)"
                       v-on:remove="removeField(s.fields, f)"
                       class="my-2"
@@ -247,6 +249,8 @@
                       v-on:input-series-issued="f.seriesIssued=$event"
                       v-on:input-series-issn="f.seriesIssn=$event"
                       v-on:input-series-identifier="f.seriesIdentifier=$event"
+                      v-on:input-page-start="f.pageStart=$event"
+                      v-on:input-page-end="f.pageEnd=$event"
                       v-on:add-role="addContainedInRole(f.roles, $event)"
                       v-on:remove-role="removeContainedInRole(f.roles, $event)"
                       v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
@@ -886,7 +890,20 @@ export default {
       }
     },
     removeField: function (arr, f) {
-      arrays.remove(arr, f)
+      if (f.component === 'p-entity-extended') {
+        let nrRoles = 0
+        for (let f of arr) {
+          if (f.component === 'p-entity-extended') {
+            nrRoles++
+          }
+        }
+        // uploader + 1 author => min 2 roles must stay
+        if (nrRoles > 2) {
+          arrays.remove(arr, f)
+        }
+      } else {
+        arrays.remove(arr, f)
+      }
     },
     sortFieldUp: function (arr, f) {
       var i = arr.indexOf(f)
@@ -1190,6 +1207,15 @@ export default {
         sf.hideIssue = true
         sf.hideIssued = true
         sf.hideIssn = true
+        sf.hidePages = false
+        if (doiImportData) {
+          if (doiImportData.pageStart) {
+            sf.pageStart = doiImportData.pageStart
+          }
+          if (doiImportData.pageEnd) {
+            sf.pageEnd = doiImportData.pageEnd
+          }
+        }
         smf.push(sf)
       }
 
@@ -1268,6 +1294,7 @@ export default {
         sf.multilingual = false
         sf.journalSuggest = true
         sf.hideIdentifier = true
+        sf.hidePages = false
         sf.issuedDatePicker = true
         if (doiImportData) {
           if (doiImportData.journalTitle) {
@@ -1282,23 +1309,15 @@ export default {
           if (doiImportData.journalIssue) {
             sf.issue = doiImportData.journalIssue
           }
+          if (doiImportData.pageStart) {
+            sf.pageStart = doiImportData.pageStart
+          }
+          if (doiImportData.pageEnd) {
+            sf.pageEnd = doiImportData.pageEnd
+          }
         }
         sof.push(sf)
       }
-
-      if (this.submitformparam !== 'book') {
-        let ps = fields.getField('page-start')
-        if (doiImportData && doiImportData.pageStart) {
-          ps.value = doiImportData.pageStart
-        }
-        sof.push(ps)
-      }
-
-      let pe = fields.getField('page-end')
-      if (doiImportData && doiImportData.pageEnd) {
-        pe.value = doiImportData.pageEnd
-      }
-      sof.push(pe)
 
       if (this.submitformparam === 'journal-article') {
         let pf = fields.getField('bf-publication')
