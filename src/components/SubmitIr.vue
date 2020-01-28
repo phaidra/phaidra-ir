@@ -780,7 +780,7 @@
     </v-stepper-items>
 
   </v-stepper>
-  
+
   <v-col cols="1">
     <v-switch
       v-model="outlinedSwitch"
@@ -930,6 +930,7 @@ export default {
   },
   methods: {
     async checkAllowSubmit () {
+
       this.submitformLoading = true
       try {
         let response = await axios.get(this.config.api + '/ir/allowsubmit',

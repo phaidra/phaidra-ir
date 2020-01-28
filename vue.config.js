@@ -10,9 +10,11 @@ module.exports = {
       clustered: true
     }
   },
+
   transpileDependencies: [
     'phaidra-vue-components'
   ],
+
   configureWebpack: {
     /*
     plugins: [
@@ -47,6 +49,7 @@ module.exports = {
       moment: 'moment'
     }
   },
+
   chainWebpack: (config) => {
     // https://github.com/Akryum/vue-cli-plugin-ssr/issues/158
     const htmlSsrPlugin = config.plugins.get('html-ssr')
@@ -55,4 +58,5 @@ module.exports = {
       htmlSsrPlugin.store.get('args')[0].chunks = []
     }
   }
+
 }

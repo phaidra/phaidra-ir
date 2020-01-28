@@ -173,6 +173,8 @@ import '@/compiled-icons/univie-sprache'
 import ClientOnly from 'vue-client-only'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
+import * as Sentry from '@sentry/browser'
+import * as Integrations from '@sentry/integrations'
 
 export default {
   name: 'app',
@@ -279,6 +281,15 @@ export default {
       this.$matomo.setDocumentTitle(this.$store.state.pagetitle)
       this.$matomo.trackPageView()
     })
+
+    if (this.config.monitor) {
+      if (this.config.monitor.sentry) {
+        Sentry.init({
+          dsn: this.config.monitor.sentry.dsn,
+          integrations: [new Integrations.Vue({ Vue, attachProps: true, logErrors: true })]
+        })
+      }
+    }
   },
   created: function () {
     this.$vuetify.theme.themes.light.primary = this.$store.state.config.primary
