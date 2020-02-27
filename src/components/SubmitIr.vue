@@ -930,7 +930,6 @@ export default {
   },
   methods: {
     async checkAllowSubmit () {
-
       this.submitformLoading = true
       try {
         let response = await axios.get(this.config.api + '/ir/allowsubmit',
@@ -2039,8 +2038,8 @@ export default {
                     if (!f.affiliation || (f.affiliation === '') || (f.affiliation.length < 1)) {
                       let event = this.getTerm('orgunits', 'https://pid.phaidra.org/univie-org/1MPF-FAME')
                       this.affiliationSelectInput(f, event)
-                      hasLocalAffiliation = true
                     }
+                    hasLocalAffiliation = true
                   }
                   if (f.affiliationType === 'other') {
                     if (f.affiliationText.length < 1) {
