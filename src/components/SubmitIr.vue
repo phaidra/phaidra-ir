@@ -1,792 +1,792 @@
 <template>
   <div>
-  <v-container v-if="submitformLoading">
-    <div class="text-center">
-      <v-progress-circular
-        indeterminate
-        color="primary"
-        class="progressbar mt-12">
-      </v-progress-circular>
-    </div>
-  </v-container>
+    <v-container v-if="submitformLoading">
+      <div class="text-center">
+        <v-progress-circular
+          indeterminate
+          color="primary"
+          class="progressbar mt-12">
+        </v-progress-circular>
+      </div>
+    </v-container>
 
-  <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" alt-labels>
-    <v-stepper-header>
-      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 1) && (step < 8)" :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
-      <v-divider></v-divider>
-      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 2) && (step < 8)" :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
-      <v-divider></v-divider>
-      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
-      <v-divider></v-divider>
-      <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
-      <v-divider v-if="(submitformparam === 'journal-article')"></v-divider>
-      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
-      <v-divider></v-divider>
-      <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
-      <v-divider></v-divider>
-      <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 7" step="7">{{ $t('Submit') }}</v-stepper-step>
-      <v-divider></v-divider>
-      <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 8" step="8">{{ $t('Notifications') }}</v-stepper-step>
-    </v-stepper-header>
+    <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" alt-labels>
+      <v-stepper-header>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 1) && (step < 8)" :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 2) && (step < 8)" :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
+        <v-divider v-if="(submitformparam === 'journal-article')"></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 7" step="7">{{ $t('Submit') }}</v-stepper-step>
+        <v-divider></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 8" step="8">{{ $t('Notifications') }}</v-stepper-step>
+      </v-stepper-header>
 
-    <v-stepper-items>
+      <v-stepper-items>
 
-      <v-stepper-content step="1">
-        <v-container v-if="checkAllowSubmitRes.allowsubmit === 1">
-          <v-row no-gutters>
-            <h3 class="title font-weight-light primary--text mb-4">{{ $t('Submitting a publication') }}</h3>
-          </v-row>
-          <v-row no-gutters>
-            <i18n path="SUBMIT_START_1" tag="p">
-              <a :href="'/info/policy'" target="_blank">{{ $t('guidelines') }}</a>
-            </i18n>
-          </v-row>
-          <v-row no-gutters justify="center">
-            <v-col>
-              <v-alert outlined type="error" color="primary">
-                <h3 class="title font-weight-light mb-4 ml-4">{{ $t('Important notice') }}</h3>
-                <ul class="black--text ml-4">
-                  <li>
-                    <i18n path="SUBMIT_START_2" tag="p">
-                      <strong>{{ $t('if you hold the necessary rights') }}</strong>
-                    </i18n>
-                  </li>
-                  <li>
-                    <i18n path="SUBMIT_START_3" tag="p">
-                      <strong>{{ $t('a larger number of publications') }}</strong>
-                      <a :href="'/info/contact'" target="_blank">{{ $t('contact us') }}</a>
-                    </i18n>
-                  </li>
-                </ul>
-              </v-alert>
-            </v-col>
-          </v-row>
-          <v-row no-gutters>
-            <i18n path="SUBMIT_START_4" tag="p">
-              <a :href="'/info/about'" target="_blank">{{ $t('Über u:scholar') }}</a>
-            </i18n>
-          </v-row>
-          <v-row no-gutters>
-            <i18n path="SUBMIT_START_5" tag="p">
-              <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
-            </i18n>
-          </v-row>
-          <v-row no-gutters>
-            <i18n path="SUBMIT_START_6" tag="p">
-              <a :href="'/info/about'" target="_blank">{{ $t('contact us') }}</a>
-              <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
-            </i18n>
-          </v-row>
-          <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters justify="center">
-            <v-btn color="primary" @click="step = 2; $vuetify.goTo(1)">{{ $t('Start') }}</v-btn>
-          </v-row>
-        </v-container>
-        <v-container v-else>
-          <v-row no-gutters justify="center">
-            <v-col>
-              <v-alert outlined type="error">
-                <i18n path="SUBMIT_NOT_ALLOWED" tag="p">
-                  <span>{{ checkAllowSubmitRes.nruploads }}</span>
-                  <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
-                  <span>{{ config.officecontact.phone }}</span>
-                </i18n>
-              </v-alert>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
-
-      <v-stepper-content step="2">
-        <v-container>
-          <v-row no-gutters>
-            <h3 class="title font-weight-light primary--text mb-4">{{ $t('Terms of use') }}</h3>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('SUBMIT_TOU_1') }}</p>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('SUBMIT_TOU_2') }}</p>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('SUBMIT_TOU_3') }}</p>
-          </v-row>
-          <v-row no-gutters>
-            <v-checkbox v-model="touCheckbox" color="primary" :error-messages="touCheckboxErrors">
-              <template v-slot:label>
-                <i18n path="SUBMIT_TOU_4" tag="span" class="black--text">
-                  <a @click.stop href="https://phaidra.univie.ac.at/terms_of_use/show_terms_of_use" target="_blank">Phaidra</a>
-                </i18n>
-              </template>
-            </v-checkbox>
-          </v-row>
-          <v-row no-gutters>
-            <a class="mt-4" href="https://uscholar.univie.ac.at/static/doc/InstitutionalRepository-TermsOfUse-German.pdf" target="_blank">{{ $t('Terms of use (PDF)') }}</a>
-          </v-row>
-          <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters justify="space-between">
-            <v-btn dark color="grey" @click="step = 1; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-            <v-btn color="primary" @click="checkTou(); $vuetify.goTo(1)">{{ $t('Continue') }}</v-btn>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
-
-      <v-stepper-content step="3">
-        <v-container>
-          <v-row no-gutters>
-            <h3 class="title font-weight-light primary--text mb-4">{{ $t('Metadata-Import via DOI') }}</h3>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('Many electronically published journals assign persistent names, so called DOIs (Digital Object Identifiers), to their articles.') }}</p>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('If you enter your article\'s DOI here, its metadata can be loaded automatically.') }}</p>
-          </v-row>
-          <v-row no-gutters justify="center">
-            <v-col cols="4">
-              <v-text-field :error-messages="doiImportErrors" filled v-model="doiImportInput" label="DOI" :placeholder="$t('please enter')"/>
-            </v-col>
-            <v-col cols="3" class="ml-4 mt-2">
-              <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="importDOI()">{{ $t('Import') }}</v-btn>
-              <v-btn :loading="loading" :disabled="loading" class="mx-2" dark color="grey" @click="resetDOIImport()">{{ $t('Reset') }}</v-btn>
-            </v-col>
-          </v-row>
-          <v-alert outlined type="error" color="primary" transition="slide-y-transition" v-if="doiDuplicate">
-            <span class="mr-2 black--text">{{ $t('Possible duplicate found') }}:</span><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doiDuplicate.pid">{{ doiDuplicate.title }}</a>
-          </v-alert>
-          <v-slide-y-transition>
-            <v-row no-gutters v-if="doiImportData" justify="center">
-              <v-col cols="12" md="7">
-                <v-card>
-                  <v-card-title class="title font-weight-light grey white--text">{{ $t('Folowing metadata were retrieved') }}</v-card-title>
-                  <v-card-text>
-                    <v-container>
-                      <v-row v-if="doiImportData.title">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.title }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.dateIssued">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.dateIssued }}</v-col>
-                      </v-row>
-                      <v-row v-for="(author, i) of doiImportData.authors" :key="'aut'+i">
-                        <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
-                        <v-col v-else md="2" cols="12"></v-col>
-                        <v-col md="10" cols="12">{{ author.firstname + ' ' + author.lastname }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.publicationType">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.publicationType }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.publisher">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.publisher }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.journalTitle">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.journalTitle }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.journalISSN">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.journalISSN }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.journalVolume">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.journalVolume }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.journalIssue">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.journalIssue }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.pageStart">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.pageStart }}</v-col>
-                      </v-row>
-                      <v-row v-if="doiImportData.pageEnd">
-                        <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
-                        <v-col md="10" cols="12">{{ doiImportData.pageEnd }}</v-col>
-                      </v-row>
-                    </v-container>
-                  </v-card-text>
-                </v-card>
+        <v-stepper-content step="1">
+          <v-container v-if="checkAllowSubmitRes.allowsubmit === 1">
+            <v-row no-gutters>
+              <h3 class="title font-weight-light primary--text mb-4">{{ $t('Submitting a publication') }}</h3>
+            </v-row>
+            <v-row no-gutters>
+              <i18n path="SUBMIT_START_1" tag="p">
+                <a :href="'/info/policy'" target="_blank">{{ $t('guidelines') }}</a>
+              </i18n>
+            </v-row>
+            <v-row no-gutters justify="center">
+              <v-col>
+                <v-alert outlined type="error" color="primary">
+                  <h3 class="title font-weight-light mb-4 ml-4">{{ $t('Important notice') }}</h3>
+                  <ul class="black--text ml-4">
+                    <li>
+                      <i18n path="SUBMIT_START_2" tag="p">
+                        <strong>{{ $t('if you hold the necessary rights') }}</strong>
+                      </i18n>
+                    </li>
+                    <li>
+                      <i18n path="SUBMIT_START_3" tag="p">
+                        <strong>{{ $t('a larger number of publications') }}</strong>
+                        <a :href="'/info/contact'" target="_blank">{{ $t('contact us') }}</a>
+                      </i18n>
+                    </li>
+                  </ul>
+                </v-alert>
               </v-col>
             </v-row>
-          </v-slide-y-transition>
-          <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters justify="space-between">
-            <v-btn dark color="grey" @click="step = 2; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-            <v-btn color="primary" @click="step = (submitformparam === 'journal-article' ?  4 : 5);  $vuetify.goTo(1)">
-              <template v-if="doiImportData">{{ $t('Continue') }}</template>
-              <template v-else>{{ $t('Skip') }}</template>
-            </v-btn>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
+            <v-row no-gutters>
+              <i18n path="SUBMIT_START_4" tag="p">
+                <a :href="'/info/about'" target="_blank">{{ $t('Über u:scholar') }}</a>
+              </i18n>
+            </v-row>
+            <v-row no-gutters>
+              <i18n path="SUBMIT_START_5" tag="p">
+                <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
+              </i18n>
+            </v-row>
+            <v-row no-gutters>
+              <i18n path="SUBMIT_START_6" tag="p">
+                <a :href="'/info/about'" target="_blank">{{ $t('contact us') }}</a>
+                <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
+              </i18n>
+            </v-row>
+            <v-divider class="mt-5 mb-7"></v-divider>
+            <v-row no-gutters justify="center">
+              <v-btn color="primary" @click="step = 2; $vuetify.goTo(1)">{{ $t('Start') }}</v-btn>
+            </v-row>
+          </v-container>
+          <v-container v-else>
+            <v-row no-gutters justify="center">
+              <v-col>
+                <v-alert outlined type="error">
+                  <i18n path="SUBMIT_NOT_ALLOWED" tag="p">
+                    <span>{{ checkAllowSubmitRes.nruploads }}</span>
+                    <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
+                    <span>{{ config.officecontact.phone }}</span>
+                  </i18n>
+                </v-alert>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-stepper-content>
 
-      <v-stepper-content v-if="(submitformparam === 'journal-article')" step="4">
-        <v-container>
-          <v-row no-gutters>
-            <h3 class="title font-weight-light primary--text mb-4">{{ $t('SHERPA/RoMEO') }}</h3>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('SHERPA RoMEO is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis.') }}</p>
-          </v-row>
-          <v-row no-gutters justify="center">
-            <v-col cols="12" md="8">
-              <v-combobox
-                v-model="rightsCheckModel"
-                :items="rightsCheckItems"
-                :loading="rightsCheckLoading"
-                :search-input.sync="rightsCheckSearch"
-                :error-messages="rightsCheckErrors"
-                hide-no-data
-                hide-selected
-                item-text="title"
-                item-value="issn"
-                solo
-                :placeholder="$t('please enter exact journal title or ISSN')"
-                filled
-                clearable
-              >
-                <template slot="item" slot-scope="{ item }">
-                  <v-list-item-content>
-                    <v-list-item-title>{{ item.title }}</v-list-item-title>
-                    <v-list-item-subtitle>{{ $t('ISSN') + ': ' + item.issn }}</v-list-item-subtitle>
-                    <v-list-item-subtitle v-if="item.romeopub">{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
-                  </v-list-item-content>
+        <v-stepper-content step="2">
+          <v-container>
+            <v-row no-gutters>
+              <h3 class="title font-weight-light primary--text mb-4">{{ $t('Terms of use') }}</h3>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('SUBMIT_TOU_1') }}</p>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('SUBMIT_TOU_2') }}</p>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('SUBMIT_TOU_3') }}</p>
+            </v-row>
+            <v-row no-gutters>
+              <v-checkbox v-model="touCheckbox" color="primary" :error-messages="touCheckboxErrors">
+                <template v-slot:label>
+                  <i18n path="SUBMIT_TOU_4" tag="span" class="black--text">
+                    <a @click.stop href="https://phaidra.univie.ac.at/terms_of_use/show_terms_of_use" target="_blank">Phaidra</a>
+                  </i18n>
                 </template>
-                <template slot="selection" slot-scope="{ item }">
-                  <v-list-item-content>
-                    <v-list-item-title v-if="item.title">{{ item.title }}</v-list-item-title>
-                    <v-list-item-title v-else>{{ item.issn }}</v-list-item-title>
-                  </v-list-item-content>
-                </template>
-              </v-combobox>
-            </v-col>
-          </v-row>
-          <v-row no-gutters v-if="rightsCheckData" justify="center">
-            <v-col cols="12" md="8">
-              <v-row v-if="rightsCheckData.journal">
-                <v-col md="3" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERSCHIENENIN') }}</v-col>
-                <v-col md="9" cols="12">{{ rightsCheckData.journal.title }}</v-col>
-              </v-row>
-              <v-row v-else>
-                <v-col offset-md="3" md="9">{{ $t('Journal data not available') }}</v-col>
-              </v-row>
-              <template v-if="rightsCheckData.publisher">
-                <v-row v-if="rightsCheckData.publisher">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <template v-if="rightsCheckData.publisher.homeurl">
-                      <a target="_blank" :href="rightsCheckData.publisher.homeurl">{{ rightsCheckData.publisher.name }}</a>
-                    </template>
-                    <template v-else>{{ rightsCheckData.publisher.name }}</template>
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.prearchiving">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <v-icon v-if="rightsCheckData.publisher.prearchiving === 'can'" left color="green">mdi-check</v-icon>
-                    <v-icon v-if="rightsCheckData.publisher.prearchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                    <v-icon v-if="rightsCheckData.publisher.prearchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                    {{ rightsCheckData.publisher.prearchiving }}
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.prerestrictions && (rightsCheckData.publisher.prerestrictions.length > 0)">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <ul>
-                      <li v-for="(r, i) in rightsCheckData.publisher.prerestrictions" :key="i">
-                        {{ r }}
-                      </li>
-                    </ul>
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.postarchiving">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <v-icon v-if="rightsCheckData.publisher.postarchiving === 'can'" left color="green">mdi-check</v-icon>
-                    <v-icon v-if="rightsCheckData.publisher.postarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                    <v-icon v-if="rightsCheckData.publisher.postarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                    {{ rightsCheckData.publisher.postarchiving }}
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.postrestrictions && (rightsCheckData.publisher.postrestrictions.length > 0)">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <ul>
-                      <li v-for="(r, i) in rightsCheckData.publisher.postrestrictions" :key="i">
-                        {{ r }}
-                      </li>
-                    </ul>
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.pdfarchiving">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'can'" left color="green">mdi-check</v-icon>
-                    <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                    <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                    {{ rightsCheckData.publisher.pdfarchiving }}
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.pdfrestrictions && (rightsCheckData.publisher.pdfrestrictions.length > 0)">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <ul>
-                      <li v-for="(r, i) in rightsCheckData.publisher.pdfrestrictions" :key="i">
-                        {{ r }}
-                      </li>
-                    </ul>
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.publisher.conditions">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
-                  <v-col md="9" cols="12">
-                    <ul>
-                      <li v-for="(r, i) in rightsCheckData.publisher.conditions" :key="i">
-                        {{ r }}
-                      </li>
-                    </ul>
-                  </v-col>
-                </v-row>
-                <v-row v-if="rightsCheckData.disclaimer">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
-                  <v-col md="9" cols="12">{{rightsCheckData.disclaimer}}</v-col>
-                </v-row>
-              </template>
-              <v-row v-else>
-                <v-col offset-md="3" md="9">{{ $t('Publisher data not available') }}</v-col>
-              </v-row>
-            </v-col>
-          </v-row>
-          <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters justify="space-between">
-            <v-btn dark color="grey" @click="step = 3; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-            <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
-              <template v-if="rightsCheckData">{{ $t('Continue') }}</template>
-              <template v-else>{{ $t('Skip') }}</template>
-            </v-btn>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
+              </v-checkbox>
+            </v-row>
+            <v-row no-gutters>
+              <a class="mt-4" href="https://uscholar.univie.ac.at/static/doc/InstitutionalRepository-TermsOfUse-German.pdf" target="_blank">{{ $t('Terms of use (PDF)') }}</a>
+            </v-row>
+            <v-divider class="mt-5 mb-7"></v-divider>
+            <v-row no-gutters justify="space-between">
+              <v-btn dark color="grey" @click="step = 1; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+              <v-btn color="primary" @click="checkTou(); $vuetify.goTo(1)">{{ $t('Continue') }}</v-btn>
+            </v-row>
+          </v-container>
+        </v-stepper-content>
 
-      <v-stepper-content v-for="(s) in form.sections" :key="'tabitem'+s.id" :step="s.id">
-        <v-container>
-          <v-alert outlined type="error" transition="slide-y-transition" v-if="validationErrors.length > 0">
-            <span v-for="(error, i) of validationErrors" :key="'verr'+i">{{ error }}</span>
-          </v-alert>
-          <v-row>
-            <v-col cols="10" offset="1">
-
-              <template v-if="s.id === 6">
-                <submit-ir-description-keywords
-                  :label="$t('Details zum Artikel')"
-                  :descriptionLabel="$t('Abstract')"
-                  :keywordsLabel="$t('Keywords')"
-                  v-on:input-description="setDescription(s, $event)"
-                  v-on:input-keywords="setKeywords(s, $event)"
-                  :inputStyle="inputStyle"
-                ></submit-ir-description-keywords>
-              </template>
-
-              <template v-for="(f) in s.fields">
-
-                <v-row no-gutters :key="f.id">
-
-                  <template v-if="(f.component === 'p-text-field') && (f.type !== 'bf:Summary')">
-                    <p-i-text-field
-                      v-bind.sync="f"
-                      v-on:input="f.value=$event"
-                      v-on:input-language="setSelected(f, 'language', $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-text-field>
-                  </template>
-
-                  <template v-if="f.component === 'p-title'">
-                    <p-i-title
-                      v-bind.sync="f"
-                      v-on:input-title="f.title=$event"
-                      v-on:input-subtitle="f.subtitle=$event"
-                      v-on:input-language="setSelected(f, 'language', $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      v-on:up="sortFieldUp(s.fields, f)"
-                      v-on:down="sortFieldDown(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-title>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-select'">
-                    <p-i-select
-                      v-show="f.predicate !== 'dcterms:type' && !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book')))"
-                      v-bind.sync="f"
-                      v-on:input="selectInput(s.fields, f, $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-select>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-date-edtf'">
-                    <p-i-date-edtf
-                      v-show="f.type === 'dcterms:available' ? showEmbargoDate : true"
-                      v-bind.sync="f"
-                      v-on:input-date="f.value=$event"
-                      v-on:input-date-type="setSelected(f, 'type', $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-date-edtf>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-series'">
-                    <p-i-series
-                      v-bind.sync="f"
-                      v-on:input-select-journal="selectJournal(s.fields, f, $event)"
-                      v-on:input-title="f.title=$event"
-                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
-                      v-on:input-volume="f.volume=$event"
-                      v-on:input-issue="f.issue=$event"
-                      v-on:input-issued="f.issued=$event"
-                      v-on:input-issn="f.issn=$event"
-                      v-on:input-identifier="f.identifier=$event"
-                      v-on:input-page-start="f.pageStart=$event"
-                      v-on:input-page-end="f.pageEnd=$event"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-series>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-bf-publication'">
-                    <p-i-bf-publication
-                      v-bind.sync="f"
-                      v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
-                      v-on:input-publisher-name="f.publisherName=$event"
-                      v-on:change-type="f.publisherType = $event"
-                      v-on:input-publisher-select="publisherSelectInput(f, $event)"
-                      v-on:input-publishing-place="f.publishingPlace=$event"
-                      v-on:input-publishing-date="f.publishingDate=$event"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-bf-publication>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-contained-in'">
-                    <p-i-contained-in
-                      v-bind.sync="f"
-                      v-on:input-title="f.title=$event"
-                      v-on:input-subtitle="f.subtitle=$event"
-                      v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
-                      v-on:input-role="containedInRoleInput(f, $event)"
-                      v-on:input-series-title="f.seriesTitle=$event"
-                      v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
-                      v-on:input-series-volume="f.seriesVolume=$event"
-                      v-on:input-series-issue="f.seriesIssue=$event"
-                      v-on:input-series-issued="f.seriesIssued=$event"
-                      v-on:input-series-issn="f.seriesIssn=$event"
-                      v-on:input-series-identifier="f.seriesIdentifier=$event"
-                      v-on:input-page-start="f.pageStart=$event"
-                      v-on:input-page-end="f.pageEnd=$event"
-                      v-on:add-role="addContainedInRole(f.roles, $event)"
-                      v-on:remove-role="removeContainedInRole(f.roles, $event)"
-                      v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
-                      v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
-                      :inputStyle="inputStyle"
-                    ></p-i-contained-in>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-entity-extended'">
-                    <p-i-entity-extended
-                      v-show="f.role !== 'role:uploader'"
-                      v-bind.sync="f"
-                      v-on:change-type="f.type = $event"
-                      v-on:input-firstname="f.firstname = $event"
-                      v-on:input-lastname="f.lastname = $event"
-                      v-on:input-name="f.name = $event"
-                      v-on:input-identifier="f.identifierText = $event"
-                      v-on:change-affiliation-type="f.affiliationType = $event"
-                      v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
-                      v-on:input-affiliation-other="f.affiliationText = $event"
-                      v-on:change-organization-type="f.organizationType = $event"
-                      v-on:input-organization-select="organizationSelectInput(f, $event)"
-                      v-on:input-organization-other="f.organizationText = $event"
-                      v-on:input-role="roleInput(f, $event)"
-                      v-on:add-clear="addEntityClear(s.fields, f)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      v-on:up="sortFieldUp(s.fields, f)"
-                      v-on:down="sortFieldDown(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-entity-extended>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-subject-gnd'">
-                    <p-i-subject-gnd
-                      v-bind.sync="f"
-                      v-on:input="f.value=$event"
-                      v-on:resolve="updateSubject(f, $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-subject-gnd>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-vocab-ext-readonly'">
-                    <p-i-vocab-ext-readonly
-                      v-bind.sync="f"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                    ></p-i-vocab-ext-readonly>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-literal'">
-                    <p-i-literal
-                      v-bind.sync="f"
-                      v-on:input-value="f.value=$event"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></p-i-literal>
-                  </template>
-
-                  <template v-else-if="(f.component === 'p-alternate-identifier')">
-                    <submit-ir-alternate-identifier
-                      v-bind.sync="f"
-                      v-on:input-identifier="f.value=$event"
-                      v-on:input-identifier-type="setSelected(f, 'type', $event)"
-                      v-on:add="addField(s.fields, f)"
-                      v-on:add-clear="addIdentifierClear(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></submit-ir-alternate-identifier>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-project'">
-                    <submit-ir-funding-field
-                      v-bind.sync="f"
-                      v-on:select-funder="setFunder(f, $event)"
-                      v-on:input-funder-name="f.funderName=$event"
-                      v-on:input-identifier="f.identifier=$event"
-                      v-on:add="addProject(s.fields, f)"
-                      v-on:add-clear="addProjectClear(s.fields, f)"
-                      v-on:remove="removeField(s.fields, f)"
-                      :inputStyle="inputStyle"
-                      class="my-2"
-                    ></submit-ir-funding-field>
-                  </template>
-
-                  <template v-else-if="f.component === 'p-file'">
-                    <v-col cols="12">
-                      <v-row no-gutters>
-                        <p-i-file
-                          v-bind.sync="f"
-                          v-on:input-file="setFilename(f, $event)"
-                          v-on:input-mimetype="setSelected(f, 'mimetype', $event)"
-                          v-on:add="addField(s.fields, f)"
-                          v-on:remove="removeField(s.fields, f)"
-                          :inputStyle="inputStyle"
-                          class="my-2"
-                        ></p-i-file>
-                      </v-row>
-                    </v-col>
-                  </template>
-
-                </v-row>
-
-              </template>
-
-              <v-row v-if="license" no-gutters>
-                 <v-col cols="12" md="10">
-                  <submit-ir-license-info v-if="s.id === 5" :license="license"></submit-ir-license-info>
-                 </v-col>
-              </v-row>
-              <v-row no-gutters v-if="showSubmitWarning">
-                <v-col cols="12" md="10">
-                  <v-alert type="error" outlined>
-                    <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: rightsCheckData.journal.title }) }}</span>
-                    <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>.
-                  </v-alert>
+        <v-stepper-content step="3">
+          <v-container>
+            <v-row no-gutters>
+              <h3 class="title font-weight-light primary--text mb-4">{{ $t('Metadata-Import via DOI') }}</h3>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('Many electronically published journals assign persistent names, so called DOIs (Digital Object Identifiers), to their articles.') }}</p>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('If you enter your article\'s DOI here, its metadata can be loaded automatically.') }}</p>
+            </v-row>
+            <v-row no-gutters justify="center">
+              <v-col cols="4">
+                <v-text-field :error-messages="doiImportErrors" filled v-model="doiImportInput" label="DOI" :placeholder="$t('please enter')"/>
+              </v-col>
+              <v-col cols="3" class="ml-4 mt-2">
+                <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="importDOI()">{{ $t('Import') }}</v-btn>
+                <v-btn :loading="loading" :disabled="loading" class="mx-2" dark color="grey" @click="resetDOIImport()">{{ $t('Reset') }}</v-btn>
+              </v-col>
+            </v-row>
+            <v-alert outlined type="error" color="primary" transition="slide-y-transition" v-if="doiDuplicate">
+              <span class="mr-2 black--text">{{ $t('Possible duplicate found') }}:</span><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doiDuplicate.pid">{{ doiDuplicate.title }}</a>
+            </v-alert>
+            <v-slide-y-transition>
+              <v-row no-gutters v-if="doiImportData" justify="center">
+                <v-col cols="12" md="7">
+                  <v-card>
+                    <v-card-title class="title font-weight-light grey white--text">{{ $t('Folowing metadata were retrieved') }}</v-card-title>
+                    <v-card-text>
+                      <v-container>
+                        <v-row v-if="doiImportData.title">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.title }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.dateIssued">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.dateIssued }}</v-col>
+                        </v-row>
+                        <v-row v-for="(author, i) of doiImportData.authors" :key="'aut'+i">
+                          <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
+                          <v-col v-else md="2" cols="12"></v-col>
+                          <v-col md="10" cols="12">{{ author.firstname + ' ' + author.lastname }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.publicationType">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.publicationType }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.publisher">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.publisher }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.journalTitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.journalTitle }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.journalISSN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.journalISSN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.journalVolume">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.journalVolume }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.journalIssue">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.journalIssue }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.pageStart">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.pageStart }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.pageEnd">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.pageEnd }}</v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card-text>
+                  </v-card>
                 </v-col>
               </v-row>
-              <v-divider class="mt-5 mb-7"></v-divider>
-              <v-row no-gutters justify="space-between">
-                <v-btn dark color="grey" @click="step = (s.id - (submitformparam === 'journal-article' ?  1 : 2)); $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-                <v-btn color="primary" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
-              </v-row>
-            </v-col>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
+            </v-slide-y-transition>
+            <v-divider class="mt-5 mb-7"></v-divider>
+            <v-row no-gutters justify="space-between">
+              <v-btn dark color="grey" @click="step = 2; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+              <v-btn color="primary" @click="step = (submitformparam === 'journal-article' ?  4 : 5);  $vuetify.goTo(1)">
+                <template v-if="doiImportData">{{ $t('Continue') }}</template>
+                <template v-else>{{ $t('Skip') }}</template>
+              </v-btn>
+            </v-row>
+          </v-container>
+        </v-stepper-content>
 
-      <v-stepper-content step="7">
-        <v-container>
-          <v-row>
-            <v-col md="10" offset-md="1">
-              <p-d-jsonld :jsonld="jsonld"></p-d-jsonld>
-            </v-col>
-          </v-row>
-          <v-row v-if="altVersionPid">
-            <v-col md="10" offset-md="1">
-              <v-alert outlined type="info" color="primary">
-                <p>
-                  {{ $t('This object will be marked as alternative version of object') }}
-                  <a class="mx-4" target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + altVersionPid">{{ 'https://' + config.phaidrabaseurl + '/' + altVersionPid }}</a>
-                  <v-btn @click="altVersionPid = null" color="grey" dark>{{ $t('Remove this relationship') }}</v-btn>
-                </p>
-              </v-alert>
-            </v-col>
-          </v-row>
-          <!--
-          <v-row>
-            <code>{{ jsonld }}</code>
-          </v-row>
-          -->
-          <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters>
-            <v-btn dark color="grey" :disabled="loading" @click="step = 6; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-            <v-spacer></v-spacer>
-            <v-dialog v-model="discardDialog" max-width="500px">
-              <template v-slot:activator="{ on }">
-                <v-btn v-on="on" class="mr-3" :disabled="loading" dark color="error">{{ $t('Discard submission') }}</v-btn>
-              </template>
-              <v-card>
-                <v-card-title class="title font-weight-light grey white--text">
-                  {{ $t('Discard submission') }}
-                </v-card-title>
-                <v-card-text>
-                  <p class="mt-6 title font-weight-light grey--text text--darken-3">{{ $t('Discard submission process?') }}</p>
-                </v-card-text>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn dark @click="discardDialog = false" color="grey">{{ $t('Cancel') }}</v-btn>
-                  <v-btn :to="'/'" @click="discardDialog = false" color="primary">{{ $t('Discard') }}</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-dialog v-model="loginDialog" max-width="500px">
-              <v-card>
-                <v-card-title class="title font-weight-light grey white--text">
-                  {{ $t('Please log in') }}
-                </v-card-title>
-                <v-card-text>
-                  <p class="mt-6 title font-weight-light grey--text text--darken-3">{{ $t('You have been logged out. Please log in to continue submit.') }}</p>
-                  <v-col cols="10" offset="1">
-                    <v-text-field
-                      :disabled="loading"
-                      :label="$t('Username')"
-                      v-model="credentials.username"
-                      required
-                      filled
-                      single-line
-                      :autocomplete="'username'"
-                    ></v-text-field>
-                    <v-text-field
-                      :disabled="loading"
-                      :label="$t('Password')"
-                      v-model="credentials.password"
-                      required
-                      filled
-                      single-line
-                      :append-icon="loginPassVisible ? 'mdi-eye' : 'mdi-eye-off'"
-                      @click:append="loginPassVisible = !loginPassVisible"
-                      :type="loginPassVisible ? 'password' : 'text'"
-                      :autocomplete="'current-password'"
-                    ></v-text-field>
+        <v-stepper-content v-if="(submitformparam === 'journal-article')" step="4">
+          <v-container>
+            <v-row no-gutters>
+              <h3 class="title font-weight-light primary--text mb-4">{{ $t('SHERPA/RoMEO') }}</h3>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('SHERPA RoMEO is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis.') }}</p>
+            </v-row>
+            <v-row no-gutters justify="center">
+              <v-col cols="12" md="8">
+                <v-combobox
+                  v-model="rightsCheckModel"
+                  :items="rightsCheckItems"
+                  :loading="rightsCheckLoading"
+                  :search-input.sync="rightsCheckSearch"
+                  :error-messages="rightsCheckErrors"
+                  hide-no-data
+                  hide-selected
+                  item-text="title"
+                  item-value="issn"
+                  solo
+                  :placeholder="$t('please enter exact journal title or ISSN')"
+                  filled
+                  clearable
+                >
+                  <template slot="item" slot-scope="{ item }">
+                    <v-list-item-content>
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                      <v-list-item-subtitle>{{ $t('ISSN') + ': ' + item.issn }}</v-list-item-subtitle>
+                      <v-list-item-subtitle v-if="item.romeopub">{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </template>
+                  <template slot="selection" slot-scope="{ item }">
+                    <v-list-item-content>
+                      <v-list-item-title v-if="item.title">{{ item.title }}</v-list-item-title>
+                      <v-list-item-title v-else>{{ item.issn }}</v-list-item-title>
+                    </v-list-item-content>
+                  </template>
+                </v-combobox>
+              </v-col>
+            </v-row>
+            <v-row no-gutters v-if="rightsCheckData" justify="center">
+              <v-col cols="12" md="8">
+                <v-row v-if="rightsCheckData.journal">
+                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERSCHIENENIN') }}</v-col>
+                  <v-col md="9" cols="12">{{ rightsCheckData.journal.title }}</v-col>
+                </v-row>
+                <v-row v-else>
+                  <v-col offset-md="3" md="9">{{ $t('Journal data not available') }}</v-col>
+                </v-row>
+                <template v-if="rightsCheckData.publisher">
+                  <v-row v-if="rightsCheckData.publisher">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <template v-if="rightsCheckData.publisher.homeurl">
+                        <a target="_blank" :href="rightsCheckData.publisher.homeurl">{{ rightsCheckData.publisher.name }}</a>
+                      </template>
+                      <template v-else>{{ rightsCheckData.publisher.name }}</template>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.prearchiving">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <v-icon v-if="rightsCheckData.publisher.prearchiving === 'can'" left color="green">mdi-check</v-icon>
+                      <v-icon v-if="rightsCheckData.publisher.prearchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
+                      <v-icon v-if="rightsCheckData.publisher.prearchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
+                      {{ rightsCheckData.publisher.prearchiving }}
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.prerestrictions && (rightsCheckData.publisher.prerestrictions.length > 0)">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <ul>
+                        <li v-for="(r, i) in rightsCheckData.publisher.prerestrictions" :key="i">
+                          {{ r }}
+                        </li>
+                      </ul>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.postarchiving">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <v-icon v-if="rightsCheckData.publisher.postarchiving === 'can'" left color="green">mdi-check</v-icon>
+                      <v-icon v-if="rightsCheckData.publisher.postarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
+                      <v-icon v-if="rightsCheckData.publisher.postarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
+                      {{ rightsCheckData.publisher.postarchiving }}
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.postrestrictions && (rightsCheckData.publisher.postrestrictions.length > 0)">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <ul>
+                        <li v-for="(r, i) in rightsCheckData.publisher.postrestrictions" :key="i">
+                          {{ r }}
+                        </li>
+                      </ul>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.pdfarchiving">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'can'" left color="green">mdi-check</v-icon>
+                      <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
+                      <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
+                      {{ rightsCheckData.publisher.pdfarchiving }}
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.pdfrestrictions && (rightsCheckData.publisher.pdfrestrictions.length > 0)">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <ul>
+                        <li v-for="(r, i) in rightsCheckData.publisher.pdfrestrictions" :key="i">
+                          {{ r }}
+                        </li>
+                      </ul>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.publisher.conditions">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
+                    <v-col md="9" cols="12">
+                      <ul>
+                        <li v-for="(r, i) in rightsCheckData.publisher.conditions" :key="i">
+                          {{ r }}
+                        </li>
+                      </ul>
+                    </v-col>
+                  </v-row>
+                  <v-row v-if="rightsCheckData.disclaimer">
+                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
+                    <v-col md="9" cols="12">{{rightsCheckData.disclaimer}}</v-col>
+                  </v-row>
+                </template>
+                <v-row v-else>
+                  <v-col offset-md="3" md="9">{{ $t('Publisher data not available') }}</v-col>
+                </v-row>
+              </v-col>
+            </v-row>
+            <v-divider class="mt-5 mb-7"></v-divider>
+            <v-row no-gutters justify="space-between">
+              <v-btn dark color="grey" @click="step = 3; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+              <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
+                <template v-if="rightsCheckData">{{ $t('Continue') }}</template>
+                <template v-else>{{ $t('Skip') }}</template>
+              </v-btn>
+            </v-row>
+          </v-container>
+        </v-stepper-content>
+
+        <v-stepper-content v-for="(s) in form.sections" :key="'tabitem'+s.id" :step="s.id">
+          <v-container>
+            <v-alert outlined type="error" transition="slide-y-transition" v-if="validationErrors.length > 0">
+              <span v-for="(error, i) of validationErrors" :key="'verr'+i">{{ error }}</span>
+            </v-alert>
+            <v-row>
+              <v-col cols="10" offset="1">
+
+                <template v-if="s.id === 6">
+                  <submit-ir-description-keywords
+                    :label="$t('Details zum Artikel')"
+                    :descriptionLabel="$t('Abstract')"
+                    :keywordsLabel="$t('Keywords')"
+                    v-on:input-description="setDescription(s, $event)"
+                    v-on:input-keywords="setKeywords(s, $event)"
+                    :inputStyle="inputStyle"
+                  ></submit-ir-description-keywords>
+                </template>
+
+                <template v-for="(f) in s.fields">
+
+                  <v-row no-gutters :key="f.id">
+
+                    <template v-if="(f.component === 'p-text-field') && (f.type !== 'bf:Summary')">
+                      <p-i-text-field
+                        v-bind.sync="f"
+                        v-on:input="f.value=$event"
+                        v-on:input-language="setSelected(f, 'language', $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-text-field>
+                    </template>
+
+                    <template v-if="f.component === 'p-title'">
+                      <p-i-title
+                        v-bind.sync="f"
+                        v-on:input-title="f.title=$event"
+                        v-on:input-subtitle="f.subtitle=$event"
+                        v-on:input-language="setSelected(f, 'language', $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        v-on:up="sortFieldUp(s.fields, f)"
+                        v-on:down="sortFieldDown(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-title>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-select'">
+                      <p-i-select
+                        v-show="f.predicate !== 'dcterms:type' && !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book')))"
+                        v-bind.sync="f"
+                        v-on:input="selectInput(s.fields, f, $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-select>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-date-edtf'">
+                      <p-i-date-edtf
+                        v-show="f.type === 'dcterms:available' ? showEmbargoDate : true"
+                        v-bind.sync="f"
+                        v-on:input-date="f.value=$event"
+                        v-on:input-date-type="setSelected(f, 'type', $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-date-edtf>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-series'">
+                      <p-i-series
+                        v-bind.sync="f"
+                        v-on:input-select-journal="selectJournal(s.fields, f, $event)"
+                        v-on:input-title="f.title=$event"
+                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                        v-on:input-volume="f.volume=$event"
+                        v-on:input-issue="f.issue=$event"
+                        v-on:input-issued="f.issued=$event"
+                        v-on:input-issn="f.issn=$event"
+                        v-on:input-identifier="f.identifier=$event"
+                        v-on:input-page-start="f.pageStart=$event"
+                        v-on:input-page-end="f.pageEnd=$event"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-series>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-bf-publication'">
+                      <p-i-bf-publication
+                        v-bind.sync="f"
+                        v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
+                        v-on:input-publisher-name="f.publisherName=$event"
+                        v-on:change-type="f.publisherType = $event"
+                        v-on:input-publisher-select="publisherSelectInput(f, $event)"
+                        v-on:input-publishing-place="f.publishingPlace=$event"
+                        v-on:input-publishing-date="f.publishingDate=$event"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-bf-publication>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-contained-in'">
+                      <p-i-contained-in
+                        v-bind.sync="f"
+                        v-on:input-title="f.title=$event"
+                        v-on:input-subtitle="f.subtitle=$event"
+                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
+                        v-on:input-role="containedInRoleInput(f, $event)"
+                        v-on:input-series-title="f.seriesTitle=$event"
+                        v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
+                        v-on:input-series-volume="f.seriesVolume=$event"
+                        v-on:input-series-issue="f.seriesIssue=$event"
+                        v-on:input-series-issued="f.seriesIssued=$event"
+                        v-on:input-series-issn="f.seriesIssn=$event"
+                        v-on:input-series-identifier="f.seriesIdentifier=$event"
+                        v-on:input-page-start="f.pageStart=$event"
+                        v-on:input-page-end="f.pageEnd=$event"
+                        v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
+                        v-on:input-publisher-name="f.publisherName=$event"
+                        v-on:change-publisher-type="f.publisherType = $event"
+                        v-on:input-publisher-select="publisherSelectInput(f, $event)"
+                        v-on:input-publishing-place="f.publishingPlace=$event"
+                        v-on:input-publishing-date="f.publishingDate=$event"
+                        v-on:add-role="addContainedInRole(f.roles, $event)"
+                        v-on:remove-role="removeContainedInRole(f.roles, $event)"
+                        v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
+                        v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                        :inputStyle="inputStyle"
+                      ></p-i-contained-in>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-entity-extended'">
+                      <p-i-entity-extended
+                        v-show="f.role !== 'role:uploader'"
+                        v-bind.sync="f"
+                        v-on:change-type="f.type = $event"
+                        v-on:input-firstname="f.firstname = $event"
+                        v-on:input-lastname="f.lastname = $event"
+                        v-on:input-name="f.name = $event"
+                        v-on:input-identifier="f.identifierText = $event"
+                        v-on:change-affiliation-type="f.affiliationType = $event"
+                        v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
+                        v-on:input-affiliation-other="f.affiliationText = $event"
+                        v-on:change-organization-type="f.organizationType = $event"
+                        v-on:input-organization-select="organizationSelectInput(f, $event)"
+                        v-on:input-organization-other="f.organizationText = $event"
+                        v-on:input-role="roleInput(f, $event)"
+                        v-on:add-clear="addEntityClear(s.fields, f)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        v-on:up="sortFieldUp(s.fields, f)"
+                        v-on:down="sortFieldDown(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-entity-extended>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-subject-gnd'">
+                      <p-i-subject-gnd
+                        v-bind.sync="f"
+                        v-on:input="f.value=$event"
+                        v-on:resolve="updateSubject(f, $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-subject-gnd>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-vocab-ext-readonly'">
+                      <p-i-vocab-ext-readonly
+                        v-bind.sync="f"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                      ></p-i-vocab-ext-readonly>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-literal'">
+                      <p-i-literal
+                        v-bind.sync="f"
+                        v-on:input-value="f.value=$event"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-literal>
+                    </template>
+
+                    <template v-else-if="(f.component === 'p-alternate-identifier')">
+                      <submit-ir-alternate-identifier
+                        v-bind.sync="f"
+                        v-on:input-identifier="f.value=$event"
+                        v-on:input-identifier-type="setSelected(f, 'type', $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:add-clear="addIdentifierClear(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></submit-ir-alternate-identifier>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-project'">
+                      <submit-ir-funding-field
+                        v-bind.sync="f"
+                        v-on:select-funder="setFunder(f, $event)"
+                        v-on:input-funder-name="f.funderName=$event"
+                        v-on:input-identifier="f.identifier=$event"
+                        v-on:add="addProject(s.fields, f)"
+                        v-on:add-clear="addProjectClear(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></submit-ir-funding-field>
+                    </template>
+
+                    <template v-else-if="f.component === 'p-file'">
+                      <v-col cols="12">
+                        <v-row no-gutters>
+                          <p-i-file
+                            v-bind.sync="f"
+                            v-on:input-file="setFilename(f, $event)"
+                            v-on:input-mimetype="setSelected(f, 'mimetype', $event)"
+                            v-on:add="addField(s.fields, f)"
+                            v-on:remove="removeField(s.fields, f)"
+                            :inputStyle="inputStyle"
+                            class="my-2"
+                          ></p-i-file>
+                        </v-row>
+                      </v-col>
+                    </template>
+
+                  </v-row>
+
+                </template>
+
+                <v-row v-if="license" no-gutters>
+                  <v-col cols="12" md="10">
+                    <submit-ir-license-info v-if="s.id === 5" :license="license"></submit-ir-license-info>
                   </v-col>
-                </v-card-text>
-                <v-divider class="mt-5"></v-divider>
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn dark @click="loginDialog = false" color="grey">{{ $t('Cancel') }}</v-btn>
-                  <v-btn @click="login()" :disabled="loading" :loading="loading" color="primary" raised>{{ $t('Login') }}</v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            <v-btn raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
+                </v-row>
+                <v-row no-gutters v-if="showSubmitWarning">
+                  <v-col cols="12" md="10">
+                    <v-alert type="error" outlined>
+                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: rightsCheckData.journal.title }) }}</span>
+                      <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>.
+                    </v-alert>
+                  </v-col>
+                </v-row>
+                <v-divider class="mt-5 mb-7"></v-divider>
+                <v-row no-gutters justify="space-between">
+                  <v-btn dark color="grey" @click="step = (s.id - (submitformparam === 'journal-article' ?  1 : 2)); $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+                  <v-btn color="primary" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
+                </v-row>
+              </v-col>
+            </v-row>
+          </v-container>
+        </v-stepper-content>
 
-      <v-stepper-content step="8">
-        <v-container v-if="submitResponse">
-          <v-row no-gutters>
-            <h3 class="title font-weight-light primary--text mb-4">{{ $t('Thank you for your submission.') }}</h3>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('The submission process was successful. Your data will be checked as quickly as possible.') }}</p>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('During the verification process your object has a temporary status, where it can only be accessed according to copyright laws ("all rights reserved"). Furthermore, it cannot yet be found through academic search engines such as BASE.') }}</p>
-          </v-row>
-          <v-row no-gutters>
-            <p>{{ $t('The persistent URL of your object is') }} <a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + submitResponse.pid">{{ 'https://' + config.phaidrabaseurl + '/' + submitResponse.pid }}</a>.</p>
-          </v-row>
-          <v-row no-gutters v-if="submitResponse.alternatives && (submitResponse.alternatives.length > 0)">
-            <p>{{ $t('The persistent URLs of alternative versions are') }}:</p>
-            <p v-for="(a, i) of submitResponse.alternatives" :key="'alt'+i"><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + a">{{ 'https://' + config.phaidrabaseurl + '/' + a }}</a>.</p>
-          </v-row>
-          <template v-if="this.showEmbargoDate">
+        <v-stepper-content step="7">
+          <v-container>
+            <v-row>
+              <v-col md="10" offset-md="1">
+                <p-d-jsonld :jsonld="jsonld"></p-d-jsonld>
+              </v-col>
+            </v-row>
+            <v-row v-if="altVersionPid">
+              <v-col md="10" offset-md="1">
+                <v-alert outlined type="info" color="primary">
+                  <p>
+                    {{ $t('This object will be marked as alternative version of object') }}
+                    <a class="mx-4" target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + altVersionPid">{{ 'https://' + config.phaidrabaseurl + '/' + altVersionPid }}</a>
+                    <v-btn @click="altVersionPid = null" color="grey" dark>{{ $t('Remove this relationship') }}</v-btn>
+                  </p>
+                </v-alert>
+              </v-col>
+            </v-row>
+            <!--
+            <v-row>
+              <code>{{ jsonld }}</code>
+            </v-row>
+            -->
+            <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters>
-              <p>{{ $t('Your publication will be available as soon as the embargo period has expired.') }}</p>
+              <v-btn dark color="grey" :disabled="loading" @click="step = 6; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+              <v-spacer></v-spacer>
+              <v-dialog v-model="discardDialog" max-width="500px">
+                <template v-slot:activator="{ on }">
+                  <v-btn v-on="on" class="mr-3" :disabled="loading" dark color="error">{{ $t('Discard submission') }}</v-btn>
+                </template>
+                <v-card>
+                  <v-card-title class="title font-weight-light grey white--text">
+                    {{ $t('Discard submission') }}
+                  </v-card-title>
+                  <v-card-text>
+                    <p class="mt-6 title font-weight-light grey--text text--darken-3">{{ $t('Discard submission process?') }}</p>
+                  </v-card-text>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn dark @click="discardDialog = false" color="grey">{{ $t('Cancel') }}</v-btn>
+                    <v-btn :to="'/'" @click="discardDialog = false" color="primary">{{ $t('Discard') }}</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-dialog v-model="loginDialog" max-width="500px">
+                <v-card>
+                  <v-card-title class="title font-weight-light grey white--text">
+                    {{ $t('Please log in') }}
+                  </v-card-title>
+                  <v-card-text>
+                    <p class="mt-6 title font-weight-light grey--text text--darken-3">{{ $t('You have been logged out. Please log in to continue submit.') }}</p>
+                    <v-col cols="10" offset="1">
+                      <v-text-field
+                        :disabled="loading"
+                        :label="$t('Username')"
+                        v-model="credentials.username"
+                        required
+                        filled
+                        single-line
+                        :autocomplete="'username'"
+                      ></v-text-field>
+                      <v-text-field
+                        :disabled="loading"
+                        :label="$t('Password')"
+                        v-model="credentials.password"
+                        required
+                        filled
+                        single-line
+                        :append-icon="loginPassVisible ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append="loginPassVisible = !loginPassVisible"
+                        :type="loginPassVisible ? 'password' : 'text'"
+                        :autocomplete="'current-password'"
+                      ></v-text-field>
+                    </v-col>
+                  </v-card-text>
+                  <v-divider class="mt-5"></v-divider>
+                  <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn dark @click="loginDialog = false" color="grey">{{ $t('Cancel') }}</v-btn>
+                    <v-btn @click="login()" :disabled="loading" :loading="loading" color="primary" raised>{{ $t('Login') }}</v-btn>
+                  </v-card-actions>
+                </v-card>
+              </v-dialog>
+              <v-btn raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
+            </v-row>
+          </v-container>
+        </v-stepper-content>
+
+        <v-stepper-content step="8">
+          <v-container v-if="submitResponse">
+            <v-row no-gutters>
+              <h3 class="title font-weight-light primary--text mb-4">{{ $t('Thank you for your submission.') }}</h3>
             </v-row>
             <v-row no-gutters>
-              <p>{{ $t('Please contact me via email') }}</p>
+              <p>{{ $t('The submission process was successful. Your data will be checked as quickly as possible.') }}</p>
             </v-row>
             <v-row no-gutters>
+              <p>{{ $t('During the verification process your object has a temporary status, where it can only be accessed according to copyright laws ("all rights reserved"). Furthermore, it cannot yet be found through academic search engines such as BASE.') }}</p>
+            </v-row>
+            <v-row no-gutters>
+              <p>{{ $t('The persistent URL of your object is') }} <a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + submitResponse.pid">{{ 'https://' + config.phaidrabaseurl + '/' + submitResponse.pid }}</a>.</p>
+            </v-row>
+            <v-row no-gutters v-if="submitResponse.alternatives && (submitResponse.alternatives.length > 0)">
+              <p>{{ $t('The persistent URLs of alternative versions are') }}:</p>
+              <p v-for="(a, i) of submitResponse.alternatives" :key="'alt'+i"><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + a">{{ 'https://' + config.phaidrabaseurl + '/' + a }}</a>.</p>
+            </v-row>
+            <template v-if="this.showEmbargoDate">
+              <v-row no-gutters>
+                <p>{{ $t('Your publication will be available as soon as the embargo period has expired.') }}</p>
+              </v-row>
+              <v-row no-gutters>
+                <p>{{ $t('Please contact me via email') }}</p>
+              </v-row>
+              <v-row no-gutters>
+                <v-checkbox v-model="notificationCheckbox" hide-details color="primary" class="mt-0">
+                  <template v-slot:label>
+                    <span class="black--text">{{ $t('as soon as my submission has been successfully verified') + ',' }}</span>
+                  </template>
+                </v-checkbox>
+              </v-row>
+              <v-row no-gutters>
+                <v-checkbox v-model="embargoNotificationCheckbox" hide-details color="primary">
+                  <template v-slot:label>
+                    <span class="black--text">{{ $t('as soon as the embargo period has expired') + '.' }}</span>
+                  </template>
+                </v-checkbox>
+              </v-row>
+            </template>
+            <v-row no-gutters v-else>
               <v-checkbox v-model="notificationCheckbox" hide-details color="primary" class="mt-0">
                 <template v-slot:label>
-                  <span class="black--text">{{ $t('as soon as my submission has been successfully verified') + ',' }}</span>
+                  <span class="black--text">{{ $t('Please notify me by e-mail as soon as my object is fully accessible.') }}</span>
                 </template>
               </v-checkbox>
             </v-row>
+            <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters>
-              <v-checkbox v-model="embargoNotificationCheckbox" hide-details color="primary">
-                <template v-slot:label>
-                  <span class="black--text">{{ $t('as soon as the embargo period has expired') + '.' }}</span>
-                </template>
-              </v-checkbox>
+              <v-spacer></v-spacer>
+              <v-btn color="primary" :loading="loading" :disabled="loading" @click="confirm()">{{ $t('Confirm') }}</v-btn>
             </v-row>
-          </template>
-          <v-row no-gutters v-else>
-            <v-checkbox v-model="notificationCheckbox" hide-details color="primary" class="mt-0">
-              <template v-slot:label>
-                <span class="black--text">{{ $t('Please notify me by e-mail as soon as my object is fully accessible.') }}</span>
-              </template>
-            </v-checkbox>
-          </v-row>
-          <v-divider class="mt-5 mb-7"></v-divider>
-          <v-row no-gutters>
-            <v-spacer></v-spacer>
-            <v-btn color="primary" :loading="loading" :disabled="loading" @click="confirm()">{{ $t('Confirm') }}</v-btn>
-          </v-row>
-        </v-container>
-      </v-stepper-content>
+          </v-container>
+        </v-stepper-content>
 
-    </v-stepper-items>
+      </v-stepper-items>
 
-  </v-stepper>
+    </v-stepper>
 
-  <v-col cols="1">
-    <v-switch
-      v-model="outlinedSwitch"
-      :label="'Outlined'"
-    ></v-switch>
-  </v-col>
   </div>
 
 </template>
@@ -859,13 +859,11 @@ export default {
         }
       }
       return false
-    },
-    inputStyle: function () {
-      return this.outlinedSwitch ? 'outlined' : 'filled'
     }
   },
   data () {
     return {
+      inputStyle: 'filled',
       form: {
         sections: []
       },
@@ -911,8 +909,7 @@ export default {
         candobulkupload: null,
         nrdays: null,
         nruploads: null
-      },
-      outlinedSwitch: false
+      }
     }
   },
   watch: {
@@ -1853,10 +1850,17 @@ export default {
             sf.pageEnd = doiImportData.pageEnd
           }
         }
+        sf.publisherSearch = false
+        sf.publisherShowPlace = false
+        sf.publisherShowDate = false
+        sf.publisherLabel = 'PUBLISHER_VERLAG'
+        if (doiImportData && doiImportData.publisher) {
+          sf.publisherName = doiImportData.publisher
+        }
         smf.push(sf)
       }
 
-      if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
+      if ((this.submitformparam === 'book')) {
         let pf = fields.getField('bf-publication')
         pf.publisherSearch = false
         pf.multiplicable = false
@@ -2097,6 +2101,22 @@ export default {
               if (f.mimetype.length < 1) {
                 f.mimetypeErrorMessages.push(this.$t('Please select'))
                 this.validationStatus = 'error'
+              }
+            }
+            if (f.component === 'p-contained-in') {
+              f.publisherNameErrorMessages = []
+              f.publisherOrgUnitErrorMessages = []
+              if (f.publisherType === 'select') {
+                if (f.publisherOrgUnit.length < 1) {
+                  f.publisherOrgUnitErrorMessages.push(this.$t('Missing publisher'))
+                  this.validationStatus = 'error'
+                }
+              }
+              if (f.publisherType === 'other') {
+                if (f.publisherName.length < 1) {
+                  f.publisherNameErrorMessages.push(this.$t('Missing publisher'))
+                  this.validationStatus = 'error'
+                }
               }
             }
             if (f.component === 'p-bf-publication') {

@@ -16,7 +16,7 @@
       :filled="!solo"
       single-line
       :solo="solo"
-      append-icon="search"
+      append-icon="mdi-magnify"
       :messages="messages"
     />
     <div :class="`${getClassName('list')} autocomplete autocomplete-list elevation-2`" v-show="showList && suggestions && suggestions.length">
