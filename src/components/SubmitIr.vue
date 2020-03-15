@@ -381,12 +381,13 @@
 
                 <template v-if="s.id === 6">
                   <submit-ir-description-keywords
-                    :label="$t('Details zum Artikel')"
+                    :label="submitformparam === 'journal-article' ? $t('Article details') : (submitformparam === 'book' ? $t('Book details') : $t('Book chapter details'))"
                     :descriptionLabel="$t('Abstract')"
                     :keywordsLabel="$t('Keywords')"
                     v-on:input-description="setDescription(s, $event)"
                     v-on:input-keywords="setKeywords(s, $event)"
                     :inputStyle="inputStyle"
+                    class="my-4"
                   ></submit-ir-description-keywords>
                 </template>
 
@@ -462,7 +463,7 @@
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
-                        class="my-2"
+                        class="my-4"
                       ></p-i-series>
                     </template>
 
@@ -478,12 +479,13 @@
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
-                        class="my-2"
+                        class="mt-2 mb-8"
                       ></p-i-bf-publication>
                     </template>
 
                     <template v-else-if="f.component === 'p-contained-in'">
                       <p-i-contained-in
+                        class="mt-2 mb-6"
                         v-bind.sync="f"
                         v-on:input-title="f.title=$event"
                         v-on:input-subtitle="f.subtitle=$event"
@@ -534,7 +536,7 @@
                         v-on:up="sortFieldUp(s.fields, f)"
                         v-on:down="sortFieldDown(s.fields, f)"
                         :inputStyle="inputStyle"
-                        class="my-2"
+                        class="mb-6"
                       ></p-i-entity-extended>
                     </template>
 
@@ -569,31 +571,65 @@
                       ></p-i-literal>
                     </template>
 
-                    <template v-else-if="(f.component === 'p-alternate-identifier')">
-                      <submit-ir-alternate-identifier
-                        v-bind.sync="f"
-                        v-on:input-identifier="f.value=$event"
-                        v-on:input-identifier-type="setSelected(f, 'type', $event)"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:add-clear="addIdentifierClear(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        :inputStyle="inputStyle"
-                        class="my-2"
-                      ></submit-ir-alternate-identifier>
+                    <template v-else-if="(f.component === 'p-alternate-identifier') && (f.subloopFlag)">
+                      <v-row class="my-4">
+                        <v-col cols="12">
+                          <v-card width="100%">
+                            <v-card-title class="title font-weight-light grey white--text">
+                              <span>{{ $t('Identifiers') }}</span>
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text class="mt-4">
+                              <template v-for="(f) in s.fields">
+                                <template no-gutters v-if="(f.component === 'p-alternate-identifier')">
+                                    <submit-ir-alternate-identifier
+                                      :key="f.id"
+                                      v-bind.sync="f"
+                                      v-on:input-identifier="f.value=$event"
+                                      v-on:input-identifier-type="setSelected(f, 'type', $event)"
+                                      v-on:add="addField(s.fields, f)"
+                                      v-on:add-clear="addIdentifierClear(s.fields, f)"
+                                      v-on:remove="removeField(s.fields, f)"
+                                      :inputStyle="inputStyle"
+                                      class="my-2"
+                                    ></submit-ir-alternate-identifier>
+                                  </template>
+                                </template>
+                            </v-card-text>
+                          </v-card>
+                        </v-col>
+                      </v-row>
                     </template>
 
-                    <template v-else-if="f.component === 'p-project'">
-                      <submit-ir-funding-field
-                        v-bind.sync="f"
-                        v-on:select-funder="setFunder(f, $event)"
-                        v-on:input-funder-name="f.funderName=$event"
-                        v-on:input-identifier="f.identifier=$event"
-                        v-on:add="addProject(s.fields, f)"
-                        v-on:add-clear="addProjectClear(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        :inputStyle="inputStyle"
-                        class="my-2"
-                      ></submit-ir-funding-field>
+                    <template v-else-if="(f.component === 'p-project') && (f.subloopFlag)">
+                      <v-row class="my-4">
+                        <v-col cols="12">
+                          <v-card width="100%">
+                            <v-card-title class="title font-weight-light grey white--text">
+                              <span>{{ $t('Funder/Project') }}</span>
+                            </v-card-title>
+                            <v-divider></v-divider>
+                            <v-card-text class="mt-4">
+                              <template v-for="(f) in s.fields">
+                                <template v-if="(f.component === 'p-project')">
+                                  <submit-ir-funding-field
+                                    :key="f.id"
+                                    v-bind.sync="f"
+                                    v-on:select-funder="setFunder(f, $event)"
+                                    v-on:input-funder-name="f.funderName=$event"
+                                    v-on:input-identifier="f.identifier=$event"
+                                    v-on:add="addProject(s.fields, f)"
+                                    v-on:add-clear="addProjectClear(s.fields, f)"
+                                    v-on:remove="removeField(s.fields, f)"
+                                    :inputStyle="inputStyle"
+                                    class="my-2"
+                                  ></submit-ir-funding-field>
+                                </template>
+                              </template>
+                            </v-card-text>
+                          </v-card>
+                        </v-col>
+                      </v-row>
                     </template>
 
                     <template v-else-if="f.component === 'p-file'">
@@ -1393,6 +1429,7 @@ export default {
         newField.lastname = ''
         newField.identifierText = ''
         newField.removable = true
+        newField.subloopFlag = false
       }
     },
     addEntityClear: function (arr, f) {
@@ -1427,6 +1464,7 @@ export default {
         newField.removable = true
         newField.addOnly = false
         newField.removeOnly = true
+        newField.subloopFlag = false
       }
     },
     addProjectClear: function (arr, f) {
@@ -1437,6 +1475,7 @@ export default {
         newField.identifier = ''
         newField.funderIdentifier = ''
         newField.funderName = ''
+        newField.subloopFlag = false
       }
     },
     addProject: function (arr, f) {
@@ -1445,6 +1484,7 @@ export default {
         newField.id = (new Date()).getTime()
         newField.removable = true
         newField.identifier = ''
+        newField.subloopFlag = false
       }
     },
     removeField: function (arr, f) {
@@ -1736,6 +1776,8 @@ export default {
         sections: []
       }
 
+      self.license = null
+
       let smf = []
 
       let rt = fields.getField('resource-type')
@@ -1907,6 +1949,7 @@ export default {
       pof.label = 'Funder/Project'
       pof.multiplicable = true
       pof.multiplicableCleared = true
+      pof.subloopFlag = true
       sof.push(pof)
 
       let aif = fields.getField('alternate-identifier')
@@ -1915,6 +1958,7 @@ export default {
       aif.vocabulary = 'irobjectidentifiertypenoisbn'
       aif.multiplicable = true
       aif.addOnly = true
+      aif.subloopFlag = true
       if (doiImportData && doiImportData.doi) {
         aif.type = 'ids:doi'
         aif.value = doiImportData.doi
@@ -2196,7 +2240,6 @@ export default {
       if (!self) {
         self = this
       }
-      self.license = null
       self.submitResponse = null
       self.$store.dispatch('loadLanguages', this.$i18n.locale)
       self.step = 1
@@ -2209,7 +2252,6 @@ export default {
       self.resetForm(self, null, null)
     },
     resetDOIImport: function () {
-      this.license = null
       this.doiImportInput = null
       this.doiImportData = null
       this.doiImportErrors = []

@@ -702,5 +702,8 @@ export default {
   'Metadata policy': 'Metadaten-Leitlinie',
   'What do you want to upload?': 'Was möchten Sie hochladen?',
   'Journal article': 'Beitrag in Zeitschrift',
-  'Book chapter': 'Buchkapitel'
+  'Book chapter': 'Buchkapitel',
+  'Article details': 'Details zum Artikel',
+  'Book details': 'Details zum Buch',
+  'Book chapter details': 'Details zum Buchkapitel'
 }
