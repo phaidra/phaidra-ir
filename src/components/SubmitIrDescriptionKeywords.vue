@@ -18,6 +18,19 @@
               ></v-textarea>
             </v-col>
           </v-row>
+          <v-row no-gutters v-if="keywordParser">
+            <v-col cols="10">
+              <v-textarea
+                v-model="keywordspaste"
+                filled
+                :placeholder="$t('Paste keywords')"
+              >
+                <template v-slot:append-outer>
+                  <v-btn @click="parseKeywordsPaste()" color="primary">{{ $t('Parse') }}</v-btn>
+                </template>
+              </v-textarea>
+            </v-col>
+          </v-row>
           <v-row>
             <v-col cols="12">
               <v-combobox
@@ -79,12 +92,17 @@ export default {
     },
     keywordsLabel: {
       type: String
+    },
+    keywordParser: {
+      type: Boolean,
+      default: false
     }
   },
   data () {
     return {
       items: [],
-      model: this.value
+      model: this.value,
+      keywordspaste: ''
     }
   },
   watch: {
@@ -93,6 +111,12 @@ export default {
     }
   },
   methods: {
+    parseKeywordsPaste () {
+      let arr = this.keywordspaste.split(/[,;]/)
+      arr = arr.map(e => e.trim())
+      this.model = arr
+      this.$emit('input-keywords', arr)
+    },
     onInput (value) {
       let arr = []
       for (let v of value) {

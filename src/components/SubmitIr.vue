@@ -682,22 +682,6 @@
                 <p-d-jsonld :jsonld="jsonld"></p-d-jsonld>
               </v-col>
             </v-row>
-            <v-row v-if="altVersionPid">
-              <v-col md="10" offset-md="1">
-                <v-alert outlined type="info" color="primary">
-                  <p>
-                    {{ $t('This object will be marked as alternative version of object') }}
-                    <a class="mx-4" target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + altVersionPid">{{ 'https://' + config.phaidrabaseurl + '/' + altVersionPid }}</a>
-                    <v-btn @click="altVersionPid = null" color="grey" dark>{{ $t('Remove this relationship') }}</v-btn>
-                  </p>
-                </v-alert>
-              </v-col>
-            </v-row>
-            <!--
-            <v-row>
-              <code>{{ jsonld }}</code>
-            </v-row>
-            -->
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters>
               <v-btn dark color="grey" :disabled="loading" @click="step = 6; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
@@ -841,7 +825,6 @@ import { config } from '@/mixins/config'
 import { vocabulary } from 'phaidra-vue-components/src//mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 import qs from 'qs'
-import axios from 'axios'
 var iconv = require('iconv-lite')
 
 export default {
@@ -876,6 +859,8 @@ export default {
       switch (this.submitformparam) {
         case 'journal-article':
           return 'irobjecttypearticle'
+        case 'book':
+          return 'irobjecttypebook'
         default:
           return 'irobjecttype'
       }
@@ -965,7 +950,7 @@ export default {
     async checkAllowSubmit () {
       this.submitformLoading = true
       try {
-        let response = await axios.get(this.config.api + '/ir/allowsubmit',
+        let response = await this.$http.get(this.config.api + '/ir/allowsubmit',
           {
             headers: {
               'X-XSRF-TOKEN': this.user.token
@@ -1038,7 +1023,7 @@ export default {
         var query = qs.stringify(params)
 
         try {
-          let response = await axios.request({
+          let response = await this.$http.request({
             method: 'GET',
             url: this.config.apis.sherparomeo.url + '?' + query,
             responseType: 'arraybuffer'
@@ -1089,7 +1074,7 @@ export default {
         var query = qs.stringify(params)
 
         try {
-          let response = await axios.request({
+          let response = await this.$http.request({
             method: 'GET',
             url: this.config.apis.sherparomeo.url + '?' + query,
             responseType: 'arraybuffer'
@@ -1189,21 +1174,6 @@ export default {
             })
 
             let crossrefData = response.data
-
-            this.doiImportData = {
-              doi: this.doiToImport,
-              title: '',
-              dateIssued: '',
-              authors: [],
-              publicationType: '',
-              publisher: '',
-              journalTitle: '',
-              journalISSN: '',
-              journalVolume: '',
-              journalIssue: '',
-              pageStart: '',
-              pageEnd: ''
-            }
 
             this.doiImportData = {
               doi: this.doiToImport,
@@ -2264,16 +2234,12 @@ export default {
     next(async vm => {
       vm.$store.commit('setSkipsubmitrouteleavehook', false)
       await vm.checkAllowSubmit()
-      // vm.submitformLoading = true
-      // setTimeout(function () { vm.submitformLoading = false }, 500)
       vm.resetSubmission(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.$store.commit('setSkipsubmitrouteleavehook', false)
     await this.checkAllowSubmit()
-    // this.submitformLoading = true
-    // setTimeout(function () { this.submitformLoading = false }, 500)
     this.resetSubmission(this)
     next()
   },

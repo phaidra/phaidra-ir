@@ -7,7 +7,7 @@ import Metadata from '@/components/Metadata'
 import MetadataEditor from '@/components/MetadataEditor'
 import SubmitIr from '@/components/SubmitIr'
 import Submit from '@/components/Submit'
-import Admin from '@/components/Admin'
+import AdminSearch from '@/components/AdminSearch'
 import AdminSubmitIr from '@/components/AdminSubmitIr'
 import AdminSubmit from '@/components/AdminSubmit'
 import About from '@/components/info/About'
@@ -67,7 +67,7 @@ export function createRouter () {
       {
         path: '/admin',
         name: 'admin',
-        component: Admin
+        component: AdminSearch
       },
       {
         path: '/admin/submit',

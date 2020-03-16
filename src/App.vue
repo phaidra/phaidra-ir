@@ -216,8 +216,9 @@ export default {
       this.$store.commit('setSkipsubmitrouteleavehook', true)
       this.$router.push('/submit')
     },
-    logout: function () {
-      this.$store.dispatch('logout')
+    logout: async function () {
+      await this.$store.dispatch('logout')
+      this.$router.push('/')
     },
     getCookie: function (name) {
       var value = '; ' + document.cookie

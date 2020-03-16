@@ -52,6 +52,7 @@ export default {
   'rdau:P60193': 'Appeared in',
   'rdau:P60101': 'Is contained in',
   'rdau:P60101_rdau:P60193': 'Series',
+  'rdau:P60101_bf:provisionActivity': 'Publisher',
   'rdau:P60227': 'Is motion picture adaptation of',
   'bf:provisionActivity': 'Provision activity: Publication',
   'cito:cites': 'Cites',
