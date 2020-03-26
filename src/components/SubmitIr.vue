@@ -2263,7 +2263,7 @@ export default {
           }
         }
       }
-      if (!hasLocalAffiliation && (this.user.username !== this.config.iraccount)) {
+      if (!hasLocalAffiliation) {
         this.validationStatus = 'error'
         this.validationErrors.push(this.$t('At least one person named must be affiliated with the') + ' ' + this.config.institution)
       }
