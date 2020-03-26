@@ -12,19 +12,19 @@
 
     <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" alt-labels>
       <v-stepper-header>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 1) && (step < 8)" :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 1) && (step < 8)" :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 2) && (step < 8)" :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 2) && (step < 8)" :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep > 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep >= 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
         <v-divider v-if="(submitformparam === 'journal-article')"></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep > 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 7" step="7">{{ $t('Submit') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 7) && (step < 8)" :complete="maxStep > 7" step="7" @click="updateJsonld()">{{ $t('Submit') }}</v-stepper-step>
         <v-divider></v-divider>
         <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 8" step="8">{{ $t('Notifications') }}</v-stepper-step>
       </v-stepper-header>
@@ -215,7 +215,7 @@
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters justify="space-between">
               <v-btn dark color="grey" @click="step = 2; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
-              <v-btn color="primary" @click="step = (submitformparam === 'journal-article' ?  4 : 5);  $vuetify.goTo(1)">
+              <v-btn color="primary" @click="step = (submitformparam === 'journal-article' ?  4 : 5); $vuetify.goTo(1)">
                 <template v-if="doiImportData">{{ $t('Continue') }}</template>
                 <template v-else>{{ $t('Skip') }}</template>
               </v-btn>
@@ -500,6 +500,7 @@
                         v-on:input-series-identifier="f.seriesIdentifier=$event"
                         v-on:input-page-start="f.pageStart=$event"
                         v-on:input-page-end="f.pageEnd=$event"
+                        v-on:input-isbn="f.isbn=$event"
                         v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
                         v-on:input-publisher-name="f.publisherName=$event"
                         v-on:change-publisher-type="f.publisherType = $event"
@@ -569,6 +570,16 @@
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-literal>
+                    </template>
+
+                    <template v-else-if="f.component === 'isbn'">
+                      <p-i-alternate-identifier
+                        v-bind.sync="f"
+                        v-on:input-identifier="f.value=$event"
+                        v-on:input-identifier-type="setSelected(f, 'type', $event)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-alternate-identifier>
                     </template>
 
                     <template v-else-if="(f.component === 'p-alternate-identifier') && (f.subloopFlag)">
@@ -667,7 +678,7 @@
                 </v-row>
                 <v-divider class="mt-5 mb-7"></v-divider>
                 <v-row no-gutters justify="space-between">
-                  <v-btn dark color="grey" @click="step = (s.id - (submitformparam === 'journal-article' ?  1 : 2)); $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+                  <v-btn dark color="grey" @click="backForm(s.id)">{{ $t('Back') }}</v-btn>
                   <v-btn color="primary" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
                 </v-row>
               </v-col>
@@ -849,9 +860,6 @@ export default {
         return null
       }
     },
-    jsonld: function () {
-      return this.getJsonld()
-    },
     submitformparam: function () {
       return this.$route.params.submitform
     },
@@ -859,8 +867,6 @@ export default {
       switch (this.submitformparam) {
         case 'journal-article':
           return 'irobjecttypearticle'
-        case 'book':
-          return 'irobjecttypebook'
         default:
           return 'irobjecttype'
       }
@@ -930,7 +936,8 @@ export default {
         candobulkupload: null,
         nrdays: null,
         nruploads: null
-      }
+      },
+      jsonld: {}
     }
   },
   watch: {
@@ -944,9 +951,15 @@ export default {
       if (val > this.maxStep) {
         this.maxStep = val
       }
+      if (val === 7) {
+        this.updateJsonld()
+      }
     }
   },
   methods: {
+    updateJsonld () {
+      this.jsonld = this.getJsonld()
+    },
     async checkAllowSubmit () {
       this.submitformLoading = true
       try {
@@ -1100,31 +1113,67 @@ export default {
               homeurl: p.homeurl['#text'],
               color: p.romeocolour['#text']
             }
-            publisher['prearchiving'] = p.preprints.prearchiving['#text']
-            publisher['prerestrictions'] = []
-            if (p.preprints.prerestrictions.prerestriction) {
-              for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
-                publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
+            if (p.preprints) {
+              if (p.preprints.prearchiving) {
+                publisher['prearchiving'] = p.preprints.prearchiving['#text']
+              }
+              publisher['prerestrictions'] = []
+              if (p.preprints.prerestrictions) {
+                if (p.preprints.prerestrictions.prerestriction) {
+                  if (p.preprints.prerestrictions.constructor === Array) {
+                    for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
+                      publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
+                    }
+                  } else {
+                    publisher['prerestrictions'].push(this.stripTags(p.preprints.prerestrictions.prerestriction['#text']))
+                  }
+                }
               }
             }
-            publisher['postarchiving'] = p.postprints.postarchiving['#text']
-            publisher['postrestrictions'] = []
-            if (p.postprints.postrestrictions.postrestriction) {
-              for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
-                publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
+            if (p.postprints) {
+              if (p.postprints.postarchiving) {
+                publisher['postarchiving'] = p.postprints.postarchiving['#text']
+              }
+              publisher['postrestrictions'] = []
+              if (p.postprints.postrestrictions) {
+                if (p.postprints.postrestrictions.postrestriction) {
+                  if (p.postprints.postrestrictions.constructor === Array) {
+                    for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
+                      publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
+                    }
+                  } else {
+                    publisher['postrestrictions'].push(this.stripTags(p.postprints.postrestrictions.postrestriction['#text']))
+                  }
+                }
               }
             }
-            publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
-            publisher['pdfrestrictions'] = []
-            if (p.pdfversion.pdfrestrictions.pdfrestriction) {
-              for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
-                publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
+            if (p.pdfversion) {
+              if (p.pdfversion.pdfarchiving) {
+                publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
+              }
+              publisher['pdfrestrictions'] = []
+              if (p.pdfversion.pdfrestrictions) {
+                if (p.pdfversion.pdfrestrictions.pdfrestriction) {
+                  if (p.postprints.pdfrestrictions.constructor === Array) {
+                    for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
+                      publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
+                    }
+                  } else {
+                    publisher['pdfrestrictions'].push(this.stripTags(p.pdfversion.pdfrestrictions.pdfrestriction['#text']))
+                  }
+                }
               }
             }
             publisher['conditions'] = []
-            if (p.conditions.condition) {
-              for (let condition of p.conditions.condition) {
-                publisher['conditions'].push(this.stripTags(condition['#text']))
+            if (p.conditions) {
+              if (p.conditions.condition) {
+                if (p.conditions.condition.constructor === Array) {
+                  for (let condition of p.conditions.condition) {
+                    publisher['conditions'].push(this.stripTags(condition['#text']))
+                  }
+                } else {
+                  publisher['conditions'].push(this.stripTags(p.conditions.condition['#text']))
+                }
               }
             }
           }
@@ -1308,7 +1357,7 @@ export default {
                 }
               }
             }
-            this.resetForm(this, this.doiImportData, null)
+            this.resetForm(this, this.doiImportData)
             if (this.doiImportData.journalISSN) {
               this.rightsCheckSearch = this.doiImportData.journalISSN
             }
@@ -1738,15 +1787,13 @@ export default {
         }
       }
     },
-    resetForm: function (self, doiImportData, importedComponents) {
+    resetForm: function (self, doiImportData) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
       self.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
 
       self.form = {
         sections: []
       }
-
-      self.license = null
 
       let smf = []
 
@@ -1864,10 +1911,13 @@ export default {
         }
         sf.publisherSearch = false
         sf.publisherShowPlace = false
-        sf.publisherShowDate = false
+        sf.publisherShowDate = true
         sf.publisherLabel = 'PUBLISHER_VERLAG'
         if (doiImportData && doiImportData.publisher) {
           sf.publisherName = doiImportData.publisher
+        }
+        if (doiImportData && doiImportData.dateIssued) {
+          sf.publishingDate = doiImportData.dateIssued
         }
         smf.push(sf)
       }
@@ -1877,12 +1927,30 @@ export default {
         pf.publisherSearch = false
         pf.multiplicable = false
         pf.showPlace = false
-        pf.showDate = false
+        pf.showDate = true
         pf.label = 'PUBLISHER_VERLAG'
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
+        if (doiImportData && doiImportData.dateIssued) {
+          pf.publishingDate = doiImportData.dateIssued
+        }
         smf.push(pf)
+
+        let isbn = {
+          id: 'alternate-identifier',
+          fieldname: 'Alternate identifier',
+          predicate: 'rdam:P30004',
+          component: 'isbn',
+          type: 'ids:isbn',
+          showType: false,
+          disableType: true,
+          multiplicable: false,
+          identifierLabel: 'ISBN',
+          valueErrorMessages: [],
+          value: ''
+        }
+        smf.push(isbn)
       }
 
       let arf = fields.getField('access-right')
@@ -1935,28 +2003,21 @@ export default {
       }
       sof.push(aif)
 
-      if ((this.submitformparam === 'book') || (this.submitformparam === 'book-part')) {
-        let isbn = fields.getField('alternate-identifier')
-        isbn.label = 'Identifier'
-        isbn.vocabulary = 'irobjectidentifiertype'
-        isbn.type = 'ids:isbn'
-        isbn.multiplicable = true
-        isbn.addOnly = true
-        sof.push(isbn)
-      }
-
       if (this.submitformparam === 'book') {
         let nop = fields.getField('number-of-pages')
         nop.multiplicable = false
         sof.push(nop)
       }
 
-      if (this.submitformparam === 'journal-article') {
+      if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book')) {
         let sf = fields.getField('series')
         sf.multilingual = false
-        sf.journalSuggest = true
         sf.hideIdentifier = true
-        sf.hidePages = false
+        sf.journalSuggest = this.submitformparam === 'journal-article'
+        sf.hidePages = this.submitformparam !== 'journal-article'
+        sf.hideIssue = this.submitformparam !== 'journal-article'
+        sf.hideIssued = this.submitformparam !== 'journal-article'
+        sf.hideIssn = this.submitformparam !== 'journal-article'
         sf.issuedDatePicker = true
         if (doiImportData) {
           if (doiImportData.journalTitle) {
@@ -1976,6 +2037,9 @@ export default {
           }
           if (doiImportData.pageEnd) {
             sf.pageEnd = doiImportData.pageEnd
+          }
+          if (doiImportData && doiImportData.dateIssued) {
+            sf.issued = doiImportData.dateIssued
           }
         }
         sof.push(sf)
@@ -2001,6 +2065,17 @@ export default {
           fields: sof
         }
       )
+
+      this.$nextTick().then(function () {
+        // put things here which might be overwritten
+        // when components re-initialize
+        // some use nextTick to wait for vocabularies or
+        // something, and then fire input event which is cought
+        // eg by selectInput here, but they fire AFTER resetForm
+        // while still having old values set
+        self.license = null
+        self.showEmbargoDate = false
+      })
     },
     continueForm: function (step) {
       if (step === 5) {
@@ -2008,6 +2083,18 @@ export default {
       }
       if (this.validationStatus !== 'error') {
         this.step = step + 1
+      }
+      this.$vuetify.goTo(1)
+    },
+    backForm: function (step) {
+      if (step === 6) {
+        this.step = 5
+      } else {
+        if (this.submitformparam === 'journal-article') {
+          this.step = 4
+        } else {
+          this.step = 3
+        }
       }
       this.$vuetify.goTo(1)
     },
@@ -2120,6 +2207,8 @@ export default {
             if (f.component === 'p-contained-in') {
               f.publisherNameErrorMessages = []
               f.publisherOrgUnitErrorMessages = []
+              f.titleErrorMessages = []
+              f.isbnErrorMessages = []
               if (f.publisherType === 'select') {
                 if (f.publisherOrgUnit.length < 1) {
                   f.publisherOrgUnitErrorMessages.push(this.$t('Missing publisher'))
@@ -2131,6 +2220,14 @@ export default {
                   f.publisherNameErrorMessages.push(this.$t('Missing publisher'))
                   this.validationStatus = 'error'
                 }
+              }
+              if (f.title.length < 1) {
+                f.titleErrorMessages.push(this.$t('Missing title'))
+                this.validationStatus = 'error'
+              }
+              if (f.isbn.length < 1) {
+                f.isbnErrorMessages.push(this.$t('Missing ISBN'))
+                this.validationStatus = 'error'
               }
             }
             if (f.component === 'p-bf-publication') {
@@ -2153,6 +2250,13 @@ export default {
               f.titleErrorMessages = []
               if (f.title.length < 1) {
                 f.titleErrorMessages.push(this.$t('Missing title'))
+                this.validationStatus = 'error'
+              }
+            }
+            if (f.component === 'isbn') {
+              f.valueErrorMessages = []
+              if (f.value.length < 1) {
+                f.valueErrorMessages.push(this.$t('Missing ISBN'))
                 this.validationStatus = 'error'
               }
             }
@@ -2219,7 +2323,7 @@ export default {
       self.doiImportErrors = []
       self.validationStatus = ''
       self.validationErrors = []
-      self.resetForm(self, null, null)
+      self.resetForm(self, null)
     },
     resetDOIImport: function () {
       this.doiImportInput = null
@@ -2227,18 +2331,24 @@ export default {
       this.doiImportErrors = []
       this.rightsCheckSearch = null
       this.rightsCheckData = null
-      this.resetForm(this, null, null)
+      this.resetForm(this, null)
     }
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
       vm.$store.commit('setSkipsubmitrouteleavehook', false)
+      if (!vm.signedin) {
+        vm.$router.push('/login')
+      }
       await vm.checkAllowSubmit()
       vm.resetSubmission(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.$store.commit('setSkipsubmitrouteleavehook', false)
+    if (!this.signedin) {
+      this.$router.push('/login')
+    }
     await this.checkAllowSubmit()
     this.resetSubmission(this)
     next()

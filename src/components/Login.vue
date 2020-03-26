@@ -8,7 +8,7 @@
             <v-card-text>
               <v-col cols="10" offset="1">
                 <v-text-field
-                  @keydown="handleKeyDown"
+                  v-on:keyup.enter="login()"
                   :disabled="loading"
                   :label="$t('Username')"
                   v-model="credentials.username"
@@ -18,7 +18,7 @@
                   :autocomplete="'username'"
                 ></v-text-field>
                 <v-text-field
-                  @keydown="handleKeyDown"
+                  v-on:keyup.enter="login()"
                   :disabled="loading"
                   :label="$t('Password')"
                   v-model="credentials.password"
@@ -80,11 +80,6 @@ export default {
     },
     toggleVisibility: function () {
       this.e1 = !this.e1
-    },
-    handleKeyDown: async function (e) {
-      if (e.keyCode === 13) {
-        await this.login()
-      }
     }
   }
 }
