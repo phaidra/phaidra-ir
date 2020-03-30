@@ -2084,7 +2084,13 @@ export default {
       if (this.validationStatus !== 'error') {
         this.step = step + 1
       }
-      this.$vuetify.goTo(1)
+      if (process.browser) {
+        if (navigator.userAgent.indexOf('Firefox') > -1) {
+          document.querySelector('#app').scrollIntoView()
+        } else {
+          this.$vuetify.goTo(1)
+        }
+      }
     },
     backForm: function (step) {
       if (step === 6) {
