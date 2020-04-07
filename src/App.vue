@@ -303,7 +303,7 @@ export default {
 </style>
 
 <style>
-.v-input__control {
+#app .v-input {
   font-weight: 400;
 }
 
