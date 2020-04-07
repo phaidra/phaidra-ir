@@ -303,6 +303,9 @@ export default {
 </style>
 
 <style>
+.v-input__control {
+  font-weight: 400;
+}
 
 .no-padding {
   padding: 0px;

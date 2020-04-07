@@ -1739,10 +1739,6 @@ export default {
 </script>
 
 <style scoped>
-.v-input__control {
-  font-weight: 400;
-}
-
 .v-btn {
   margin: 0;
 }
