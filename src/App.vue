@@ -303,10 +303,6 @@ export default {
 </style>
 
 <style>
-#app .v-input {
-  font-weight: 400;
-}
-
 .no-padding {
   padding: 0px;
 }
@@ -497,6 +493,11 @@ address {
 #app .v-btn {
   text-transform: none;
 }
+
+#app .v-input {
+  font-weight: 400;
+}
+
 #app .v-tabs__div {
   text-transform: none;
   font-weight: 300;
