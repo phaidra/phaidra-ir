@@ -1805,6 +1805,7 @@ export default {
       f.multiplicable = false
       f.mimetype = 'application/pdf'
       f.autoMimetype = true
+      f.showMimetype = false
       smf.push(f)
 
       let tf = fields.getField('title')
@@ -2372,6 +2373,10 @@ export default {
 </script>
 
 <style scoped>
+.v-input__control {
+  font-weight: 400;
+}
+
 .v-btn {
   margin: 0;
 }
