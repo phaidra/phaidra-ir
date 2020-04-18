@@ -231,7 +231,48 @@
             <v-row no-gutters>
               <p>{{ $t('SHERPA RoMEO is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis.') }}</p>
             </v-row>
-            <v-row no-gutters justify="center">
+
+            <v-row justify="start" class="mt-2">
+              <v-col col="12" md="5" class="mr-4">
+                <v-text-field clearable solo v-model="journalSearchQuery" v-on:keyup.enter="journalSearch()" :append-icon="'mdi-magnify'" :placeholder="$t('journal title')"></v-text-field>
+              </v-col>
+              <v-col col="12" md="5">
+                <v-text-field clearable solo v-model="journalSearchISSN" v-on:keyup.enter="journalSearch()" :append-icon="'mdi-magnify'" :placeholder="$t('ISSN')"></v-text-field>
+              </v-col>
+            </v-row>
+
+            <v-row>
+              <v-col col="12">
+                <v-data-table
+                  :headers="journalSearchHeaders"
+                  :items="journalSearchItems"
+                  :loading="journalSearchLoading"
+                  :loading-text="$t('Loading...')"
+                  :options.sync="journalSearchOptions"
+                  :server-items-length="journalSearchTotal"
+                  :footer-props="{ itemsPerPageOptions: [10, 50, 100] }"
+                  show-expand
+                >
+                  <template v-slot:item.title="{ item }">
+                    <template v-if="Array.isArray(item.title)">{{ item.title[0].title | truncate(50) }}</template>
+                  </template>
+                  <template v-slot:item.publishers="{ item }">
+                    <template v-if="Array.isArray(item.publishers)">
+                      <template v-if="Array.isArray(item.publishers[0].publisher.name)">
+                        <span v-for="(pub, i) in item.publishers" :key="'pub'+i"><template v-if="i > 0">, </template>{{ pub.publisher.name[0].name }}</span>
+                      </template>
+                    </template>
+                  </template>
+                  <template v-slot:item.data-table-expand="{ item, expand, isExpanded }">
+                    <v-btn text color="primary" @click="expand(!isExpanded)">{{ $t(isExpanded ? 'Hide policy' : 'Show policy') }}</v-btn>
+                  </template>
+                  <template v-slot:expanded-item="{ headers, item }">
+                    <publisher-policy-versions :publication="item"></publisher-policy-versions>
+                  </template>
+                </v-data-table>
+              </v-col>
+            </v-row>
+            <!-- <v-row no-gutters justify="center">
               <v-col cols="12" md="8">
                 <v-combobox
                   v-model="rightsCheckModel"
@@ -367,7 +408,7 @@
                 <template v-if="rightsCheckData">{{ $t('Continue') }}</template>
                 <template v-else>{{ $t('Skip') }}</template>
               </v-btn>
-            </v-row>
+            </v-row> -->
           </v-container>
         </v-stepper-content>
 
@@ -827,6 +868,7 @@ import SubmitIrLicenseInfo from '@/components/SubmitIrLicenseInfo'
 import SubmitIrFundingField from '@/components/SubmitIrFundingField'
 import SubmitIrAlternateIdentifier from '@/components/SubmitIrAlternateIdentifier'
 import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeywords'
+import PublisherPolicyVersions from '@/components/PublisherPolicyVersions'
 import xmlUtils from 'phaidra-vue-components/src/utils/xml'
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
@@ -845,7 +887,8 @@ export default {
     SubmitIrLicenseInfo,
     SubmitIrFundingField,
     SubmitIrDescriptionKeywords,
-    SubmitIrAlternateIdentifier
+    SubmitIrAlternateIdentifier,
+    PublisherPolicyVersions
   },
   computed: {
     doiToImport: function () {
@@ -908,15 +951,15 @@ export default {
       showEmbargoDate: false,
       embargoDateMenu: false,
       embargoDateModel: null,
-      rightsCheckModel: null,
-      rightsCheckItems: [],
-      rightsCheckErrors: [],
-      rightsCheckData: null,
-      rightsCheckLoading: false,
-      rightsCheckSearch: '',
-      rightsCheckDebounce: 500,
-      rightsCheckMinLetters: 3,
-      rightsCheckDebounceTask: null,
+      // rightsCheckModel: null,
+      // rightsCheckItems: [],
+      // rightsCheckErrors: [],
+      // rightsCheckData: null,
+      // rightsCheckLoading: false,
+      // rightsCheckSearch: '',
+      // rightsCheckDebounce: 500,
+      // rightsCheckMinLetters: 3,
+      // rightsCheckDebounceTask: null,
       doiDuplicate: null,
       validationStatus: '',
       validationErrors: [],
@@ -932,21 +975,43 @@ export default {
       },
       submitformLoading: false,
       checkAllowSubmitRes: {
-        allowsubmit: null,
+        allowsubmit: 1,
         candobulkupload: null,
         nrdays: null,
         nruploads: null
       },
-      jsonld: {}
+      jsonld: {},
+      journalSearchQuery: null,
+      journalSearchISSN: null,
+      journalSearchLoading: false,
+      journalSearchSelected: null,
+      journalSearchItems: [],
+      journalSearchErrors: [],
+      journalSearchTotal: 100,
+      journalSearchOptions: {
+        page: 1,
+        itemsPerPage: 10
+      },
+      journalSearchHeaders: [
+        { text: this.$t('Title'), align: 'left', value: 'title', sortable: false },
+        { text: this.$t('Publishers'), align: 'left', value: 'publishers', sortable: false },
+        { text: '', align: 'right', value: 'data-table-expand' }
+      ],
     }
   },
   watch: {
-    rightsCheckSearch (val) {
-      val && this.queryRightsCheckDebounce(val)
+    journalSearchOptions: {
+      handler () {
+        this.journalSearch()
+      },
+      deep: true 
     },
-    rightsCheckModel (val) {
-      val && val.issn && this.queryRightsCheckJournal(val.issn)
-    },
+    // rightsCheckSearch (val) {
+    //   val && this.queryRightsCheckDebounce(val)
+    // },
+    // rightsCheckModel (val) {
+    //   val && val.issn && this.queryRightsCheckJournal(val.issn)
+    // },
     step (val) {
       if (val > this.maxStep) {
         this.maxStep = val
@@ -1018,54 +1083,47 @@ export default {
         return this.suggestJournals(value)
       }
     },
-    async suggestJournals (q) {
+    async journalSearch (q) {
       if (process.browser) {
-        if (q.length < this.rightsCheckMinLetters || !this.config.apis.sherparomeo) return
+        if (!this.config.apis.sherparomeo) return
+        if ((!this.journalSearchQuery) && (!this.journalSearchISSN)) return
 
-        this.rightsCheckLoading = true
-        this.rightsCheckItems = []
-        this.rightsCheckErrors = []
+        this.journalSearchLoading = true
+        this.journalSearchItems = []
+        this.journalSearchErrors = []
 
-        var params = {
-          ak: this.config.apis.sherparomeo.key,
-          versions: 'all',
-          qtype: 'contains',
-          jtitle: q
+        let filter = []
+        if (this.journalSearchQuery) {
+          filter.push(["title","contains word",this.journalSearchQuery])
         }
-
-        var query = qs.stringify(params)
+        if (this.journalSearchISSN) {
+          filter.push(["issn","equals",this.journalSearchQuery])
+        }
 
         try {
           let response = await this.$http.request({
             method: 'GET',
-            url: this.config.apis.sherparomeo.url + '?' + query,
-            responseType: 'arraybuffer'
+            url: this.config.apis.sherparomeo.url,
+            params: {
+              'api-key': this.config.apis.sherparomeo.key,
+              'item-type': 'publication',
+              format: 'Json',
+              limit: this.journalSearchOptions.itemsPerPage,
+              offset: (this.journalSearchOptions.page - 1) * this.journalSearchOptions.itemsPerPage,
+              filter: JSON.stringify(filter)
+            }
           })
-          let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
-          let dp = new window.DOMParser()
-          let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
-          if (!obj.romeoapi[1].journals.journal) {
-            this.rightsCheckErrors.push(this.$t('No journals found'))
+          
+          if (!response.data.items) {
+            this.journalSearchErrors.push(this.$t('No journals found'))
             return
           }
-          if (Array.isArray(obj.romeoapi[1].journals.journal)) {
-            for (let j of obj.romeoapi[1].journals.journal) {
-              this.rightsCheckItems.push(
-                {
-                  title: j.jtitle['#text'],
-                  issn: j.issn['#text'],
-                  romeopub: j.romeopub['#text']
-                }
-              )
-            }
-          } else {
-            this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
-          }
+          this.journalSearchItems = response.data.items
         } catch (error) {
           console.error(error)
-          this.rightsCheckErrors.push(error)
+          this.journalSearchErrors.push(error)
         } finally {
-          this.rightsCheckLoading = false
+          this.journalSearchLoading = false
         }
       }
     },
@@ -2344,19 +2402,19 @@ export default {
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
       vm.$store.commit('setSkipsubmitrouteleavehook', false)
-      if (!vm.signedin) {
-        vm.$router.push('/login')
-      }
-      await vm.checkAllowSubmit()
+      // if (!vm.signedin) {
+      //   vm.$router.push('/login')
+      // }
+      // await vm.checkAllowSubmit()
       vm.resetSubmission(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.$store.commit('setSkipsubmitrouteleavehook', false)
-    if (!this.signedin) {
-      this.$router.push('/login')
-    }
-    await this.checkAllowSubmit()
+    // if (!this.signedin) {
+    //   this.$router.push('/login')
+    // }
+    // await this.checkAllowSubmit()
     this.resetSubmission(this)
     next()
   },

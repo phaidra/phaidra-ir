@@ -1,0 +1,84 @@
+<template>
+  <div class="pa-4">
+    <v-tabs>
+      <v-tab v-for="(version, i) in versions">{{ version.label }}</v-tab>
+      <v-tab-item v-for="(version, i) in versions">
+        <div class="my-6">{{ $t('The following Open Access routes are permitted for this version') }}:</div>
+        <template v-if="version.oaroutes.length > 1">
+        <v-tabs>
+          <v-tab v-for="(route, i) in version.oaroutes">{{ $t('Option') }} {{ i+1 }}</v-tab>
+          <v-tab-item v-for="(route, i) in version.oaroutes">
+            <open-access-route :route="route"></open-access-route>
+          </v-tab-item>
+        </v-tabs>
+        </template>
+        <template v-else>
+          <open-access-route :route="version.oaroutes[0]"></open-access-route>
+        </template>
+      </v-tab-item>
+    </v-tabs>
+    <div class="mb-2 mt-6" v-if="links.length > 0">{{ $t('For more information, please see the following links') }}:</div>
+    <div v-for="(url, i) in links" class="pt-2">
+      <a :href="url.url" target="_blank">{{ url.description }}</a>
+    </div>
+  </div>
+</template>
+
+<script>
+import OpenAccessRoute from '@/components/OpenAccessRoute'
+
+export default {
+  name: 'publisher-policy-versions',
+  components: {
+    OpenAccessRoute
+  },
+  props: {
+    publication: Object
+  },
+  computed: {
+    links: function() {
+      let links = []
+      if (Array.isArray(this.publication.publisher_policy)) {
+        for (let policy of this.publication.publisher_policy) {
+          if (Array.isArray(policy.urls)) {
+            for (let url of policy.urls) {
+              links.push(url)
+            }
+          }
+        }
+      }
+      return links
+    },
+    versions: function() {
+      let versions = []
+      let versionsHahs = {}
+      if (Array.isArray(this.publication.publisher_policy)) {
+        for (let policy of this.publication.publisher_policy) {
+          if (Array.isArray(policy.permitted_oa)) {
+            for (let route of policy.permitted_oa) {
+              if (!versionsHahs.hasOwnProperty(route.article_version)) {
+                versionsHahs[route.article_version] = {
+                  label: route.article_version,
+                  oaroutes: []
+                }
+              }
+              if (Array.isArray(route.article_version_phrases)) {
+                for (let phrase of route.article_version_phrases) {
+                  if (phrase.language === 'en') {
+                    versionsHahs[route.article_version].label = phrase.phrase
+                  }
+                }
+              }
+              versionsHahs[route.article_version].oaroutes.push(route)
+            }
+          }
+        }
+      }
+      Object.entries(versionsHahs).forEach(([key, value]) => {
+        versions.push(value)
+      })
+      return versions
+    }
+  }
+}
+</script>
