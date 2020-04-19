@@ -51,7 +51,11 @@ export async function createApp ({
 
   Vue.filter('dateyear', function (value) {
     if (value) {
-      return moment(String(value)).format('YYYY')
+      if (String(value).match(/^\d{4}$/g)) {
+        return value
+      } else {
+        return moment(String(value)).format('YYYY')
+      }
     }
   })
 

@@ -233,16 +233,18 @@
             </v-row>
 
             <v-row justify="start" class="mt-2">
-              <v-col col="12" md="5" class="mr-4">
+              <v-col cols="12" md="5" class="mr-4">
                 <v-text-field clearable solo v-model="journalSearchQuery" v-on:keyup.enter="journalSearch()" :append-icon="'mdi-magnify'" :placeholder="$t('journal title')"></v-text-field>
               </v-col>
-              <v-col col="12" md="5">
+              <v-col cols="12" md="5">
                 <v-text-field clearable solo v-model="journalSearchISSN" v-on:keyup.enter="journalSearch()" :append-icon="'mdi-magnify'" :placeholder="$t('ISSN')"></v-text-field>
               </v-col>
             </v-row>
 
             <v-row>
-              <v-col col="12">
+              <v-col cols="12">
+                <span v-if="(this.journalSearchSelected.length > 0) && this.journalSearchSelected[0].title">{{this.journalSearchSelected[0].title[0].title}}</span>
+                <span v-else>no journal</span>
                 <v-data-table
                   :headers="journalSearchHeaders"
                   :items="journalSearchItems"
@@ -252,6 +254,8 @@
                   :server-items-length="journalSearchTotal"
                   :footer-props="{ itemsPerPageOptions: [10, 50, 100] }"
                   show-expand
+                  single-expand
+                  :expanded.sync="journalSearchSelected"
                 >
                   <template v-slot:item.title="{ item }">
                     <template v-if="Array.isArray(item.title)">{{ item.title[0].title | truncate(50) }}</template>
@@ -264,151 +268,24 @@
                     </template>
                   </template>
                   <template v-slot:item.data-table-expand="{ item, expand, isExpanded }">
-                    <v-btn text color="primary" @click="expand(!isExpanded)">{{ $t(isExpanded ? 'Hide policy' : 'Show policy') }}</v-btn>
+                    <v-btn text color="primary" @click="expand(!isExpanded)">{{ $t(isExpanded ? 'Unselect journal' : 'Select journal') }}</v-btn>
                   </template>
                   <template v-slot:expanded-item="{ headers, item }">
-                    <publisher-policy-versions :publication="item"></publisher-policy-versions>
+                    <td :colspan="headers.length">
+                      <publisher-policy-versions :publication="item"></publisher-policy-versions>
+                    </td>
                   </template>
                 </v-data-table>
-              </v-col>
-            </v-row>
-            <!-- <v-row no-gutters justify="center">
-              <v-col cols="12" md="8">
-                <v-combobox
-                  v-model="rightsCheckModel"
-                  :items="rightsCheckItems"
-                  :loading="rightsCheckLoading"
-                  :search-input.sync="rightsCheckSearch"
-                  :error-messages="rightsCheckErrors"
-                  hide-no-data
-                  hide-selected
-                  item-text="title"
-                  item-value="issn"
-                  solo
-                  :placeholder="$t('please enter exact journal title or ISSN')"
-                  filled
-                  clearable
-                >
-                  <template slot="item" slot-scope="{ item }">
-                    <v-list-item-content>
-                      <v-list-item-title>{{ item.title }}</v-list-item-title>
-                      <v-list-item-subtitle>{{ $t('ISSN') + ': ' + item.issn }}</v-list-item-subtitle>
-                      <v-list-item-subtitle v-if="item.romeopub">{{ $t('PUBLISHER_VERLAG') + ': ' + item.romeopub }}</v-list-item-subtitle>
-                    </v-list-item-content>
-                  </template>
-                  <template slot="selection" slot-scope="{ item }">
-                    <v-list-item-content>
-                      <v-list-item-title v-if="item.title">{{ item.title }}</v-list-item-title>
-                      <v-list-item-title v-else>{{ item.issn }}</v-list-item-title>
-                    </v-list-item-content>
-                  </template>
-                </v-combobox>
-              </v-col>
-            </v-row>
-            <v-row no-gutters v-if="rightsCheckData" justify="center">
-              <v-col cols="12" md="8">
-                <v-row v-if="rightsCheckData.journal">
-                  <v-col md="3" cols="12" class="primary--text text-right">{{ $t('JOURNAL_ERSCHIENENIN') }}</v-col>
-                  <v-col md="9" cols="12">{{ rightsCheckData.journal.title }}</v-col>
-                </v-row>
-                <v-row v-else>
-                  <v-col offset-md="3" md="9">{{ $t('Journal data not available') }}</v-col>
-                </v-row>
-                <template v-if="rightsCheckData.publisher">
-                  <v-row v-if="rightsCheckData.publisher">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <template v-if="rightsCheckData.publisher.homeurl">
-                        <a target="_blank" :href="rightsCheckData.publisher.homeurl">{{ rightsCheckData.publisher.name }}</a>
-                      </template>
-                      <template v-else>{{ rightsCheckData.publisher.name }}</template>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.prearchiving">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_PREPRINT') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <v-icon v-if="rightsCheckData.publisher.prearchiving === 'can'" left color="green">mdi-check</v-icon>
-                      <v-icon v-if="rightsCheckData.publisher.prearchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                      <v-icon v-if="rightsCheckData.publisher.prearchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                      {{ rightsCheckData.publisher.prearchiving }}
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.prerestrictions && (rightsCheckData.publisher.prerestrictions.length > 0)">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <ul>
-                        <li v-for="(r, i) in rightsCheckData.publisher.prerestrictions" :key="i">
-                          {{ r }}
-                        </li>
-                      </ul>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.postarchiving">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('AUTHOR_POSTPRINT') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <v-icon v-if="rightsCheckData.publisher.postarchiving === 'can'" left color="green">mdi-check</v-icon>
-                      <v-icon v-if="rightsCheckData.publisher.postarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                      <v-icon v-if="rightsCheckData.publisher.postarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                      {{ rightsCheckData.publisher.postarchiving }}
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.postrestrictions && (rightsCheckData.publisher.postrestrictions.length > 0)">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <ul>
-                        <li v-for="(r, i) in rightsCheckData.publisher.postrestrictions" :key="i">
-                          {{ r }}
-                        </li>
-                      </ul>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.pdfarchiving">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_PDF') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'can'" left color="green">mdi-check</v-icon>
-                      <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'cannot'" left color="red">mdi-cancel</v-icon>
-                      <v-icon v-if="rightsCheckData.publisher.pdfarchiving === 'restricted'" left color="red">mdi-exclamation</v-icon>
-                      {{ rightsCheckData.publisher.pdfarchiving }}
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.pdfrestrictions && (rightsCheckData.publisher.pdfrestrictions.length > 0)">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Restrictions') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <ul>
-                        <li v-for="(r, i) in rightsCheckData.publisher.pdfrestrictions" :key="i">
-                          {{ r }}
-                        </li>
-                      </ul>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.publisher.conditions">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Further conditions') }}</v-col>
-                    <v-col md="9" cols="12">
-                      <ul>
-                        <li v-for="(r, i) in rightsCheckData.publisher.conditions" :key="i">
-                          {{ r }}
-                        </li>
-                      </ul>
-                    </v-col>
-                  </v-row>
-                  <v-row v-if="rightsCheckData.disclaimer">
-                    <v-col md="3" cols="12" class="primary--text text-right">{{ $t('Disclaimer') }}</v-col>
-                    <v-col md="9" cols="12">{{rightsCheckData.disclaimer}}</v-col>
-                  </v-row>
-                </template>
-                <v-row v-else>
-                  <v-col offset-md="3" md="9">{{ $t('Publisher data not available') }}</v-col>
-                </v-row>
               </v-col>
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters justify="space-between">
               <v-btn dark color="grey" @click="step = 3; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
               <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
-                <template v-if="rightsCheckData">{{ $t('Continue') }}</template>
+                <template v-if="this.journalSearchSelected.length > 0">{{ $t('Continue') }}</template>
                 <template v-else>{{ $t('Skip') }}</template>
               </v-btn>
-            </v-row> -->
+            </v-row>
           </v-container>
         </v-stepper-content>
 
@@ -712,7 +589,7 @@
                 <v-row no-gutters v-if="showSubmitWarning">
                   <v-col cols="12" md="10">
                     <v-alert type="error" outlined>
-                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: rightsCheckData.journal.title }) }}</span>
+                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: this.journalSearchSelected[0].title[0].title }) }}</span>
                       <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>.
                     </v-alert>
                   </v-col>
@@ -869,7 +746,6 @@ import SubmitIrFundingField from '@/components/SubmitIrFundingField'
 import SubmitIrAlternateIdentifier from '@/components/SubmitIrAlternateIdentifier'
 import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeywords'
 import PublisherPolicyVersions from '@/components/PublisherPolicyVersions'
-import xmlUtils from 'phaidra-vue-components/src/utils/xml'
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
 import fields from 'phaidra-vue-components/src/utils/fields'
@@ -877,8 +753,6 @@ import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
 import { vocabulary } from 'phaidra-vue-components/src//mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
-import qs from 'qs'
-var iconv = require('iconv-lite')
 
 export default {
   name: 'submit-ir',
@@ -915,14 +789,12 @@ export default {
       }
     },
     showSubmitWarning: function () {
-      if (this.rightsCheckData) {
-        for (let s of this.form.sections) {
-          for (let f of s.fields) {
-            if (f.predicate === 'oaire:version') {
-              if (f.value === 'https://pid.phaidra.org/vocabulary/PMR8-3C8D') {
-                if (this.rightsCheckData.publisher.pdfarchiving === 'cannot') {
-                  return true
-                }
+      if (this.journalSearchSelected.length > 0) {
+        if (this.journalSearchSelected[0].hasOwnProperty('publisher_policy')) {
+          if (Array.isArray(this.journalSearchSelected[0].publisher_policy)) {
+            for (let p of this.journalSearchSelected[0].publisher_policy) {
+              if (p.open_access_prohibited === 'yes') {
+                return true
               }
             }
           }
@@ -951,15 +823,6 @@ export default {
       showEmbargoDate: false,
       embargoDateMenu: false,
       embargoDateModel: null,
-      // rightsCheckModel: null,
-      // rightsCheckItems: [],
-      // rightsCheckErrors: [],
-      // rightsCheckData: null,
-      // rightsCheckLoading: false,
-      // rightsCheckSearch: '',
-      // rightsCheckDebounce: 500,
-      // rightsCheckMinLetters: 3,
-      // rightsCheckDebounceTask: null,
       doiDuplicate: null,
       validationStatus: '',
       validationErrors: [],
@@ -984,7 +847,7 @@ export default {
       journalSearchQuery: null,
       journalSearchISSN: null,
       journalSearchLoading: false,
-      journalSearchSelected: null,
+      journalSearchSelected: [],
       journalSearchItems: [],
       journalSearchErrors: [],
       journalSearchTotal: 100,
@@ -996,7 +859,7 @@ export default {
         { text: this.$t('Title'), align: 'left', value: 'title', sortable: false },
         { text: this.$t('Publishers'), align: 'left', value: 'publishers', sortable: false },
         { text: '', align: 'right', value: 'data-table-expand' }
-      ],
+      ]
     }
   },
   watch: {
@@ -1004,14 +867,8 @@ export default {
       handler () {
         this.journalSearch()
       },
-      deep: true 
+      deep: true
     },
-    // rightsCheckSearch (val) {
-    //   val && this.queryRightsCheckDebounce(val)
-    // },
-    // rightsCheckModel (val) {
-    //   val && val.issn && this.queryRightsCheckJournal(val.issn)
-    // },
     step (val) {
       if (val > this.maxStep) {
         this.maxStep = val
@@ -1072,18 +929,7 @@ export default {
         this.loading = false
       }
     },
-    queryRightsCheckDebounce (value) {
-      this.showList = true
-      if (this.rightsCheckDebounce) {
-        if (this.rightsCheckDebounceTask !== undefined) clearTimeout(this.rightsCheckDebounceTask)
-        this.rightsCheckDebounceTask = setTimeout(() => {
-          return this.suggestJournals(value)
-        }, this.rightsCheckDebounce)
-      } else {
-        return this.suggestJournals(value)
-      }
-    },
-    async journalSearch (q) {
+    async journalSearch () {
       if (process.browser) {
         if (!this.config.apis.sherparomeo) return
         if ((!this.journalSearchQuery) && (!this.journalSearchISSN)) return
@@ -1094,10 +940,10 @@ export default {
 
         let filter = []
         if (this.journalSearchQuery) {
-          filter.push(["title","contains word",this.journalSearchQuery])
+          filter.push(['title', 'contains word', this.journalSearchQuery])
         }
         if (this.journalSearchISSN) {
-          filter.push(["issn","equals",this.journalSearchQuery])
+          filter.push(['issn', 'equals', this.journalSearchISSN])
         }
 
         try {
@@ -1113,7 +959,6 @@ export default {
               filter: JSON.stringify(filter)
             }
           })
-          
           if (!response.data.items) {
             this.journalSearchErrors.push(this.$t('No journals found'))
             return
@@ -1124,127 +969,6 @@ export default {
           this.journalSearchErrors.push(error)
         } finally {
           this.journalSearchLoading = false
-        }
-      }
-    },
-    stripTags (text) {
-      return text.replace(/<\/?[^>]+(>|$)/g, '')
-    },
-    async queryRightsCheckJournal (issn) {
-      if (process.browser) {
-        if (!issn || !this.config.apis.sherparomeo) return
-
-        this.rightsCheckLoading = true
-
-        var params = {
-          ak: this.config.apis.sherparomeo.key,
-          versions: 'all',
-          issn: issn
-        }
-
-        var query = qs.stringify(params)
-
-        try {
-          let response = await this.$http.request({
-            method: 'GET',
-            url: this.config.apis.sherparomeo.url + '?' + query,
-            responseType: 'arraybuffer'
-          })
-          let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
-          let dp = new window.DOMParser()
-          let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
-          let disclaimer = obj.romeoapi[1].header.disclaimer['#text']
-          let j = obj.romeoapi[1].journals.journal
-          let journal = null
-          if (j) {
-            journal = {
-              title: j.jtitle['#text'],
-              issn: j.issn['#text'],
-              romeopub: j.romeopub['#text']
-            }
-          }
-          let p = obj.romeoapi[1].publishers.publisher
-          let publisher = null
-          if (p) {
-            publisher = {
-              name: p.name['#text'],
-              homeurl: p.homeurl['#text'],
-              color: p.romeocolour['#text']
-            }
-            if (p.preprints) {
-              if (p.preprints.prearchiving) {
-                publisher['prearchiving'] = p.preprints.prearchiving['#text']
-              }
-              publisher['prerestrictions'] = []
-              if (p.preprints.prerestrictions) {
-                if (p.preprints.prerestrictions.prerestriction) {
-                  if (p.preprints.prerestrictions.constructor === Array) {
-                    for (let prerestriction of p.preprints.prerestrictions.prerestriction) {
-                      publisher['prerestrictions'].push(this.stripTags(prerestriction['#text']))
-                    }
-                  } else {
-                    publisher['prerestrictions'].push(this.stripTags(p.preprints.prerestrictions.prerestriction['#text']))
-                  }
-                }
-              }
-            }
-            if (p.postprints) {
-              if (p.postprints.postarchiving) {
-                publisher['postarchiving'] = p.postprints.postarchiving['#text']
-              }
-              publisher['postrestrictions'] = []
-              if (p.postprints.postrestrictions) {
-                if (p.postprints.postrestrictions.postrestriction) {
-                  if (p.postprints.postrestrictions.constructor === Array) {
-                    for (let postrestriction of p.postprints.postrestrictions.postrestriction) {
-                      publisher['postrestrictions'].push(this.stripTags(postrestriction['#text']))
-                    }
-                  } else {
-                    publisher['postrestrictions'].push(this.stripTags(p.postprints.postrestrictions.postrestriction['#text']))
-                  }
-                }
-              }
-            }
-            if (p.pdfversion) {
-              if (p.pdfversion.pdfarchiving) {
-                publisher['pdfarchiving'] = p.pdfversion.pdfarchiving['#text']
-              }
-              publisher['pdfrestrictions'] = []
-              if (p.pdfversion.pdfrestrictions) {
-                if (p.pdfversion.pdfrestrictions.pdfrestriction) {
-                  if (p.postprints.pdfrestrictions.constructor === Array) {
-                    for (let pdfrestriction of p.pdfversion.pdfrestrictions.pdfrestriction) {
-                      publisher['pdfrestrictions'].push(this.stripTags(pdfrestriction['#text']))
-                    }
-                  } else {
-                    publisher['pdfrestrictions'].push(this.stripTags(p.pdfversion.pdfrestrictions.pdfrestriction['#text']))
-                  }
-                }
-              }
-            }
-            publisher['conditions'] = []
-            if (p.conditions) {
-              if (p.conditions.condition) {
-                if (p.conditions.condition.constructor === Array) {
-                  for (let condition of p.conditions.condition) {
-                    publisher['conditions'].push(this.stripTags(condition['#text']))
-                  }
-                } else {
-                  publisher['conditions'].push(this.stripTags(p.conditions.condition['#text']))
-                }
-              }
-            }
-          }
-          this.rightsCheckData = {
-            disclaimer: disclaimer,
-            journal: journal,
-            publisher: publisher
-          }
-        } catch (error) {
-          console.error(error)
-          this.rightsCheckErrors.push(error)
-        } finally {
-          this.rightsCheckLoading = false
         }
       }
     },
@@ -1417,7 +1141,8 @@ export default {
             }
             this.resetForm(this, this.doiImportData)
             if (this.doiImportData.journalISSN) {
-              this.rightsCheckSearch = this.doiImportData.journalISSN
+              this.journalSearchISSN = this.doiImportData.journalISSN
+              this.journalSearch()
             }
           }
         } catch (error) {
@@ -2380,7 +2105,7 @@ export default {
         self = this
       }
       self.submitResponse = null
-      self.$store.dispatch('loadLanguages', this.$i18n.locale)
+      self.$store.dispatch('loadLanguages', self.$i18n.locale)
       self.step = 1
       self.maxStep = 0
       self.doiImportInput = null
@@ -2388,33 +2113,39 @@ export default {
       self.doiImportErrors = []
       self.validationStatus = ''
       self.validationErrors = []
+      self.journalSearchQuery = null
+      self.journalSearchISSN = null
+      self.journalSearchItems = []
+      self.journalSearchSelected = []
       self.resetForm(self, null)
     },
     resetDOIImport: function () {
       this.doiImportInput = null
       this.doiImportData = null
       this.doiImportErrors = []
-      this.rightsCheckSearch = null
-      this.rightsCheckData = null
+      this.journalSearchQuery = null
+      this.journalSearchISSN = null
+      this.journalSearchItems = []
+      this.journalSearchSelected = []
       this.resetForm(this, null)
     }
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
       vm.$store.commit('setSkipsubmitrouteleavehook', false)
-      // if (!vm.signedin) {
-      //   vm.$router.push('/login')
-      // }
-      // await vm.checkAllowSubmit()
+      if (!vm.signedin) {
+        vm.$router.push('/login')
+      }
+      await vm.checkAllowSubmit()
       vm.resetSubmission(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.$store.commit('setSkipsubmitrouteleavehook', false)
-    // if (!this.signedin) {
-    //   this.$router.push('/login')
-    // }
-    // await this.checkAllowSubmit()
+    if (!this.signedin) {
+      this.$router.push('/login')
+    }
+    await this.checkAllowSubmit()
     this.resetSubmission(this)
     next()
   },
