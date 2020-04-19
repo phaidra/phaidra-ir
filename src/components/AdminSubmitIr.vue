@@ -500,7 +500,6 @@
 import SubmitIrFundingField from '@/components/SubmitIrFundingField'
 import SubmitIrAlternateIdentifier from '@/components/SubmitIrAlternateIdentifier'
 import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeywords'
-import xmlUtils from 'phaidra-vue-components/src/utils/xml'
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
 import fields from 'phaidra-vue-components/src/utils/fields'
@@ -508,8 +507,6 @@ import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
 import { vocabulary } from 'phaidra-vue-components/src//mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
-import qs from 'qs'
-var iconv = require('iconv-lite')
 
 export default {
   name: 'admin-submit-ir',
@@ -610,60 +607,6 @@ export default {
       } finally {
         this.loading = false
       }
-    },
-    async suggestJournals (q) {
-      if (process.browser) {
-        if (q.length < this.rightsCheckMinLetters || !this.config.apis.sherparomeo) return
-
-        this.rightsCheckLoading = true
-        this.rightsCheckItems = []
-        this.rightsCheckErrors = []
-
-        var params = {
-          ak: this.config.apis.sherparomeo.key,
-          versions: 'all',
-          qtype: 'contains',
-          jtitle: q
-        }
-
-        var query = qs.stringify(params)
-
-        try {
-          let response = await this.$http.request({
-            method: 'GET',
-            url: this.config.apis.sherparomeo.url + '?' + query,
-            responseType: 'arraybuffer'
-          })
-          let utfxml = iconv.decode(Buffer.from(response.data), 'ISO-8859-1')
-          let dp = new window.DOMParser()
-          let obj = xmlUtils.xmlToJson(dp.parseFromString(utfxml, 'text/xml'))
-          if (!obj.romeoapi[1].journals.journal) {
-            this.rightsCheckErrors.push(this.$t('No journals found'))
-            return
-          }
-          if (Array.isArray(obj.romeoapi[1].journals.journal)) {
-            for (let j of obj.romeoapi[1].journals.journal) {
-              this.rightsCheckItems.push(
-                {
-                  title: j.jtitle['#text'],
-                  issn: j.issn['#text'],
-                  romeopub: j.romeopub['#text']
-                }
-              )
-            }
-          } else {
-            this.queryRightsCheckJournal(obj.romeoapi[1].journals.journal.issn['#text'])
-          }
-        } catch (error) {
-          console.error(error)
-          this.rightsCheckErrors.push(error)
-        } finally {
-          this.rightsCheckLoading = false
-        }
-      }
-    },
-    stripTags (text) {
-      return text.replace(/<\/?[^>]+(>|$)/g, '')
     },
     importDOI: async function () {
       this.loading = true
@@ -1436,7 +1379,6 @@ export default {
       if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book')) {
         let sf = fields.getField('series')
         sf.multilingual = false
-        sf.journalSuggest = this.submitformparam === 'journal-article'
         sf.hidePages = this.submitformparam !== 'journal-article'
         sf.hideIssue = this.submitformparam !== 'journal-article'
         sf.hideIssued = this.submitformparam !== 'journal-article'

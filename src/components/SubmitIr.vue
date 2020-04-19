@@ -1797,7 +1797,6 @@ export default {
         let sf = fields.getField('series')
         sf.multilingual = false
         sf.hideIdentifier = true
-        sf.journalSuggest = this.submitformparam === 'journal-article'
         sf.hidePages = this.submitformparam !== 'journal-article'
         sf.hideIssue = this.submitformparam !== 'journal-article'
         sf.hideIssued = this.submitformparam !== 'journal-article'
