@@ -787,7 +787,14 @@ export default {
       }
     },
     showSubmitWarning: function () {
-      let permittedVersions = {}
+      let permittedVersions = {
+        // these versions are not in sherpa/romeo, so we can't say
+        'https://pid.phaidra.org/vocabulary/TV31-080M': true,
+        'https://pid.phaidra.org/vocabulary/83ZP-CPP2': true,
+        'https://pid.phaidra.org/vocabulary/MT1G-APSB': true,
+        'https://pid.phaidra.org/vocabulary/SSQW-AP1S': true,
+        'https://pid.phaidra.org/vocabulary/KZB5-0F5G': true
+      }
       if (this.journalSearchSelected.length > 0) {
         if (this.journalSearchSelected[0].hasOwnProperty('publisher_policy')) {
           if (Array.isArray(this.journalSearchSelected[0].publisher_policy)) {
