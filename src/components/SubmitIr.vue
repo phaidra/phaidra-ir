@@ -243,8 +243,6 @@
 
             <v-row>
               <v-col cols="12">
-                <span v-if="(this.journalSearchSelected.length > 0) && this.journalSearchSelected[0].title">{{this.journalSearchSelected[0].title[0].title}}</span>
-                <span v-else>no journal</span>
                 <v-data-table
                   :headers="journalSearchHeaders"
                   :items="journalSearchItems"
@@ -587,9 +585,9 @@
                   </v-col>
                 </v-row>
                 <v-row no-gutters v-if="showSubmitWarning">
-                  <v-col cols="12" md="10">
+                  <v-col cols="12">
                     <v-alert type="error" outlined>
-                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: this.journalSearchSelected[0].title[0].title }) }}</span>
+                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: journalSearchSelected[0].title[0].title }) }}</span>
                       <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>.
                     </v-alert>
                   </v-col>
@@ -789,12 +787,47 @@ export default {
       }
     },
     showSubmitWarning: function () {
+      let permittedVersions = {}
       if (this.journalSearchSelected.length > 0) {
         if (this.journalSearchSelected[0].hasOwnProperty('publisher_policy')) {
           if (Array.isArray(this.journalSearchSelected[0].publisher_policy)) {
             for (let p of this.journalSearchSelected[0].publisher_policy) {
               if (p.open_access_prohibited === 'yes') {
                 return true
+              }
+              if (p.hasOwnProperty('permitted_oa')) {
+                if (Array.isArray(p.permitted_oa)) {
+                  for (let route of p.permitted_oa) {
+                    if (route.hasOwnProperty('article_version')) {
+                      if (Array.isArray(route.article_version)) {
+                        for (let version of route.article_version) {
+                          switch (version) {
+                            case 'submitted':
+                              permittedVersions['https://pid.phaidra.org/vocabulary/JTD4-R26P'] = true
+                              break
+                            case 'accepted':
+                              permittedVersions['https://pid.phaidra.org/vocabulary/PHXV-R6B3'] = true
+                              break
+                            case 'published':
+                              permittedVersions['https://pid.phaidra.org/vocabulary/PMR8-3C8D'] = true
+                              break
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        for (let s of this.form.sections) {
+          for (let f of s.fields) {
+            if (f.predicate === 'oaire:version') {
+              if (f.value) {
+                if (!permittedVersions[f.value]) {
+                  return true
+                }
               }
             }
           }
