@@ -48,7 +48,7 @@
                       <v-list-item @click="$router.push({ path: '/info/about' })"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/info/policy' })"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/info/contact' })"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
-                      <v-list-item @click="$router.push({ path: '/search' })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
+                      <v-list-item @click="$router.push({ path: '/search', query: { reset: true } })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
                       <v-list-item v-if="signedin" @click="$router.push({ path: '/submit' })"><v-list-item-title>{{ $t("Upload") }}</v-list-item-title></v-list-item>
                       <v-list-item v-if="signedin && (user.username === config.iraccount)" @click="$router.push({ path: '/admin' })"><v-list-item-title>{{ $t("Admin") }}</v-list-item-title></v-list-item>
                       <v-list-item v-if="!signedin" @click="$router.push('login')"><v-list-item-title>{{ $t("Login") }}</v-list-item-title></v-list-item>
@@ -85,7 +85,7 @@
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/contact' }">{{ $t("Contact") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search' }">{{ $t("Search") }}</router-link>
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search', query: { reset: true } }">{{ $t("Search") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
                   <a :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" @click="goToSubmit()">{{ $t("Upload") }}</a>

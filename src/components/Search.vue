@@ -286,7 +286,9 @@ export default {
     // setTimeout(() => { this.search() }, 100)
   },
   beforeRouteUpdate: async function (to, from, next) {
-    this.resetSearchParams()
+    if (to.query.reset) {
+      this.resetSearchParams()
+    }
     if (to.query.owner) {
       this.owner = to.query.owner
     } else {
@@ -302,7 +304,9 @@ export default {
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async vm => {
-      vm.resetSearchParams()
+      if (to.query.reset) {
+        vm.resetSearchParams()
+      }
       if (to.query.owner) {
         vm.owner = to.query.owner
       } else {

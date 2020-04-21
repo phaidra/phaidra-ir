@@ -587,7 +587,7 @@
                 <v-row no-gutters v-if="showSubmitWarning">
                   <v-col cols="12">
                     <v-alert type="error" outlined>
-                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: journalSearchSelected[0].title[0].title }) }}</span>
+                      <span class="mr-2">{{ $t('SUBMIT_ATTENTION', { journal: journalSearchSelected[0].title[0].title, version: getLocalizedTermLabel('versiontypes', selectedVersion) }) }}</span>
                       <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>.
                     </v-alert>
                   </v-col>
@@ -786,6 +786,16 @@ export default {
           return 'irobjecttype'
       }
     },
+    selectedVersion: function () {
+      for (let s of this.form.sections) {
+        for (let f of s.fields) {
+          if (f.predicate === 'oaire:version') {
+            return f.value
+          }
+        }
+      }
+      return null
+    },
     showSubmitWarning: function () {
       let permittedVersions = {
         // these versions are not in sherpa/romeo, so we can't say
@@ -828,15 +838,9 @@ export default {
             }
           }
         }
-        for (let s of this.form.sections) {
-          for (let f of s.fields) {
-            if (f.predicate === 'oaire:version') {
-              if (f.value) {
-                if (!permittedVersions[f.value]) {
-                  return true
-                }
-              }
-            }
+        if (this.selectedVersion) {
+          if (!permittedVersions[this.selectedVersion]) {
+            return true
           }
         }
       }

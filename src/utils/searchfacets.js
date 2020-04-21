@@ -4,65 +4,80 @@ import config from '../config/phaidra-ir'
 export const facetQueries = [
   {
     label: 'Type',
-    field: 'resourcetype',
-    id: 'resourcetype',
+    field: 'edm_hastype_id',
+    id: 'edm_hastype_id',
     resetable: true,
     show: false,
     queries: [
       {
-        id: 'image',
-        query: 'resourcetype:image',
-        label: 'Image'
+        id: 'https://pid.phaidra.org/vocabulary/VKA6-9XTY',
+        query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/VKA6-9XTY"',
+        label: 'journal article'
+      },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/T023-BGTD',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/T023-BGTD"',
+      //   label: 'preprint'
+      // },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/489N-Y6VX',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/489N-Y6VX"',
+      //   label: 'working paper'
+      // },
+      {
+        id: 'https://pid.phaidra.org/vocabulary/JMAV-7F3R',
+        query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/JMAV-7F3R"',
+        label: 'report'
       },
       {
-        id: 'book',
-        query: 'resourcetype:book',
-        label: 'Book'
+        id: 'https://pid.phaidra.org/vocabulary/JJKV-B1CG',
+        query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/JJKV-B1CG"',
+        label: 'review'
+      },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/MF25-FDGW',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/MF25-FDGW"',
+      //   label: 'contribution to journal'
+      // },
+      {
+        id: 'https://pid.phaidra.org/vocabulary/47QB-8QF1',
+        query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/47QB-8QF1"',
+        label: 'book'
       },
       {
-        id: 'article',
-        query: 'resourcetype:journalarticle',
-        label: 'Article'
+        id: 'https://pid.phaidra.org/vocabulary/XA52-09WA',
+        query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/XA52-09WA"',
+        label: 'book part'
       },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/1PHE-7VMS',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/1PHE-7VMS"',
+      //   label: 'dissertation'
+      // },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/QKDF-E5HA',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/QKDF-E5HA"',
+      //   label: 'conference object'
+      // },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/F4JN-ZST0',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/F4JN-ZST0"',
+      //   label: 'lecture'
+      // },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/KW6N-2VTP',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/KW6N-2VTP"',
+      //   label: 'dataset'
+      // },
+      // {
+      //   id: 'https://pid.phaidra.org/vocabulary/N35H-PDEE',
+      //   query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/N35H-PDEE"',
+      //   label: 'annotation'
+      // },
       {
-        id: 'text',
-        query: 'resourcetype:text',
-        label: 'Text'
-      },
-      {
-        id: 'collection',
-        query: 'resourcetype:collection',
-        label: 'Collection'
-      },
-      {
-        id: 'video',
-        query: 'resourcetype:video',
-        label: 'Video'
-      },
-      {
-        id: 'other',
-        query: 'resourcetype:other',
-        label: 'Data'
-      },
-      {
-        id: 'dataset',
-        query: 'resourcetype:dataset',
-        label: 'Container'
-      },
-      {
-        id: 'map',
-        query: 'resourcetype:map',
-        label: 'Map'
-      },
-      {
-        id: 'resource',
-        query: 'resourcetype:interactiveresource',
-        label: 'Resource'
-      },
-      {
-        id: 'sound',
-        query: 'resourcetype:sound',
-        label: 'Sound'
+        id: 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ',
+        query: 'edm_hastype_id:"https://pid.phaidra.org/vocabulary/PYRE-RAWJ" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/N35H-PDEE" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/KW6N-2VTP" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/F4JN-ZST0" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/QKDF-E5HA" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/1PHE-7VMS" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/MF25-FDGW" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/489N-Y6VX" OR edm_hastype_id:"https://pid.phaidra.org/vocabulary/T023-BGTD"',
+        label: 'other'
       }
     ]
   }

@@ -13,7 +13,16 @@ export function createStore () {
   return new Vuex.Store({
     state: () => ({
       config: config,
-      instanceconfig: config,
+      instanceconfig: {
+        baseurl: config.phaidrabaseurl,
+        api: config.api,
+        solr: config.solr,
+        primary: config.primary,
+        institution: config.institution,
+        address: config.address,
+        phone: config.phone,
+        email: config.email
+      },
       appconfig: config,
       snackbar: false,
       alerts: [],
