@@ -48,7 +48,7 @@
               <v-row no-gutters class="my-4 mr-2" v-if="doc.bib_journal">
                 <v-col>
                   <span class="grey--text text--darken-4">
-                    <span class="font-italic mr-2">{{ doc.bib_journal[0] }}</span> <template v-if="doc.bib_volume">{{ doc.bib_volume[0] }}.</template>{{ doc.bib_published | dateyear }} <template v-if="doc.bib_issue">({{ doc.bib_issue[0] }})</template>
+                    <span class="font-italic mr-2">{{ doc.bib_journal[0] }}</span> <template v-if="doc.bib_volume">{{ doc.bib_volume[0] }}.</template><template v-if="doc.bib_published">{{ doc.bib_published[0] | dateyear }}</template> <template v-if="doc.bib_issue">({{ doc.bib_issue[0] }})</template>
                   </span>
                 </v-col>
               </v-row>
