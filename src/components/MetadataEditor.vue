@@ -4,6 +4,7 @@
     :form="editform"
     :targetpid="pid"
     :templating="false"
+    :validate="validate"
     v-on:object-saved="objectSaved($event)"
   ></p-i-form>
 
@@ -30,6 +31,9 @@ export default {
     }
   },
   methods: {
+    validate: function () {
+      return true
+    },
     objectSaved: function (event) {
       this.$store.commit('setAlerts', [{ type: 'success', msg: 'Metadata for object ' + event + ' saved' }])
       this.$router.push({ name: 'detail', params: { pid: event } })
