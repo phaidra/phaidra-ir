@@ -26,13 +26,12 @@
         color: white;
         padding-top: 50px;
       }
-      .jumbotron-alert h1 {
-        font-size: 30pt;
+      .jumbotron-alert h3 {
+        font-size: 15pt;
         color: white;
         margin: 0;
       }
       .jumbotron-alert p {
-        font-size: 11pt;
         margin-top: 15px;
       }
     </style>
@@ -43,7 +42,7 @@
     <script>
       if(navigator.userAgent.indexOf('MSIE')!==-1 || navigator.appVersion.indexOf('Trident/') > -1){
         var outdatedDiv = document.getElementById("outdated");
-        outdatedDiv.innerHTML = '<div class="jumbotron-alert"><h1>Unsupported browser</h1><p>Meldung: Ihr Browser ist nicht un.</p><p>EN version of unsupported browser message</p></div>';
+        outdatedDiv.innerHTML = '<div class="jumbotron-alert"><p><h3>Ihr Browser wird nicht mehr unterstützt. Bitte verwenden Sie eine aktuelle Version von Firefox, Chrome or Edge (oder einen anderen aktuellen Browser).</h3></p><p><h3>Your browser is no longer being supported. Please use a current version of Firefox, Chrome or Edge (or another current browser).<h3></p></div>';
       }
     </script>
   </body>

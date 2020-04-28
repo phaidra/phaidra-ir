@@ -510,6 +510,10 @@ address {
 .univie-grey {
   color: #7b7b7b
 }
+
+.pdlabel {
+  font-weight: 500;
+}
 </style>
 
 <style scoped>

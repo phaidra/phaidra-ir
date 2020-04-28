@@ -3,20 +3,24 @@
 
     <v-row v-if="objectInfo">
 
-        <v-col cols="12" md="8">
+        <v-col cols="12" md="9">
 
           <v-alert type="info" color="primary" outlined v-if="!isApproved">
             {{ $t('This item needs to be cleared by the repository management.') }}
           </v-alert>
 
-          <p-d-jsonld v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="3"></p-d-jsonld>
-
+          <v-row no-gutters>
+            <v-col cols="12" md="11">
+              <p-d-jsonld v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+            </v-col>
+            <v-col cols="12" md="1"></v-col>
+          </v-row>
         </v-col>
 
-        <v-col cols="12" md="3" offset-md="1" class="col-border">
+        <v-col cols="12" md="3" class="col-border">
 
           <v-row class="mb-6">
-            <v-col class="pt-0">
+            <v-col >
               <v-row>
                 <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Download') }}</h3>
               </v-row>
@@ -28,7 +32,7 @@
           </v-row>
 
           <v-row class="mb-6" v-show="stats.detail || stats.download">
-            <v-col class="pt-0">
+            <v-col>
               <v-row>
                 <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Usage statistics') }}</h3>
               </v-row>
@@ -41,36 +45,6 @@
                   <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
                 </v-col>
                 <v-spacer></v-spacer>
-              </v-row>
-            </v-col>
-          </v-row>
-
-          <v-row class="my-6" v-if="alternativeVersions.length > 0">
-            <v-col class="pt-0">
-              <v-row>
-                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Alternative versions') }}</h3>
-              </v-row>
-              <v-divider></v-divider>
-              <v-row v-for="(version,i) in alternativeVersions" :key="i" no-gutters class="pt-2">
-                <span class="caption grey--text text--darken-2 mr-3">{{ version.label }}</span>
-                <span>
-                  <router-link :to="{ name: 'detail', params: { pid: version.pid } }">{{ version.pid }}</router-link>
-                </span>
-              </v-row>
-            </v-col>
-          </v-row>
-
-          <v-row class="my-6" v-if="alternativeFormats.length > 0">
-            <v-col class="pt-0">
-              <v-row>
-                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Alternative formats') }}</h3>
-              </v-row>
-              <v-divider></v-divider>
-              <v-row v-for="(format,i) in alternativeFormats" :key="i" no-gutters class="pt-2">
-                <span class="caption grey--text text--darken-2 mr-3">{{ format.label }}</span>
-                <span>
-                  <router-link :to="{ name: 'detail', params: { pid: format.pid } }">{{ format.pid }}</router-link>
-                </span>
               </v-row>
             </v-col>
           </v-row>
@@ -150,9 +124,6 @@ export default {
       this.$matomo.setDocumentTitle('Download ' + this.routepid)
       this.$matomo.trackPageView()
     },
-    async fetchAsyncData (self, pid) {
-      await self.$store.dispatch('fetchObjectInfo', pid)
-    },
     async fetchUsageStats (self) {
       self.stats.download = null
       self.stats.detail = null
@@ -172,81 +143,6 @@ export default {
         console.log(error)
       }
     },
-    async fetchAlternatives (self) {
-      self.alternativeFormats = []
-      self.alternativeVersions = []
-      if (self.objectInfo) {
-        if (self.objectInfo.isalternativeformatof) {
-          for (let o of self.objectInfo.isalternativeformatof) {
-            self.fetchAlternativesRec(self, o, 'isalternativeformatof', 'ebucore:hasMimeType', 'mimetypes', self.alternativeFormats)
-          }
-        }
-        if (self.objectInfo.isalternativeversionof) {
-          for (let o of self.objectInfo.isalternativeversionof) {
-            self.fetchAlternativesRec(self, o, 'isalternativeversionof', 'oaire:version', 'versiontypes', self.alternativeVersions)
-          }
-        }
-      }
-    },
-    async fetchAlternativesRec (self, pid, property, predicate, vocabulary, array) {
-      try {
-        // avoid infinite loops
-        if (pid === self.objectInfo.pid) {
-          console.log('fetchAlternatives skipping ' + pid + ' (source pid)')
-          return
-        }
-        for (let o of array) {
-          if (o.pid === pid) {
-            console.log('fetchAlternatives skipping ' + pid + ' (already visited)')
-            return
-          }
-        }
-        console.log('fetchAlternatives [' + predicate + '] fetching ' + pid)
-        let response = await axios.get(self.config.api + '/object/' + pid + '/info',
-          {
-            headers: {
-              'X-XSRF-TOKEN': self.user.token
-            }
-          }
-        )
-        let objectInfo = response.data.info
-        if (objectInfo) {
-          let jsonld = objectInfo.metadata['JSON-LD']
-          if (jsonld) {
-            if (jsonld[predicate]) {
-              let objarr = jsonld[predicate]
-              if (objarr.length > 0) {
-                let id
-                if (predicate === 'oaire:version') {
-                  if (objarr[0]['skos:exactMatch']) {
-                    if (objarr[0]['skos:exactMatch'].length > 0) {
-                      id = objarr[0]['skos:exactMatch'][0]
-                    }
-                  }
-                }
-                if (predicate === 'ebucore:hasMimeType') {
-                  id = objarr[0]
-                }
-                array.push(
-                  {
-                    label: self.getLocalizedTermLabel(vocabulary, id),
-                    pid: pid
-                  }
-                )
-              }
-            }
-          }
-        }
-        if (objectInfo[property]) {
-          for (let o of self.objectInfo[property]) {
-            self.fetchAlternatives(self, o, property, predicate, vocabulary, array)
-          }
-        }
-        console.log('[' + pid + '] fetching object info done')
-      } catch (error) {
-        console.log(error)
-      }
-    },
     getFormatLabel (objectInfo) {
       if (objectInfo.metadata) {
         if (objectInfo.metadata['JSON-LD']) {
@@ -256,6 +152,10 @@ export default {
         }
       }
       return this.$t('Download')
+    },
+    async fetchAsyncData (self, pid) {
+      await self.$store.dispatch('fetchObjectInfo', pid)
+      await self.$store.dispatch('loadOrgUnits', self.$i18n.locale)
     }
   },
   serverPrefetch () {
@@ -276,13 +176,11 @@ export default {
       if (inforesponse) {
         vm.$store.commit('setObjectInfo', inforesponse.data.info)
       }
-      vm.fetchAlternatives(vm)
       vm.fetchUsageStats(vm)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
     await this.fetchAsyncData(this, to.params.pid)
-    this.fetchAlternatives(this)
     this.fetchUsageStats(this)
     next()
   }

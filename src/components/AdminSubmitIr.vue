@@ -421,7 +421,7 @@
           <v-container>
             <v-row>
               <v-col md="10" offset-md="1">
-                <p-d-jsonld :jsonld="jsonld"></p-d-jsonld>
+                <p-d-jsonld :jsonld="jsonld" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
               </v-col>
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
@@ -1133,6 +1133,24 @@ export default {
         this.$emit('form-input-' + f.component, f)
       }
     },
+    containedInRoleInput: function (f, event) {
+      for (let r of f.roles) {
+        if (r.id === event.role.id) {
+          if (event.roleTerm) {
+            r.role = event.roleTerm['@id']
+          }
+          if (event.name) {
+            r.name = event.name
+          }
+          if (event.firstname) {
+            r.firstname = event.firstname
+          }
+          if (event.lastname) {
+            r.lastname = event.lastname
+          }
+        }
+      }
+    },
     setFilename: function (f, event) {
       if (event) {
         f.value = event.name
@@ -1379,6 +1397,8 @@ export default {
       if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book')) {
         let sf = fields.getField('series')
         sf.multilingual = false
+        sf.hideIdentifier = true
+        sf.label = this.submitformparam === 'book' ? 'Series' : 'Journal/Series'
         sf.hidePages = this.submitformparam !== 'journal-article'
         sf.hideIssue = this.submitformparam !== 'journal-article'
         sf.hideIssued = this.submitformparam !== 'journal-article'

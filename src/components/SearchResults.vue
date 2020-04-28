@@ -1,6 +1,6 @@
 <template>
   <v-container>
-    <template v-for="(doc, i) in this.docs">
+    <template v-for="(doc, i) in docs">
       <v-row :key="'doc'+i">
         <v-col :cols="12">
           <v-row :key="'prev'+doc.pid">
@@ -25,11 +25,11 @@
                 <v-col>
                   <span class="grey--text text--darken-4">
                     <span v-for="(aut,i) in doc.bib_roles_pers_aut" :key="'aut'+i">
-                      <template v-if="(i < 3) || doc.showAllAuthors">
+                      <template v-if="(i < rolesLimit) || doc.showAllAuthors">
                       {{aut}}<span v-if="(i+1) < doc.bib_roles_pers_aut.length">; </span>
                       </template>
                     </span>
-                    <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_aut.length > 3 && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
+                    <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_aut.length > rolesLimit && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
                   </span>
                 </v-col>
               </v-row>
@@ -37,11 +37,11 @@
                 <v-col>
                   <span class="grey--text text--darken-4">
                     <span v-for="(aut,i) in doc.bib_roles_pers_edt" :key="'aut'+i">
-                      <template v-if="(i < 3) || doc.showAllAuthors">
+                      <template v-if="(i < rolesLimit) || doc.showAllAuthors">
                       {{aut}}<span v-if="(i+1) < doc.bib_roles_pers_edt.length">; </span>
                       </template>
                     </span>
-                    <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_edt.length > 3 && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
+                    <span class="mx-2 primary--text" v-if="doc.bib_roles_pers_edt.length > rolesLimit && !doc.showAllAuthors" @click="showAll(doc)">... {{ $t('show all') }}</span>
                   </span>
                 </v-col>
               </v-row>
@@ -89,6 +89,11 @@ export default {
       type: Array
     },
     total: Number
+  },
+  data () {
+    return {
+      rolesLimit: 4
+    }
   },
   methods: {
     showAll: function (doc) {
