@@ -165,6 +165,10 @@
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.title }}</v-col>
                         </v-row>
+                        <v-row v-if="doiImportData.subtitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.subtitle }}</v-col>
+                        </v-row>
                         <v-row v-if="doiImportData.dateIssued">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.dateIssued }}</v-col>
@@ -205,6 +209,10 @@
                         <v-row v-if="doiImportData.pageEnd">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.pageEnd }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.ISBN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.ISBN }}</v-col>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -1067,9 +1075,21 @@ export default {
 
             if (crossrefData['title']) {
               if (Array.isArray(crossrefData['title'])) {
-                this.doiImportData.title = crossrefData['title'][0]
+                if (crossrefData['title'].length > 0) {
+                  this.doiImportData.title = crossrefData['title'][0]
+                }
               } else {
                 this.doiImportData.title = crossrefData['title']
+              }
+            }
+
+            if (crossrefData['subtitle']) {
+              if (Array.isArray(crossrefData['subtitle'])) {
+                if (crossrefData['subtitle'].length > 0) {
+                  this.doiImportData.subtitle = crossrefData['subtitle'][0]
+                }
+              } else {
+                this.doiImportData.subtitle = crossrefData['subtitle']
               }
             }
 
@@ -1146,18 +1166,42 @@ export default {
             }
 
             if (crossrefData['publisher']) {
-              this.doiImportData.publisher = crossrefData['publisher']
+              if (Array.isArray(crossrefData['publisher'])) {
+                if (crossrefData['publisher'].length > 0) {
+                  this.doiImportData.publisher = crossrefData['publisher'][0]
+                }
+              } else {
+                this.doiImportData.publisher = crossrefData['publisher']
+              }
             }
 
             if (crossrefData['container-title']) {
-              this.doiImportData.journalTitle = crossrefData['container-title']
+              if (Array.isArray(crossrefData['container-title'])) {
+                if (crossrefData['container-title'].length > 0) {
+                  this.doiImportData.journalTitle = crossrefData['container-title'][0]
+                }
+              } else {
+                this.doiImportData.journalTitle = crossrefData['container-title']
+              }
             }
 
             if (crossrefData['ISSN']) {
               if (Array.isArray(crossrefData['ISSN'])) {
-                this.doiImportData.journalISSN = crossrefData['ISSN'][0]
+                if (crossrefData['ISSN'].length > 0) {
+                  this.doiImportData.journalISSN = crossrefData['ISSN'][0]
+                }
               } else {
                 this.doiImportData.journalISSN = crossrefData['ISSN']
+              }
+            }
+
+            if (crossrefData['ISBN']) {
+              if (Array.isArray(crossrefData['ISBN'])) {
+                if (crossrefData['ISBN'].length > 0) {
+                  this.doiImportData.ISBN = crossrefData['ISBN'][0]
+                }
+              } else {
+                this.doiImportData.ISBN = crossrefData['ISBN']
               }
             }
 
@@ -1535,6 +1579,20 @@ export default {
           this.license = f.value
         }
 
+        if (f.predicate === 'dcterms:language') {
+          for (let s of this.form.sections) {
+            for (let field of s.fields) {
+              if (
+                (field.predicate === 'dce:title') ||
+                (field.predicate === 'bf:note') ||
+                (field.predicate === 'dce:subject')
+              ) {
+                field.language = event['@id']
+              }
+            }
+          }
+        }
+
         if (f.predicate === 'dcterms:accessRights') {
           this.showEmbargoDate = f.value === 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
         }
@@ -1657,7 +1715,15 @@ export default {
       if (doiImportData && doiImportData.title) {
         tf.title = doiImportData.title
       }
-      tf.hideSubtitle = true
+      if (this.submitformparam === 'book') {
+        tf.hideSubtitle = false
+      } else {
+        tf.hideSubtitle = true
+      }
+      if (doiImportData && doiImportData.subtitle) {
+        tf.subtitle = doiImportData.subtitle
+        tf.hideSubtitle = false
+      }
       tf.multilingual = false
       tf.multiplicable = false
       smf.push(tf)
@@ -1775,6 +1841,7 @@ export default {
         pf.showPlace = false
         pf.showDate = true
         pf.label = 'PUBLISHER_VERLAG'
+        pf.publishingDateLabel = 'Publication date'
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -1795,6 +1862,9 @@ export default {
           identifierLabel: 'ISBN',
           valueErrorMessages: [],
           value: ''
+        }
+        if (doiImportData && doiImportData.ISBN) {
+          isbn.value = doiImportData.ISBN
         }
         smf.push(isbn)
       }

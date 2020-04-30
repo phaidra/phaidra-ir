@@ -706,5 +706,6 @@ export default {
   'Book chapter': 'Buchkapitel',
   'Article details': 'Details zum Artikel',
   'Book details': 'Details zum Buch',
-  'Book chapter details': 'Details zum Buchkapitel'
+  'Book chapter details': 'Details zum Buchkapitel',
+  'Publication date': 'Erscheinungsdatum'
 }
