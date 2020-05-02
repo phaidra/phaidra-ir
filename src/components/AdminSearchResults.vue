@@ -15,8 +15,12 @@
         <v-col cols="3">
           <router-link class="font-weight-light primary--text" :to="{ name: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] | truncate(100) }}</router-link>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" v-if="doc.requestedlicense === doc.currentlicense">
           {{ doc.requestedlicense }}
+        </v-col>
+        <v-col cols="2" v-else>
+          <div>{{ doc.currentlicense }}</div>
+          <div class="grey--text pt-2">{{ doc.requestedlicense }}</div>
         </v-col>
         <v-col cols="1">
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">

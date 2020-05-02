@@ -158,6 +158,18 @@ export default {
       this.facet_counts = response.data.facet_counts
       updateFacetQueries(response.data.facet_counts.facet_queries, adminFacetQueries)
 
+      for (let d of this.docs) {
+        if (d.hasOwnProperty('dc_license')) {
+          if (Array.isArray(d.dc_license)) {
+            for (let l of d.dc_license) {
+              if (l.startsWith('http')) {
+                Vue.set(d, 'currentlicense', this.getLocalizedTermLabel('alllicenses', l))
+              }
+            }
+          }
+        }
+      }
+
       let pagePids = []
       for (let d of this.docs) {
         pagePids.push(d.pid)
@@ -179,7 +191,7 @@ export default {
         for (let rl of rlresponse.data.requestedlicenses) {
           for (let d of this.docs) {
             if (rl.pid === d.pid) {
-              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('licenses', rl.requestedlicense))
+              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
             }
           }
         }

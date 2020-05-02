@@ -62,6 +62,35 @@
               </v-combobox>
             </v-col>
           </v-row>
+          <v-row>
+            <v-col cols="12" md="2" v-if="multilingual">
+              <v-autocomplete
+                :value="getTerm('lang', language)"
+                v-on:input="$emit('input-language', $event )"
+                :items="vocabularies['lang'].terms"
+                :item-value="'@id'"
+                :filter="autocompleteFilter"
+                hide-no-data
+                :label="$t('Language')"
+                :filled="inputStyle==='filled'"
+                :outlined="inputStyle==='outlined'"
+                return-object
+                clearable
+              >
+                <template slot="item" slot-scope="{ item }">
+                  <v-list-item-content two-line>
+                    <v-list-item-title  v-html="`${getLocalizedTermLabel('lang', item['@id'])}`"></v-list-item-title>
+                    <v-list-item-subtitle v-if="showIds" v-html="`${item['@id']}`"></v-list-item-subtitle>
+                  </v-list-item-content>
+                </template>
+                <template slot="selection" slot-scope="{ item }">
+                  <v-list-item-content>
+                    <v-list-item-title v-html="`${getLocalizedTermLabel('lang', item['@id'])}`"></v-list-item-title>
+                  </v-list-item-content>
+                </template>
+              </v-autocomplete>
+            </v-col>
+          </v-row>
         </v-card-text>
       </v-card>
     </v-col>
@@ -90,10 +119,17 @@ export default {
     descriptionLabel: {
       type: String
     },
+    language: {
+      type: String
+    },
     keywordsLabel: {
       type: String
     },
     keywordParser: {
+      type: Boolean,
+      default: false
+    },
+    multilingual: {
       type: Boolean,
       default: false
     }

@@ -1,5 +1,11 @@
 <template>
   <div>
+
+    <v-alert v-if="importData" :type="'error'">
+      {{ $t('This object contains metadatafields not supperted by institutional repository!') }}
+      <div v-for="(pred, i) in importData.unknownpredicates" :key="'up'+i">{{ pred }}</div>
+    </v-alert>
+
     <v-container v-if="submitformLoading">
       <div class="text-center">
         <v-progress-circular
@@ -12,18 +18,18 @@
 
     <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2">
       <v-stepper-header>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
+        <v-stepper-step v-if="!targetPid" edit-icon='mdi-check' :editable="true" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
+        <v-divider v-if="!targetPid"></v-divider>
+        <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
-        <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 7) && (step < 8)" :complete="maxStep > 7" step="7" @click="updateJsonld()">{{ $t('Submit') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="maxStep > 7" step="7" @click="updateJsonld()">{{ $t('Submit') }}</v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
 
-        <v-stepper-content step="3">
+        <v-stepper-content v-if="!targetPid" step="3">
           <v-container>
             <v-row no-gutters>
               <h3 class="title font-weight-light primary--text mb-4">{{ $t('Metadata-Import via DOI') }}</h3>
@@ -128,9 +134,14 @@
                     :descriptionLabel="$t('Abstract')"
                     :keywordsLabel="$t('Keywords')"
                     :keywordParser="true"
+                    :keywordsValue="typeof importData !== 'undefined' ? importData.keywords : []"
+                    :descriptionValue="typeof importData !== 'undefined' ? importData.abstract.value : ''"
+                    :language="typeof importData !== 'undefined' ? importData.abstract.language : ''"
                     v-on:input-description="setDescription(s, $event)"
                     v-on:input-keywords="setKeywords(s, $event)"
+                    v-on:input-language="setDescriptionAndKeywordsLanguage(s, $event)"
                     :inputStyle="inputStyle"
+                    :multilingual="typeof importData !== 'undefined'"
                     class="my-4"
                   ></submit-ir-description-keywords>
                 </template>
@@ -403,14 +414,19 @@
                       </v-col>
                     </template>
 
+                    <template v-else-if="f.component === 'p-filename-readonly'">
+                      <p-i-filename-readonly v-bind.sync="f"></p-i-filename-readonly>
+                    </template>
+
                   </v-row>
 
                 </template>
 
                 <v-divider class="mt-5 mb-7"></v-divider>
                 <v-row no-gutters justify="space-between">
-                  <v-btn dark color="grey" @click="backForm(s.id)">{{ $t('Back') }}</v-btn>
-                  <v-btn color="primary" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
+                  <v-btn dark color="grey"  v-if="!(targetPid && s.id == 5)" @click="backForm(s.id)">{{ $t('Back') }}</v-btn>
+                  <v-spacer></v-spacer>
+                  <v-btn class="primary float-right" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
                 </v-row>
               </v-col>
             </v-row>
@@ -485,7 +501,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-btn raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
+              <v-btn v-if="!targetPid" raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
             </v-row>
           </v-container>
         </v-stepper-content>
@@ -493,6 +509,7 @@
       </v-stepper-items>
 
     </v-stepper>
+    <v-btn v-if="targetPid " fixed bottom right raised color="primary" :loading="loading" :disabled="loading" @click="save()">{{ $t('Save') }}</v-btn>
   </div>
 </template>
 
@@ -516,6 +533,10 @@ export default {
     SubmitIrDescriptionKeywords,
     SubmitIrAlternateIdentifier
   },
+  props: {
+    targetPid: String,
+    importData: Object
+  },
   computed: {
     doiToImport: function () {
       if (this.doiImportInput) {
@@ -530,7 +551,18 @@ export default {
       }
     },
     submitformparam: function () {
-      return this.$route.params.submitform
+      if (this.importData) {
+        switch (this.importData['objecttype']) {
+          case 'https://pid.phaidra.org/vocabulary/47QB-8QF1':
+            return 'book'
+          case 'https://pid.phaidra.org/vocabulary/XA52-09WA':
+            return 'book-part'
+          default:
+            return 'journal-article'
+        }
+      } else {
+        return this.$route.params.submitform
+      }
     },
     irObjectTypeVocabulary: function () {
       switch (this.submitformparam) {
@@ -547,7 +579,7 @@ export default {
       form: {
         sections: []
       },
-      step: 1,
+      step: 3,
       maxStep: 0,
       loadedMetadata: [],
       loading: false,
@@ -586,6 +618,10 @@ export default {
       if (val === 7) {
         this.updateJsonld()
       }
+    },
+    importData (val) {
+      this.resetSubmission(this)
+      this.step = 5
     }
   },
   methods: {
@@ -842,6 +878,45 @@ export default {
           this.$router.push('/admin')
         }
       } catch (error) {
+        console.log(error)
+        this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      } finally {
+        this.$vuetify.goTo(0)
+        this.loading = false
+      }
+    },
+    save: async function () {
+      this.validateMandatory()
+      if (this.validationStatus === 'error') {
+        this.step = 5
+        return
+      }
+      this.loading = true
+      var httpFormData = new FormData()
+      httpFormData.append('metadata', JSON.stringify(this.getMetadata()))
+      try {
+        let response = await this.$http.request({
+          method: 'POST',
+          url: this.$store.state.config.api + '/object/' + this.targetPid + '/metadata',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          },
+          data: httpFormData
+        })
+        if (response.data.alerts && response.data.alerts.length > 0) {
+          if (response.data.status === 401) {
+            response.data.alerts.push({ type: 'danger', msg: 'Please log in' })
+          }
+          this.$store.commit('setAlerts', response.data.alerts)
+        }
+        if (response.data.status === 200) {
+          if (response.data.pid) {
+            this.$emit('object-saved', this.targetpid)
+          }
+        }
+      } catch (error) {
+        console.log(error)
         this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
       } finally {
         this.$vuetify.goTo(0)
@@ -1116,6 +1191,20 @@ export default {
           this.license = f.value
         }
 
+        if (f.predicate === 'dcterms:language') {
+          for (let s of this.form.sections) {
+            for (let field of s.fields) {
+              if (
+                (field.predicate === 'dce:title') ||
+                (field.predicate === 'bf:note') ||
+                (field.predicate === 'dce:subject')
+              ) {
+                field.language = event['@id']
+              }
+            }
+          }
+        }
+
         if (f.predicate === 'dcterms:accessRights') {
           this.showEmbargoDate = f.value === 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
         }
@@ -1172,6 +1261,16 @@ export default {
         }
       }
     },
+    setDescriptionAndKeywordsLanguage: function (section, event) {
+      for (let f of section.fields) {
+        if ((f.component === 'p-text-field') && (f.type === 'bf:Summary')) {
+          f.language = event['@id']
+        }
+        if ((f.component === 'p-keyword')) {
+          f.language = event['@id']
+        }
+      }
+    },
     resetForm: function (self, doiImportData) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
       self.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
@@ -1186,87 +1285,150 @@ export default {
       rt.value = 'https://pid.phaidra.org/vocabulary/69ZZ-2KGX'
       smf.push(rt)
 
-      let f = fields.getField('file')
-      f.multiplicable = false
-      f.mimetype = 'application/pdf'
-      f.autoMimetype = true
-      f.showMimetype = false
-      smf.push(f)
+      if (!this.importData) {
+        let f = fields.getField('file')
+        f.multiplicable = false
+        f.mimetype = 'application/pdf'
+        f.autoMimetype = true
+        f.showMimetype = false
+        smf.push(f)
+      }
 
       let tf = fields.getField('title')
-      if (doiImportData && doiImportData.title) {
-        tf.title = doiImportData.title
+      if (this.importData && this.importData.title) {
+        if (this.importData.title.value) {
+          tf.title = this.importData.title.value
+        }
+        if (this.importData.title.language) {
+          tf.language = this.importData.title.language
+        }
+        tf.multilingual = true
+      } else {
+        if (doiImportData && doiImportData.title) {
+          tf.title = doiImportData.title
+        }
       }
-      tf.hideSubtitle = true
+      if (this.importData && this.importData.subtitle) {
+        tf.subtitle = this.importData.subtitle
+        tf.hideSubtitle = false
+      } else {
+        if (doiImportData && doiImportData.subtitle) {
+          tf.subtitle = doiImportData.subtitle
+          tf.hideSubtitle = false
+        }
+      }
       tf.multilingual = false
       tf.multiplicable = false
       smf.push(tf)
 
-      let uploader = fields.getField('role-extended')
-      uploader.role = 'role:uploader'
-      uploader.roleVocabulary = 'rolepredicate'
-      uploader.firstname = this.user.firstname
-      uploader.lastname = this.user.lastname
-      smf.push(uploader)
+      if (!this.importData) {
+        let uploader = fields.getField('role-extended')
+        uploader.role = 'role:uploader'
+        uploader.roleVocabulary = 'rolepredicate'
+        uploader.firstname = this.user.firstname
+        uploader.lastname = this.user.lastname
+        smf.push(uploader)
+      }
 
-      if (doiImportData && doiImportData.authors.length > 0) {
-        for (let author of doiImportData.authors) {
+      if (this.importData && this.importData.roles) {
+        for (let importRole of this.importData.roles) {
           let role = fields.getField('role-extended')
           role.type = 'schema:Person'
-          role.role = 'role:aut'
+          role.role = importRole.role
           role.roleVocabulary = 'irrolepredicate'
           role.ordergroup = 'roles'
-          role.firstname = author.firstname
-          role.lastname = author.lastname
+          role.firstname = importRole.firstname
+          role.lastname = importRole.lastname
+          role.showIdentifierType = false
+          if (importRole.identifier) {
+            role.identifierType = importRole.identifier.type
+            role.identifierText = importRole.identifier.value
+          }
+          if (importRole.affiliation) {
+            role.affiliationType = importRole.affiliation.type
+            if (importRole.affiliation.type === 'other') {
+              role.affiliationText = importRole.affiliation.value
+            } else {
+              role.affiliation = importRole.affiliation.value
+            }
+          }
+          smf.push(role)
+        }
+      } else {
+        if (doiImportData && doiImportData.authors.length > 0) {
+          for (let author of doiImportData.authors) {
+            let role = fields.getField('role-extended')
+            role.type = 'schema:Person'
+            role.role = 'role:aut'
+            role.roleVocabulary = 'irrolepredicate'
+            role.ordergroup = 'roles'
+            role.firstname = author.firstname
+            role.lastname = author.lastname
+            role.showIdentifierType = false
+            role.identifierType = 'ids:orcid'
+            role.identifierLabel = 'ORCID'
+            role.affiliationType = ''
+            smf.push(role)
+          }
+        } else {
+          let role = fields.getField('role-extended')
+          role.role = 'role:aut'
+          role.type = 'schema:Person'
+          role.enableTypeSelect = false
+          if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book-part')) {
+            role.hideRole = true
+            role.label = 'Author'
+          }
+          role.roleVocabulary = 'irrolepredicate'
+          role.ordergroup = 'roles'
           role.showIdentifierType = false
           role.identifierType = 'ids:orcid'
           role.identifierLabel = 'ORCID'
           role.affiliationType = ''
           smf.push(role)
         }
-      } else {
-        let role = fields.getField('role-extended')
-        role.role = 'role:aut'
-        role.type = 'schema:Person'
-        role.enableTypeSelect = false
-        if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book-part')) {
-          role.hideRole = true
-          role.label = 'Author'
-        }
-        role.roleVocabulary = 'irrolepredicate'
-        role.ordergroup = 'roles'
-        role.showIdentifierType = false
-        role.identifierType = 'ids:orcid'
-        role.identifierLabel = 'ORCID'
-        role.affiliationType = ''
-        smf.push(role)
       }
 
       let vtf = fields.getField('version-type')
+      if (this.importData && this.importData.version) {
+        vtf.value = this.importData.version
+      }
       smf.push(vtf)
 
       let issued = fields.getField('date-edtf')
       issued.mainSubmitDate = true // we need to find this field again when changing predicates
       issued.picker = true
+      if (this.importData && this.importData.date) {
+        issued.type = this.importData.date.type
+        issued.value = this.importData.date.value
+      } else {
+        if (doiImportData && doiImportData.dateIssued) {
+          issued.value = doiImportData.dateIssued
+        }
+        issued.dateLabel = 'Date issued'
+      }
       issued.type = 'dcterms:issued'
       issued.hideType = true
-      issued.dateLabel = 'Date issued'
       issued.multiplicable = false
-      if (doiImportData && doiImportData.dateIssued) {
-        issued.value = doiImportData.dateIssued
-      }
       smf.push(issued)
 
       let lmf = fields.getField('language')
       lmf.multiplicable = false
+      if (this.importData && this.importData.language) {
+        lmf.value = this.importData.language
+      }
       smf.push(lmf)
 
       let otf = fields.getField('object-type')
       otf.vocabulary = this.irObjectTypeVocabulary
       otf.multiplicable = false
       otf.label = 'Type of publication'
-      if (doiImportData && doiImportData.publicationTypeId) {
-        otf.value = doiImportData.publicationTypeId
+      if (this.importData && this.importData.date) {
+        otf.value = this.importData.objecttype
+      } else {
+        if (doiImportData && doiImportData.publicationTypeId) {
+          otf.value = doiImportData.publicationTypeId
+        }
       }
       if (this.submitformparam === 'book') {
         otf.value = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
@@ -1285,23 +1447,93 @@ export default {
         sf.hideSeriesIssn = true
         sf.collapseSeries = true
         sf.hidePages = false
-        if (doiImportData) {
-          if (doiImportData.pageStart) {
-            sf.pageStart = doiImportData.pageStart
-          }
-          if (doiImportData.pageEnd) {
-            sf.pageEnd = doiImportData.pageEnd
-          }
-        }
         sf.publisherSearch = false
         sf.publisherShowPlace = false
         sf.publisherShowDate = true
         sf.publisherLabel = 'PUBLISHER_VERLAG'
-        if (doiImportData && doiImportData.publisher) {
-          sf.publisherName = doiImportData.publisher
-        }
-        if (doiImportData && doiImportData.dateIssued) {
-          sf.publishingDate = doiImportData.dateIssued
+        sf.publishingDateLabel = 'Publication date'
+        if (this.importData && this.importData.containedin) {
+          if (this.importData.containedin.title) {
+            sf.title = this.importData.containedin.title
+          }
+          if (this.importData.containedin.subtitle) {
+            sf.subtitle = this.importData.containedin.subtitle
+          }
+          if (this.importData.containedin.isbn) {
+            sf.isbn = this.importData.containedin.isbn
+          }
+          if (this.importData.containedin.pagestart) {
+            sf.pageStart = this.importData.containedin.pagestart
+          }
+          if (this.importData.containedin.pageend) {
+            sf.pageEnd = this.importData.containedin.pageend
+          }
+          if (this.importData.containedin.roles) {
+            for (let role of this.importData.containedin.roles) {
+              let roleidx = 0
+              roleidx++
+              let entity = {
+                id: 'contained-in-role-' + roleidx,
+                role: role.role,
+                firstname: role.firstname,
+                lastname: role.lastname,
+                ordergroup: 'contained-in-role'
+              }
+              sf.roles.push(entity)
+            }
+          }
+          if (this.importData.containedin.series) {
+            if (this.importData.containedin.series.title) {
+              sf.seriesTitle = this.importData.containedin.series.title
+            }
+            if (this.importData.containedin.series.volume) {
+              sf.seriesVolume = this.importData.containedin.series.volume
+            }
+            if (this.importData.containedin.series.issue) {
+              sf.seriesIssue = this.importData.containedin.series.issue
+            }
+            if (this.importData.containedin.series.issued) {
+              sf.seriesIssued = this.importData.containedin.series.issued
+            }
+            if (this.importData.containedin.series.issn) {
+              sf.seriesIssn = this.importData.containedin.series.issn
+            }
+            if (this.importData.containedin.series.identifier) {
+              sf.seriesIdentifier = this.importData.containedin.series.identifier
+            }
+          }
+          if (this.importData.containedin.publisher) {
+            if (this.importData.containedin.publisher.type) {
+              sf.publisherType = this.importData.containedin.publisher.type
+              if (this.importData.containedin.publisher.type === 'other') {
+                if (this.importData.containedin.publisher.name) {
+                  sf.publisherName = this.importData.containedin.publisher.name
+                }
+              } else {
+                if (this.importData.containedin.publisher.orgunit) {
+                  sf.publisherOrgUnit = this.importData.containedin.publisher.orgunit
+                }
+              }
+            }
+            if (this.importData.containedin.publisher.date) {
+              sf.publishingDate = this.importData.containedin.publisher.date
+            }
+          }
+        } else {
+          if (doiImportData) {
+            if (doiImportData.pageStart) {
+              sf.pageStart = doiImportData.pageStart
+            }
+            if (doiImportData.pageEnd) {
+              sf.pageEnd = doiImportData.pageEnd
+            }
+            if (doiImportData.publisher) {
+              sf.publisherName = doiImportData.publisher
+            }
+            if (doiImportData.dateIssued) {
+              sf.publishingDate = doiImportData.dateIssued
+            }
+          }
         }
         smf.push(sf)
       }
@@ -1313,11 +1545,29 @@ export default {
         pf.showPlace = false
         pf.showDate = true
         pf.label = 'PUBLISHER_VERLAG'
-        if (doiImportData && doiImportData.publisher) {
-          pf.publisherName = doiImportData.publisher
-        }
-        if (doiImportData && doiImportData.dateIssued) {
-          pf.publishingDate = doiImportData.dateIssued
+        if (this.importData && this.importData.publisher) {
+          if (this.importData.publisher.type) {
+            pf.publisherType = this.importData.publisher.type
+            if (this.importData.publisher.type === 'other') {
+              if (this.importData.publisher.name) {
+                pf.publisherName = this.importData.publisher.name
+              }
+            } else {
+              if (this.importData.publisher.orgunit) {
+                pf.publisherOrgUnit = this.importData.publisher.orgunit
+              }
+            }
+          }
+          if (this.importData.publisher.date) {
+            pf.publishingDate = this.importData.publisher.date
+          }
+        } else {
+          if (doiImportData && doiImportData.publisher) {
+            pf.publisherName = doiImportData.publisher
+          }
+          if (doiImportData && doiImportData.dateIssued) {
+            pf.publishingDate = doiImportData.dateIssued
+          }
         }
         smf.push(pf)
 
@@ -1334,10 +1584,24 @@ export default {
           valueErrorMessages: [],
           value: ''
         }
+        if (this.importData && this.importData.identifiers) {
+          let identifiersArrayNoIsbn = []
+          for (let id of this.importData.identifiers) {
+            if (id.type === 'ids:isbn') {
+              isbn.value = id.value
+            } else {
+              identifiersArrayNoIsbn.push(id)
+            }
+          }
+          this.importData.identifiers = identifiersArrayNoIsbn
+        }
         smf.push(isbn)
       }
 
       let arf = fields.getField('access-right')
+      if (this.importData && this.importData.accessrights) {
+        arf.value = this.importData.accessrights
+      }
       arf.vocabulary = 'iraccessright'
       smf.push(arf)
 
@@ -1346,9 +1610,16 @@ export default {
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
+      if (this.importData && this.importData.embargodate) {
+        embargoDate.value = this.importData.embargodate
+        self.showEmbargoDate = true
+      }
       smf.push(embargoDate)
 
       let lic = fields.getField('license')
+      if (this.importData && this.importData.license) {
+        lic.value = this.importData.license
+      }
       lic.vocabulary = 'alllicenses'
       smf.push(lic)
 
@@ -1364,33 +1635,87 @@ export default {
       let sof = []
 
       // handled by submit-ir-description-keyword component
-      sof.push(fields.getField('abstract'))
-      sof.push(fields.getField('keyword'))
+      let abst = fields.getField('abstract')
+      if (this.importData && this.importData.abstract) {
+        if (this.importData.abstract.value) {
+          abst.value = this.importData.abstract.value
+        }
+        if (this.importData.abstract.language) {
+          abst.language = this.importData.abstract.language
+        }
+      }
+      sof.push(abst)
+      let keyws = fields.getField('keyword')
+      if (this.importData && this.importData.keywords) {
+        if (this.importData.keywords) {
+          keyws.value = this.importData.keywords
+        }
+      }
+      sof.push(keyws)
 
       // handled by submit-ir-funding-field component
-      let pof = fields.getField('project')
-      pof.label = 'Funder/Project'
-      pof.multiplicable = true
-      pof.multiplicableCleared = true
-      pof.subloopFlag = true
-      sof.push(pof)
-
-      let aif = fields.getField('alternate-identifier')
-      aif.label = 'Identifier'
-      aif.identifierLabel = 'Identifier'
-      aif.vocabulary = 'irobjectidentifiertypenoisbn'
-      aif.multiplicable = true
-      aif.addOnly = true
-      aif.subloopFlag = true
-      if (doiImportData && doiImportData.doi) {
-        aif.type = 'ids:doi'
-        aif.value = doiImportData.doi
+      if (this.importData && this.importData.funding) {
+        for (let funding of this.importData.funding) {
+          let pof = fields.getField('project')
+          pof.label = 'Funder/Project'
+          pof.multiplicable = true
+          pof.multiplicableCleared = true
+          pof.subloopFlag = true
+          if (funding.funderid) {
+            pof.funderIdentifier = funding.funderid
+          }
+          if (funding.projectid) {
+            pof.identifier = funding.projectid
+          }
+          sof.push(pof)
+        }
+      } else {
+        let pof = fields.getField('project')
+        pof.label = 'Funder/Project'
+        pof.multiplicable = true
+        pof.multiplicableCleared = true
+        pof.subloopFlag = true
+        sof.push(pof)
       }
-      sof.push(aif)
+
+      if (this.importData && this.importData.identifiers) {
+        for (let id of this.importData.identifiers) {
+          let aif = fields.getField('alternate-identifier')
+          aif.label = 'Identifier'
+          aif.identifierLabel = 'Identifier'
+          aif.vocabulary = 'irobjectidentifiertypenoisbn'
+          aif.multiplicable = true
+          aif.addOnly = true
+          aif.subloopFlag = true
+          if (id.type) {
+            aif.type = id.type
+          }
+          if (id.value) {
+            aif.value = id.value
+          }
+          sof.push(aif)
+        }
+      } else {
+        let aif = fields.getField('alternate-identifier')
+        aif.label = 'Identifier'
+        aif.identifierLabel = 'Identifier'
+        aif.vocabulary = 'irobjectidentifiertypenoisbn'
+        aif.multiplicable = true
+        aif.addOnly = true
+        aif.subloopFlag = true
+        if (doiImportData && doiImportData.doi) {
+          aif.type = 'ids:doi'
+          aif.value = doiImportData.doi
+        }
+        sof.push(aif)
+      }
 
       if (this.submitformparam === 'book') {
         let nop = fields.getField('number-of-pages')
         nop.multiplicable = false
+        if (this.importData && this.importData.numberofpages) {
+          nop.value = this.importData.numberofpages
+        }
         sof.push(nop)
       }
 
@@ -1404,27 +1729,54 @@ export default {
         sf.hideIssued = this.submitformparam !== 'journal-article'
         sf.hideIssn = this.submitformparam !== 'journal-article'
         sf.issuedDatePicker = true
-        if (doiImportData) {
-          if (doiImportData.journalTitle) {
-            sf.title = doiImportData.journalTitle
+        if (this.importData && this.importData.series) {
+          if (this.importData.series.title) {
+            sf.title = this.importData.series.title
           }
-          if (doiImportData.journalISSN) {
-            sf.issn = doiImportData.journalISSN
+          if (this.importData.series.volume) {
+            sf.volume = this.importData.series.volume
           }
-          if (doiImportData.journalVolume) {
-            sf.volume = doiImportData.journalVolume
+          if (this.importData.series.issue) {
+            sf.issue = this.importData.series.issue
           }
-          if (doiImportData.journalIssue) {
-            sf.issue = doiImportData.journalIssue
+          if (this.importData.series.issued) {
+            sf.issued = this.importData.series.issued
           }
-          if (doiImportData.pageStart) {
-            sf.pageStart = doiImportData.pageStart
+          if (this.importData.series.issn) {
+            sf.issn = this.importData.series.issn
           }
-          if (doiImportData.pageEnd) {
-            sf.pageEnd = doiImportData.pageEnd
+          if (this.importData.series.identifier) {
+            sf.identifier = this.importData.series.identifier
           }
-          if (doiImportData && doiImportData.dateIssued) {
-            sf.issued = doiImportData.dateIssued
+          if (this.importData.series.pagestart) {
+            sf.pageStart = this.importData.series.pagestart
+          }
+          if (this.importData.series.pageend) {
+            sf.pageEnd = this.importData.series.pageend
+          }
+        } else {
+          if (doiImportData) {
+            if (doiImportData.journalTitle) {
+              sf.title = doiImportData.journalTitle
+            }
+            if (doiImportData.journalISSN) {
+              sf.issn = doiImportData.journalISSN
+            }
+            if (doiImportData.journalVolume) {
+              sf.volume = doiImportData.journalVolume
+            }
+            if (doiImportData.journalIssue) {
+              sf.issue = doiImportData.journalIssue
+            }
+            if (doiImportData.pageStart) {
+              sf.pageStart = doiImportData.pageStart
+            }
+            if (doiImportData.pageEnd) {
+              sf.pageEnd = doiImportData.pageEnd
+            }
+            if (doiImportData && doiImportData.dateIssued) {
+              sf.issued = doiImportData.dateIssued
+            }
           }
         }
         sof.push(sf)
@@ -1436,13 +1788,54 @@ export default {
         pf.showPlace = false
         pf.showDate = false
         pf.label = this.$t('PUBLISHER_VERLAG')
-        if (doiImportData && doiImportData.publisher) {
-          pf.publisherName = doiImportData.publisher
+        if (this.importData && this.importData.publisher) {
+          if (this.importData.publisher.type) {
+            pf.publisherType = this.importData.publisher.type
+            if (this.importData.publisher.type === 'other') {
+              if (this.importData.publisher.name) {
+                pf.publisherName = this.importData.publisher.name
+              }
+            } else {
+              if (this.importData.publisher.orgunit) {
+                pf.publisherOrgUnit = this.importData.publisher.orgunit
+              }
+            }
+          }
+          if (this.importData.publisher.date) {
+            pf.publishingDate = this.importData.publisher.date
+          }
+        } else {
+          if (doiImportData && doiImportData.publisher) {
+            pf.publisherName = doiImportData.publisher
+          }
         }
         sof.push(pf)
       }
 
-      sof.push(fields.getField('rights'))
+      let rights = fields.getField('rights')
+      if (this.importData && this.importData.rights) {
+        if (this.importData.rights.value) {
+          rights.value = this.importData.rights.value
+        }
+        if (this.importData.rights.language) {
+          rights.language = this.importData.rights.language
+        }
+      }
+      sof.push(rights)
+
+      if (this.importData) {
+        if (this.importData.filename) {
+          let fn = fields.getField('filename-readonly')
+          fn.value = this.importData.filename
+          sof.push(fn)
+        }
+        if (this.importData.mimetype) {
+          let mim = fields.getField('mime-type')
+          mim.readonly = true
+          mim.value = this.importData.mimetype
+          sof.push(mim)
+        }
+      }
 
       self.form.sections.push(
         {
@@ -1477,11 +1870,15 @@ export default {
       this.$vuetify.goTo(1)
     },
     continueForm: function (step) {
-      if (step === 5) {
-        this.validateMandatory()
-      }
-      if (this.validationStatus !== 'error') {
+      if (this.targetPid) {
         this.step = step + 1
+      } else {
+        if (step === 5) {
+          this.validateMandatory()
+        }
+        if (this.validationStatus !== 'error') {
+          this.step = step + 1
+        }
       }
       this.$vuetify.goTo(1)
     },

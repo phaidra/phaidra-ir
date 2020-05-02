@@ -1715,11 +1715,6 @@ export default {
       if (doiImportData && doiImportData.title) {
         tf.title = doiImportData.title
       }
-      if (this.submitformparam === 'book') {
-        tf.hideSubtitle = false
-      } else {
-        tf.hideSubtitle = true
-      }
       if (doiImportData && doiImportData.subtitle) {
         tf.subtitle = doiImportData.subtitle
         tf.hideSubtitle = false
@@ -1813,6 +1808,11 @@ export default {
         sf.hideSeriesIssn = true
         sf.collapseSeries = true
         sf.hidePages = false
+        sf.publisherSearch = false
+        sf.publisherShowPlace = false
+        sf.publisherShowDate = true
+        sf.publisherLabel = 'PUBLISHER_VERLAG'
+        sf.publishingDateLabel = 'Publication date'
         if (doiImportData) {
           if (doiImportData.pageStart) {
             sf.pageStart = doiImportData.pageStart
@@ -1820,16 +1820,12 @@ export default {
           if (doiImportData.pageEnd) {
             sf.pageEnd = doiImportData.pageEnd
           }
-        }
-        sf.publisherSearch = false
-        sf.publisherShowPlace = false
-        sf.publisherShowDate = true
-        sf.publisherLabel = 'PUBLISHER_VERLAG'
-        if (doiImportData && doiImportData.publisher) {
-          sf.publisherName = doiImportData.publisher
-        }
-        if (doiImportData && doiImportData.dateIssued) {
-          sf.publishingDate = doiImportData.dateIssued
+          if (doiImportData.publisher) {
+            sf.publisherName = doiImportData.publisher
+          }
+          if (doiImportData.dateIssued) {
+            sf.publishingDate = doiImportData.dateIssued
+          }
         }
         smf.push(sf)
       }
