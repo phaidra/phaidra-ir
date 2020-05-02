@@ -25,7 +25,14 @@ export default {
   },
   data () {
     return {
-      importData: {}
+      importData: {
+        roles: [],
+        funding: [],
+        identifiers: [],
+        keywords: [],
+        abstract: {},
+        unknownpredicates: []
+      }
     }
   },
   methods: {
@@ -234,7 +241,9 @@ export default {
                   }
                 }
                 if (obj['ids:isbn']) {
-                  this.importData['containedin'].isbn = obj['ids:isbn']
+                  for (let isbn of obj['ids:isbn']) {
+                    this.importData['containedin'].isbn = isbn
+                  }
                 }
                 this.importData['containedin']['roles'] = []
                 Object.entries(obj).forEach(([key, value]) => {
@@ -299,8 +308,8 @@ export default {
                         this.importData['containedin']['series']['issued'] = v
                       }
                     }
-                    if (series['identifiers:issn']) {
-                      for (let v of series['identifiers:issn']) {
+                    if (series['ids:issn']) {
+                      for (let v of series['ids:issn']) {
                         this.importData['containedin']['series']['issn'] = v
                       }
                     }

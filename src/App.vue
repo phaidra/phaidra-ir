@@ -26,7 +26,7 @@
               </v-list>
             </v-menu>
 
-            <a id="quicklinks-button" class="ph-button hidden-sm-and-down" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
+            <a id="quicklinks-button" class="ph-button hidden-sm-and-down quicklinks" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
           </v-row>
 
           <v-row no-gutters>
@@ -72,7 +72,7 @@
           </v-row>
           <v-row no-gutters class="hidden-sm-and-down header">
 
-            <v-toolbar flat color="white" dense>
+            <v-toolbar flat color="white" dense class="no-padding">
               <v-spacer></v-spacer>
               <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
                 <v-hover v-slot:default="{ hover }">
@@ -303,6 +303,10 @@ export default {
 </style>
 
 <style>
+.no-padding > .v-toolbar__content {
+  padding: 0px;
+}
+
 .no-padding {
   padding: 0px;
 }
@@ -453,6 +457,7 @@ address {
   color: white;
   margin-top: 0px;
   width: 263px;
+  margin-right: 12px;
 }
 
 #quicklinks-button:hover {
@@ -517,6 +522,7 @@ address {
 </style>
 
 <style scoped>
+
 .top-margin-lang {
   margin-top: 0px;
 }

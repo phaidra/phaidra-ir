@@ -1,10 +1,14 @@
 <template>
   <div>
 
-    <v-alert v-if="importData" :type="'error'">
-      {{ $t('This object contains metadatafields not supperted by institutional repository!') }}
-      <div v-for="(pred, i) in importData.unknownpredicates" :key="'up'+i">{{ pred }}</div>
-    </v-alert>
+    <template v-if="importData">
+      <v-alert v-if="(importData.unknownpredicates.length > 0)" :type="'error'">
+        {{ $t('This object contains metadatafields not supperted by institutional repository!') }}
+        <ul>
+          <li v-for="(pred, i) in importData.unknownpredicates" :key="'up'+i">{{ pred }}</li>
+        </ul>
+      </v-alert>
+    </template>
 
     <v-container v-if="submitformLoading">
       <div class="text-center">
@@ -24,7 +28,10 @@
         <v-divider></v-divider>
         <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="maxStep > 7" step="7" @click="updateJsonld()">{{ $t('Submit') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="maxStep > 7" step="7" @click="updateJsonld()">
+          <template v-if="targetPid">{{ $t('Preview') }}</template>
+          <template v-else>{{ $t('Submit') }}</template>
+        </v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -179,7 +186,7 @@
 
                     <template v-else-if="f.component === 'p-select'">
                       <p-i-select
-                        v-show="f.predicate !== 'dcterms:type' && !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book')))"
+                        v-show="(f.predicate !== 'ebucore:hasMimeType') && (f.predicate !== 'dcterms:type') && !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book')))"
                         v-bind.sync="f"
                         v-on:input="selectInput(s.fields, f, $event)"
                         v-on:add="addField(s.fields, f)"
@@ -415,7 +422,7 @@
                     </template>
 
                     <template v-else-if="f.component === 'p-filename-readonly'">
-                      <p-i-filename-readonly v-bind.sync="f"></p-i-filename-readonly>
+                      <p-i-filename-readonly v-show="false" v-bind.sync="f"></p-i-filename-readonly>
                     </template>
 
                   </v-row>
@@ -509,7 +516,7 @@
       </v-stepper-items>
 
     </v-stepper>
-    <v-btn v-if="targetPid " fixed bottom right raised color="primary" :loading="loading" :disabled="loading" @click="save()">{{ $t('Save') }}</v-btn>
+    <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
   </div>
 </template>
 
@@ -1295,6 +1302,8 @@ export default {
       }
 
       let tf = fields.getField('title')
+      tf.hideSubtitle = true
+      tf.multilingual = false
       if (this.importData && this.importData.title) {
         if (this.importData.title.value) {
           tf.title = this.importData.title.value
@@ -1317,7 +1326,6 @@ export default {
           tf.hideSubtitle = false
         }
       }
-      tf.multilingual = false
       tf.multiplicable = false
       smf.push(tf)
 
@@ -1343,6 +1351,9 @@ export default {
           if (importRole.identifier) {
             role.identifierType = importRole.identifier.type
             role.identifierText = importRole.identifier.value
+          } else {
+            role.identifierType = 'ids:orcid'
+            role.identifierLabel = 'ORCID'
           }
           if (importRole.affiliation) {
             role.affiliationType = importRole.affiliation.type
@@ -1655,12 +1666,14 @@ export default {
 
       // handled by submit-ir-funding-field component
       if (this.importData && this.importData.funding) {
+        let i = 0
         for (let funding of this.importData.funding) {
+          i++
           let pof = fields.getField('project')
           pof.label = 'Funder/Project'
           pof.multiplicable = true
           pof.multiplicableCleared = true
-          pof.subloopFlag = true
+          pof.subloopFlag = i === 1
           if (funding.funderid) {
             pof.funderIdentifier = funding.funderid
           }

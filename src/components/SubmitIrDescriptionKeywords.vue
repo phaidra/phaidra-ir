@@ -3,7 +3,7 @@
     <v-col cols="12">
       <v-card >
         <v-card-title class="title font-weight-light grey white--text">
-            <span>{{ $t(label) }}</span>
+          <span>{{ $t(label) }}</span>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text class="mt-4">
@@ -63,7 +63,7 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="12" md="2" v-if="multilingual">
+            <v-col cols="12" md="6" v-if="multilingual">
               <v-autocomplete
                 :value="getTerm('lang', language)"
                 v-on:input="$emit('input-language', $event )"
@@ -80,7 +80,6 @@
                 <template slot="item" slot-scope="{ item }">
                   <v-list-item-content two-line>
                     <v-list-item-title  v-html="`${getLocalizedTermLabel('lang', item['@id'])}`"></v-list-item-title>
-                    <v-list-item-subtitle v-if="showIds" v-html="`${item['@id']}`"></v-list-item-subtitle>
                   </v-list-item-content>
                 </template>
                 <template slot="selection" slot-scope="{ item }">
@@ -137,13 +136,13 @@ export default {
   data () {
     return {
       items: [],
-      model: this.value,
+      model: this.keywordsValue,
       keywordspaste: ''
     }
   },
   watch: {
     keywordsValue (val) {
-      this.model = this.value
+      this.model = this.keywordsValue
     }
   },
   methods: {

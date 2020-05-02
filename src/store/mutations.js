@@ -44,11 +44,11 @@ export default {
     }
     if (transition.to.name === 'metadataeditor') {
       pagetitle = 'Metadata editor ' + transition.to.params.pid
-      if (transition.from.name === 'detail') {
+      if (transition.from.name === 'admin') {
         state.breadcrumbs.push(
           {
-            text: 'Detail ' + transition.from.params.pid,
-            to: { name: transition.from.name, params: { pid: transition.from.params.pid } }
+            text: 'Admin',
+            to: { name: 'admin' }
           }
         )
       }
