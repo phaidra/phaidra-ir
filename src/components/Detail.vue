@@ -52,10 +52,6 @@
         </v-col>
     </v-row>
 
-    <v-row v-else>
-      <v-alert :value="true" transition="slide-y-transition">{{$t('Object not found')}}</v-alert>
-    </v-row>
-
   </v-container>
 </template>
 
@@ -163,25 +159,20 @@ export default {
     return this.fetchAsyncData(this, this.$store.state.route.params.pid)
   },
   beforeRouteEnter: async function (to, from, next) {
-    // see https://router.vuejs.org/guide/advanced/data-fetching.html#fetching-before-navigation
-    // here the component does not exist yet so we don't have 'this' or access to the store
-    let inforesponse
-    try {
-      console.log('[' + to.params.pid + '] fetching object info')
-      inforesponse = await axios.get(configjs.api + '/object/' + to.params.pid + '/info')
-    } catch (error) {
-      console.error(error)
-    }
-    next(vm => {
-      if (inforesponse) {
-        vm.$store.commit('setObjectInfo', inforesponse.data.info)
-      }
+    next(async function (vm) {
+      vm.$store.commit('setLoading', true)
+      vm.$store.commit('setObjectInfo', null)
+      await vm.fetchAsyncData(vm, to.params.pid)
       vm.fetchUsageStats(vm)
+      vm.$store.commit('setLoading', false)
     })
   },
   beforeRouteUpdate: async function (to, from, next) {
+    this.$store.commit('setLoading', true)
+    this.$store.commit('setObjectInfo', null)
     await this.fetchAsyncData(this, to.params.pid)
     this.fetchUsageStats(this)
+    this.$store.commit('setLoading', false)
     next()
   }
 }

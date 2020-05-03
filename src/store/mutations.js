@@ -158,6 +158,9 @@ export default {
       document.title = state.pagetitle
     }
   },
+  setLoading (state, loading) {
+    state.loading = loading
+  },
   setGroups (state, groups) {
     state.groups = groups
   },

@@ -1254,6 +1254,7 @@ export default {
       return jsonLd.form2json(this.form)
     },
     submit: async function () {
+      // TODO check if token is valid
       if (!this.user.token) {
         this.loginDialog = true
         return

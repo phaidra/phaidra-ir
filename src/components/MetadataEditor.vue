@@ -42,22 +42,7 @@ export default {
       this.$vuetify.goTo(0)
     },
     loadJsonld: async function (self, pid) {
-      try {
-        let response = await this.$http.request({
-          method: 'GET',
-          url: self.config.api + '/object/' + pid + '/metadata',
-          params: {
-            mode: 'resolved'
-          }
-        })
-        self.getImportData(response.data.metadata['JSON-LD'])
-      } catch (error) {
-        console.log(error)
-        self.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
-      }
-    },
-    getImportData: function (jsonld) {
-      this.importData = {
+      self.importData = {
         roles: [],
         funding: [],
         identifiers: [],
@@ -65,7 +50,29 @@ export default {
         abstract: {},
         unknownpredicates: []
       }
-
+      try {
+        let response = await self.$http.request({
+          method: 'GET',
+          url: self.config.api + '/object/' + pid + '/metadata',
+          params: {
+            mode: 'resolved'
+          }
+        })
+        self.importData = self.getImportData(response.data.metadata['JSON-LD'])
+      } catch (error) {
+        console.log(error)
+        self.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      }
+    },
+    getImportData: function (jsonld) {
+      let importData = {
+        roles: [],
+        funding: [],
+        identifiers: [],
+        keywords: [],
+        abstract: {},
+        unknownpredicates: []
+      }
       // ir only have 1 keywords component, so we assume the language is the same
       let keywords = []
       Object.entries(jsonld).forEach(([key, value]) => {
@@ -80,7 +87,7 @@ export default {
           }
         }
       })
-      this.importData['keywords'] = keywords
+      importData['keywords'] = keywords
 
       Object.entries(jsonld).forEach(([key, values]) => {
         if (key !== '@type') {
@@ -88,7 +95,7 @@ export default {
             switch (key) {
               // alternate identifier
               case 'rdam:P30004':
-                this.importData['identifiers'].push(
+                importData['identifiers'].push(
                   {
                     type: obj['@type'],
                     value: obj['@value']
@@ -104,7 +111,7 @@ export default {
               // edm:hasType
               case 'edm:hasType':
                 for (let em of obj['skos:exactMatch']) {
-                  this.importData['objecttype'] = em
+                  importData['objecttype'] = em
                 }
                 break
 
@@ -112,7 +119,7 @@ export default {
               // oaire:version
               case 'oaire:version':
                 for (let em of obj['skos:exactMatch']) {
-                  this.importData['version'] = em
+                  importData['version'] = em
                 }
                 break
 
@@ -120,7 +127,7 @@ export default {
               // dcterms:accessRights
               case 'dcterms:accessRights':
                 for (let em of obj['skos:exactMatch']) {
-                  this.importData['accessrights'] = em
+                  importData['accessrights'] = em
                 }
                 break
 
@@ -128,17 +135,17 @@ export default {
               // dce:title
               case 'dce:title':
                 if (obj['bf:mainTitle']) {
-                  this.importData['title'] = {}
+                  importData['title'] = {}
                   for (let title of obj['bf:mainTitle']) {
-                    this.importData['title']['value'] = title['@value']
+                    importData['title']['value'] = title['@value']
                     if (title['@language']) {
-                      this.importData['title']['language'] = title['@language']
+                      importData['title']['language'] = title['@language']
                     }
                   }
                 }
                 if (obj['bf:subtitle']) {
                   for (let subtitle of obj['bf:subtitle']) {
-                    this.importData['subtitle'] = subtitle['@value']
+                    importData['subtitle'] = subtitle['@value']
                   }
                 }
                 break
@@ -146,11 +153,11 @@ export default {
               // not repeatable in uscholar (only bf:Summary)
               // bf:note
               case 'bf:note':
-                this.importData['abstract'] = {}
+                importData['abstract'] = {}
                 for (let prefLabel of obj['skos:prefLabel']) {
-                  this.importData['abstract']['value'] = prefLabel['@value']
+                  importData['abstract']['value'] = prefLabel['@value']
                   if (prefLabel['@language']) {
-                    this.importData['abstract']['language'] = prefLabel['@language']
+                    importData['abstract']['language'] = prefLabel['@language']
                   }
                 }
                 break
@@ -158,7 +165,7 @@ export default {
               // only simple language (no skos:Concept)
               // dcterms:language
               case 'dcterms:language':
-                this.importData['language'] = obj
+                importData['language'] = obj
                 break
 
               // dce:subject
@@ -167,13 +174,13 @@ export default {
                 break
 
               case 'rdau:P60193':
-                this.importData['series'] = {}
+                importData['series'] = {}
                 if (obj['dce:title']) {
                   for (let t of obj['dce:title']) {
                     if (t['bf:mainTitle']) {
                       for (let mt of t['bf:mainTitle']) {
                         if (mt['@value']) {
-                          this.importData['series'].title = mt['@value']
+                          importData['series'].title = mt['@value']
                         }
                         // language is not used
                       }
@@ -182,51 +189,51 @@ export default {
                 }
                 if (obj['bibo:volume']) {
                   for (let v of obj['bibo:volume']) {
-                    this.importData['series'].volume = v
+                    importData['series'].volume = v
                   }
                 }
                 if (obj['bibo:issue']) {
                   for (let v of obj['bibo:issue']) {
-                    this.importData['series'].issue = v
+                    importData['series'].issue = v
                   }
                 }
                 if (obj['dcterms:issued']) {
                   for (let v of obj['dcterms:issued']) {
-                    this.importData['series'].issued = v
+                    importData['series'].issued = v
                   }
                 }
                 if (obj['identifiers:issn']) {
                   for (let v of obj['identifiers:issn']) {
-                    this.importData['series'].issn = v
+                    importData['series'].issn = v
                   }
                 }
                 if (obj['skos:exactMatch']) {
                   for (let v of obj['skos:exactMatch']) {
-                    this.importData['series'].identifier = v
+                    importData['series'].identifier = v
                   }
                 }
                 Object.entries(jsonld).forEach(([key1, value1]) => {
                   if (key1 === 'schema:pageStart') {
                     for (let ps of value1) {
-                      this.importData['series'].pagestart = ps
+                      importData['series'].pagestart = ps
                     }
                   }
                   if (key1 === 'schema:pageEnd') {
                     for (let pe of value1) {
-                      this.importData['series'].pageend = pe
+                      importData['series'].pageend = pe
                     }
                   }
                 })
                 break
 
               case 'rdau:P60101':
-                this.importData['containedin'] = {}
+                importData['containedin'] = {}
                 if (obj['dce:title']) {
                   for (let t of obj['dce:title']) {
                     if (t['bf:mainTitle']) {
                       for (let mt of t['bf:mainTitle']) {
                         if (mt['@value']) {
-                          this.importData['containedin']['title'] = mt['@value']
+                          importData['containedin']['title'] = mt['@value']
                         }
                         // language is not used
                       }
@@ -234,7 +241,7 @@ export default {
                     if (t['bf:subtitle']) {
                       for (let st of t['bf:subtitle']) {
                         if (st['@value']) {
-                          this.importData['containedin']['subtitle'] = st['@value']
+                          importData['containedin']['subtitle'] = st['@value']
                         }
                       }
                     }
@@ -242,10 +249,10 @@ export default {
                 }
                 if (obj['ids:isbn']) {
                   for (let isbn of obj['ids:isbn']) {
-                    this.importData['containedin'].isbn = isbn
+                    importData['containedin'].isbn = isbn
                   }
                 }
-                this.importData['containedin']['roles'] = []
+                importData['containedin']['roles'] = []
                 Object.entries(obj).forEach(([key, value]) => {
                   if (key.startsWith('role')) {
                     for (let role of value) {
@@ -262,31 +269,31 @@ export default {
                           entity.firstname = firstname['@value']
                         }
                       }
-                      this.importData['containedin']['roles'].push(entity)
+                      importData['containedin']['roles'].push(entity)
                     }
                   }
                 })
                 Object.entries(jsonld).forEach(([key1, value1]) => {
                   if (key1 === 'schema:pageStart') {
                     for (let ps of value1) {
-                      this.importData['containedin']['pagestart'] = ps
+                      importData['containedin']['pagestart'] = ps
                     }
                   }
                   if (key1 === 'schema:pageEnd') {
                     for (let pe of value1) {
-                      this.importData['containedin']['pageend'] = pe
+                      importData['containedin']['pageend'] = pe
                     }
                   }
                 })
                 if (obj['rdau:P60193']) {
-                  this.importData['containedin']['series'] = {}
+                  importData['containedin']['series'] = {}
                   for (let series of obj['rdau:P60193']) {
                     if (series['dce:title']) {
                       for (let t of series['dce:title']) {
                         if (t['bf:mainTitle']) {
                           for (let mt of t['bf:mainTitle']) {
                             if (mt['@value']) {
-                              this.importData['containedin']['series']['title'] = mt['@value']
+                              importData['containedin']['series']['title'] = mt['@value']
                             }
                             // language is not used
                           }
@@ -295,56 +302,56 @@ export default {
                     }
                     if (series['bibo:volume']) {
                       for (let v of series['bibo:volume']) {
-                        this.importData['containedin']['series']['volume'] = v
+                        importData['containedin']['series']['volume'] = v
                       }
                     }
                     if (series['bibo:issue']) {
                       for (let v of series['bibo:issue']) {
-                        this.importData['containedin']['series']['issue'] = v
+                        importData['containedin']['series']['issue'] = v
                       }
                     }
                     if (series['dcterms:issued']) {
                       for (let v of series['dcterms:issued']) {
-                        this.importData['containedin']['series']['issued'] = v
+                        importData['containedin']['series']['issued'] = v
                       }
                     }
                     if (series['ids:issn']) {
                       for (let v of series['ids:issn']) {
-                        this.importData['containedin']['series']['issn'] = v
+                        importData['containedin']['series']['issn'] = v
                       }
                     }
                     if (series['skos:exactMatch']) {
                       for (let v of series['skos:exactMatch']) {
-                        this.importData['containedin']['series']['identifier'] = v
+                        importData['containedin']['series']['identifier'] = v
                       }
                     }
                   }
                 }
                 if (obj['bf:provisionActivity']) {
-                  this.importData['containedin']['publisher'] = {}
+                  importData['containedin']['publisher'] = {}
                   for (let prov of obj['bf:provisionActivity']) {
                     if (prov['bf:agent']) {
                       for (let pub of prov['bf:agent']) {
                         if (pub['skos:exactMatch']) {
                           for (let id of pub['skos:exactMatch']) {
                             if (id.startsWith('https://pid.phaidra.org/')) {
-                              this.importData['containedin']['publisher']['type'] = 'select'
-                              this.importData['containedin']['publisher']['orgunit'] = id
+                              importData['containedin']['publisher']['type'] = 'select'
+                              importData['containedin']['publisher']['orgunit'] = id
                             } else {
-                              this.importData['containedin']['publisher']['type'] = 'other'
+                              importData['containedin']['publisher']['type'] = 'other'
                               if (pub['schema:name']) {
                                 for (let name of pub['schema:name']) {
-                                  this.importData['containedin']['publisher']['name'] = name['@value']
+                                  importData['containedin']['publisher']['name'] = name['@value']
                                 }
                               }
                             }
                           }
                         } else {
                           if (pub['schema:name']) {
-                            this.importData['containedin']['publisher']['type'] = 'other'
+                            importData['containedin']['publisher']['type'] = 'other'
                             if (pub['schema:name']) {
                               for (let name of pub['schema:name']) {
-                                this.importData['containedin']['publisher']['name'] = name['@value']
+                                importData['containedin']['publisher']['name'] = name['@value']
                               }
                             }
                           }
@@ -353,7 +360,7 @@ export default {
                     }
                     if (prov['bf:date']) {
                       for (let pdate of prov['bf:date']) {
-                        this.importData['containedin']['publisher']['date'] = pdate
+                        importData['containedin']['publisher']['date'] = pdate
                       }
                     }
                   }
@@ -362,43 +369,43 @@ export default {
 
               // edm:rights
               case 'edm:rights':
-                this.importData['license'] = obj
+                importData['license'] = obj
                 break
 
               // dce:rights
               case 'dce:rights':
-                this.importData['rights'] = {}
-                this.importData['rights']['value'] = obj['@value']
+                importData['rights'] = {}
+                importData['rights']['value'] = obj['@value']
                 if (obj['@language']) {
-                  this.importData['rights']['language'] = obj['@language']
+                  importData['rights']['language'] = obj['@language']
                 }
                 break
 
               // bf:provisionActivity
               case 'bf:provisionActivity':
-                this.importData['publisher'] = {}
+                importData['publisher'] = {}
                 if (obj['bf:agent']) {
                   for (let pub of obj['bf:agent']) {
                     if (pub['skos:exactMatch']) {
                       for (let id of pub['skos:exactMatch']) {
                         if (id.startsWith('https://pid.phaidra.org/')) {
-                          this.importData['publisher']['type'] = 'select'
-                          this.importData['publisher']['orgunit'] = id
+                          importData['publisher']['type'] = 'select'
+                          importData['publisher']['orgunit'] = id
                         } else {
-                          this.importData['publisher']['type'] = 'other'
+                          importData['publisher']['type'] = 'other'
                           if (pub['schema:name']) {
                             for (let name of pub['schema:name']) {
-                              this.importData['publisher']['name'] = name['@value']
+                              importData['publisher']['name'] = name['@value']
                             }
                           }
                         }
                       }
                     } else {
                       if (pub['schema:name']) {
-                        this.importData['publisher']['type'] = 'other'
+                        importData['publisher']['type'] = 'other'
                         if (pub['schema:name']) {
                           for (let name of pub['schema:name']) {
-                            this.importData['publisher']['name'] = name['@value']
+                            importData['publisher']['name'] = name['@value']
                           }
                         }
                       }
@@ -409,14 +416,14 @@ export default {
                   for (let pl of obj['bf:place']) {
                     if (pl['skos:prefLabel']) {
                       for (let pllab of pl['skos:prefLabel']) {
-                        this.importData['publisher']['place'] = pllab['@value']
+                        importData['publisher']['place'] = pllab['@value']
                       }
                     }
                   }
                 }
                 if (obj['bf:date']) {
                   for (let pdate of obj['bf:date']) {
-                    this.importData['publisher']['date'] = pdate
+                    importData['publisher']['date'] = pdate
                   }
                 }
                 break
@@ -439,23 +446,23 @@ export default {
                       }
                     }
                   }
-                  this.importData['funding'].push(funding)
+                  importData['funding'].push(funding)
                 }
                 break
 
               // schema:numberOfPages
               case 'schema:numberOfPages':
-                this.importData['numberofpages'] = obj
+                importData['numberofpages'] = obj
                 break
 
               // ebucore:filename
               case 'ebucore:filename':
-                this.importData['filename'] = obj
+                importData['filename'] = obj
                 break
 
               // ebucore:hasMimeType
               case 'ebucore:hasMimeType':
-                this.importData['mimetype'] = obj
+                importData['mimetype'] = obj
                 break
 
               // dates (not embargo date, save that one separately)
@@ -471,16 +478,16 @@ export default {
               case 'phaidra:dateAccessioned':
                 // only edtf now (later time can be edm:TimeSpan)
                 if (typeof obj === 'string') {
-                  this.importData['date'] = {}
-                  this.importData['date']['type'] = key
-                  this.importData['date']['value'] = obj
+                  importData['date'] = {}
+                  importData['date']['type'] = key
+                  importData['date']['value'] = obj
                 }
                 break
 
               // embargo date
               case 'dcterms:available':
                 if (typeof obj === 'string') {
-                  this.importData['embargodate'] = obj
+                  importData['embargodate'] = obj
                 }
                 break
 
@@ -545,27 +552,33 @@ export default {
                       }
                     }
                   }
-                  this.importData['roles'].push(entity)
+                  importData['roles'].push(entity)
                 } else {
                   // unknown predicate
-                  this.importData['unknownpredicates'].push(key)
+                  importData['unknownpredicates'].push(key)
                 }
                 break
             }
           }
         }
       })
+
+      return importData
     }
   },
   beforeRouteEnter: function (to, from, next) {
     next(vm => {
+      vm.$store.commit('setLoading', true)
       vm.loadJsonld(vm, to.params.pid).then(() => {
+        vm.$store.commit('setLoading', false)
         next()
       })
     })
   },
   beforeRouteUpdate: function (to, from, next) {
+    this.$store.commit('setLoading', true)
     this.loadJsonld(this, to.params.pid).then(() => {
+      this.$store.commit('setLoading', false)
       next()
     })
   }

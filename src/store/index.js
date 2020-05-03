@@ -9,9 +9,10 @@ Vue.use(Vuex)
 
 const debug = process.env.NODE_ENV !== 'production'
 
-export function createStore () {
+export function createStore (token) {
   return new Vuex.Store({
     state: () => ({
+      loading: false,
       config: config,
       instanceconfig: {
         baseurl: config.phaidrabaseurl,
@@ -28,7 +29,9 @@ export function createStore () {
       alerts: [],
       objectInfo: null,
       objectMembers: [],
-      user: {},
+      user: {
+        token: token
+      },
       groups: [],
       breadcrumbs: [],
       pagetitle: null,
