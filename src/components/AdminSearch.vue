@@ -15,11 +15,11 @@
               :messages="[ total + ' ' + $t('objects') ]"
             ></autocomplete>
           </v-col>
-          <v-col cols="4" align="center">
+          <v-col cols="4">
             <v-btn-toggle v-model="toggleFilter">
               <template v-for="(f, i) in adminFacetQueries">
                 <template v-for="(q, j) in f.queries">
-                  <v-btn primary @click="toggleFacet(q,f)">
+                  <v-btn primary @click="toggleFacet(q,f)" :key="'bt'+i+j">
                     <span>{{ $t(q.label) }} </span><span class="font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
                   </v-btn>
                 </template>
