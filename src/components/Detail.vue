@@ -59,8 +59,6 @@
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { context } from '../mixins/context'
 import { config } from '../mixins/config'
-import configjs from '../config/phaidra-ir'
-import axios from 'axios'
 
 export default {
   name: 'detail',
@@ -124,7 +122,7 @@ export default {
       self.stats.download = null
       self.stats.detail = null
       try {
-        let response = await axios.get(self.config.api + '/ir/stats/' + self.routepid,
+        let response = await self.$http.get(self.config.api + '/ir/stats/' + self.routepid,
           {
             headers: {
               'X-XSRF-TOKEN': self.user.token
