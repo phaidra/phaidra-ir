@@ -2,7 +2,7 @@
     <v-row no-gutters>
       <v-col cols="12">
         <v-row justify="space-between">
-          <v-col cols="3">
+          <v-col cols="4">
             <autocomplete
               placeholder="Search..."
               name="autocomplete"
@@ -15,27 +15,17 @@
               :messages="[ total + ' ' + $t('objects') ]"
             ></autocomplete>
           </v-col>
-          <template v-for="(f, i) in adminFacetQueries">
-            <template v-for="(q, j) in f.queries">
-              <v-col cols="2" :key="'f'+i+'q'+j">
-                <span @click="toggleFacet(q,f)" :key="'f'+i+'q'+j" >
-                  <span :class="{ 'active font-weight-medium': q.active }" class="title facet-label primary--text">{{ $t(q.label) }}</span>
-                  <span class="font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
-                </span>
-              </v-col>
-            </template>
-          </template>
-          <v-col cols="2">
-            <v-btn raised color="primary float-right" :to="'/admin/submit'">
-              <v-icon dark left>mdi-plus</v-icon> {{$t('Upload')}}
-            </v-btn>
+          <v-col cols="4" align="center">
+            <v-btn-toggle v-model="toggleFilter">
+              <template v-for="(f, i) in adminFacetQueries">
+                <template v-for="(q, j) in f.queries">
+                  <v-btn primary @click="toggleFacet(q,f)">
+                    <span>{{ $t(q.label) }} </span><span class="font-weight-light facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
+                  </v-btn>
+                </template>
+              </template>
+            </v-btn-toggle>
           </v-col>
-        </v-row>
-        <v-row justify="space-between">
-          <v-col cols="6">
-            <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page"/>
-          </v-col>
-          <v-spacer></v-spacer>
           <v-col cols="3">
             <v-spacer></v-spacer>
             <v-tooltip bottom>
@@ -71,7 +61,17 @@
               <span>{{ $t('Upload date descending')}}</span>
             </v-tooltip>
           </v-col>
+          <v-col cols="1">
+            <v-btn raised color="primary float-right" :to="'/admin/submit'">
+              <v-icon dark left>mdi-plus</v-icon> {{$t('Upload')}}
+            </v-btn>
+          </v-col>
         </v-row>
+        <v-row justify="start">
+          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page"/>
+          <v-spacer></v-spacer>
+        </v-row>
+        <v-divider class="my-3"></v-divider>
         <v-row no-gutters>
           <admin-search-results
             :docs="docs"
@@ -112,6 +112,16 @@ export default {
     AdminSearchResults,
     PPagination
   },
+  props: {
+    collection: {
+      type: String,
+      default: ''
+    },
+    ownerProp: {
+      type: String,
+      default: ''
+    }
+  },
   computed: {
     page: {
       get () {
@@ -126,14 +136,23 @@ export default {
       return Math.ceil(this.total / this.pagesize)
     }
   },
-  props: {
-    collection: {
-      type: String,
-      default: ''
-    },
-    ownerProp: {
-      type: String,
-      default: ''
+  data () {
+    return {
+      link: '',
+      limitdialog: false,
+      linkdialog: false,
+      q: '',
+      currentPage: 1,
+      pagesize: 10,
+      sortdef,
+      lang: 'en',
+      adminFacetQueries,
+
+      docs: [],
+      total: 0,
+      facet_counts: null,
+
+      toggleFilter: null
     }
   },
   methods: {
@@ -255,23 +274,6 @@ export default {
   mounted: async function () {
     setSearchParams(this, this.$route.query)
     await this.search()
-  },
-  data () {
-    return {
-      link: '',
-      limitdialog: false,
-      linkdialog: false,
-      q: '',
-      currentPage: 1,
-      pagesize: 10,
-      sortdef,
-      lang: 'en',
-      adminFacetQueries,
-
-      docs: [],
-      total: 0,
-      facet_counts: null
-    }
   },
   beforeRouteUpdate: async function (to, from, next) {
     this.resetSearchParams()
