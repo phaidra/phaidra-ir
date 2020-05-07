@@ -3,7 +3,7 @@
 
     <template v-if="importData">
       <v-alert v-if="(importData.unknownpredicates.length > 0)" :type="'error'">
-        {{ $t('This object contains metadatafields not supperted by institutional repository!') }}
+        {{ $t('This object contains metadata not supperted by institutional repository. Please check metadata in Phaidra metadataeditor!') }}
         <ul>
           <li v-for="(pred, i) in importData.unknownpredicates" :key="'up'+i">{{ pred }}</li>
         </ul>
@@ -21,17 +21,14 @@
     </v-container>
 
     <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2">
-      <v-stepper-header>
+      <v-stepper-header :class="targetPid ? 'mdeditor-header' : ''">
         <v-stepper-step v-if="!targetPid" edit-icon='mdi-check' :editable="true" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
         <v-divider v-if="!targetPid"></v-divider>
         <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
-        <v-divider></v-divider>
+        <v-divider v-if="!targetPid"></v-divider>
         <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
-        <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="true" :complete="maxStep > 7" step="7" @click="updateJsonld()">
-          <template v-if="targetPid">{{ $t('Preview') }}</template>
-          <template v-else>{{ $t('Submit') }}</template>
-        </v-stepper-step>
+        <v-divider v-if="!targetPid"></v-divider>
+        <v-stepper-step v-if="!targetPid" edit-icon='mdi-check' :editable="true" :complete="maxStep > 7" step="7" @click="updateJsonld()">{{ $t('Submit') }}</v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -431,9 +428,9 @@
 
                 <v-divider class="mt-5 mb-7"></v-divider>
                 <v-row no-gutters justify="space-between">
-                  <v-btn dark color="grey"  v-if="!(targetPid && s.id == 5)" @click="backForm(s.id)">{{ $t('Back') }}</v-btn>
+                  <v-btn dark color="grey" v-if="!(targetPid && s.id == 5)" @click="backForm(s.id)">{{ $t('Back') }}</v-btn>
                   <v-spacer></v-spacer>
-                  <v-btn class="primary float-right" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
+                  <v-btn v-if="!(targetPid && s.id == 6)" class="primary float-right" @click="continueForm(s.id)">{{ $t('Continue') }}</v-btn>
                 </v-row>
               </v-col>
             </v-row>
@@ -918,9 +915,7 @@ export default {
           this.$store.commit('setAlerts', response.data.alerts)
         }
         if (response.data.status === 200) {
-          if (response.data.pid) {
-            this.$emit('object-saved', this.targetpid)
-          }
+          this.$emit('object-saved', this.targetpid)
         }
       } catch (error) {
         console.log(error)
@@ -1302,7 +1297,7 @@ export default {
       }
 
       let tf = fields.getField('title')
-      tf.hideSubtitle = true
+      tf.hideSubtitle = this.submitformparam === 'journal-article'
       tf.multilingual = false
       if (this.importData && this.importData.title) {
         if (this.importData.title.value) {
@@ -2099,7 +2094,7 @@ export default {
     next()
   },
   beforeRouteLeave: async function (to, from, next) {
-    if ((this.step > 1) && (to.name === 'adminsubmit') && (!this.$store.state.skipsubmitrouteleavehook)) {
+    if ((this.step > 3) && (to.name === 'adminsubmit') && (!this.$store.state.skipsubmitrouteleavehook)) {
       this.step = this.step - 1
       this.$vuetify.goTo(1)
       next(false)

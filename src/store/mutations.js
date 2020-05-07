@@ -84,6 +84,42 @@ export default {
         }
       )
     }
+    if (transition.to.name === 'adminsubmit') {
+      pagetitle = 'Upload'
+      state.breadcrumbs.push(
+        {
+          text: 'Admin',
+          to: { name: 'admin' }
+        }
+      )
+      state.breadcrumbs.push(
+        {
+          text: pagetitle,
+          disabled: true
+        }
+      )
+    }
+    if (transition.to.name === 'adminsubmitform') {
+      pagetitle = 'Upload ' + transition.to.params.submitform
+      state.breadcrumbs.push(
+        {
+          text: 'Admin',
+          to: { name: 'admin' }
+        }
+      )
+      state.breadcrumbs.push(
+        {
+          text: 'Upload',
+          to: '/admin/submit'
+        }
+      )
+      state.breadcrumbs.push(
+        {
+          text: pagetitle,
+          disabled: true
+        }
+      )
+    }
     if (transition.to.name === 'admin') {
       pagetitle = 'Admin'
       state.breadcrumbs.push(

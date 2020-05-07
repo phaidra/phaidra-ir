@@ -3,6 +3,7 @@
   <admin-submit-ir
     :importData="importData"
     :targetPid="pid"
+    @object-saved="objectSaved()"
   ></admin-submit-ir>
 
 </template>
@@ -37,8 +38,7 @@ export default {
   },
   methods: {
     objectSaved: function (event) {
-      this.$store.commit('setAlerts', [{ type: 'success', msg: 'Metadata for object ' + event + ' saved' }])
-      this.$router.push({ name: 'detail', params: { pid: event } })
+      this.$router.push({ name: 'detail', params: { pid: this.pid } })
       this.$vuetify.goTo(0)
     },
     loadJsonld: async function (self, pid) {

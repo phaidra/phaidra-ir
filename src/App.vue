@@ -308,6 +308,10 @@ export default {
 </style>
 
 <style>
+.mdeditor-header {
+  justify-content: center;
+}
+
 .no-padding > .v-toolbar__content {
   padding: 0px;
 }
