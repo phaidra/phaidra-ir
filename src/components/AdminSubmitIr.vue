@@ -1460,7 +1460,10 @@ export default {
         sf.publishingDateLabel = 'Publication date'
         if (this.importData && this.importData.containedin) {
           if (this.importData.containedin.title) {
-            sf.title = this.importData.containedin.title
+            sf.title = this.importData.containedin.title.value
+            if (this.importData.containedin.title.language) {
+              sf.titleLanguage = this.importData.containedin.title.language
+            }
           }
           if (this.importData.containedin.subtitle) {
             sf.subtitle = this.importData.containedin.subtitle
@@ -1739,7 +1742,10 @@ export default {
         sf.issuedDatePicker = true
         if (this.importData && this.importData.series) {
           if (this.importData.series.title) {
-            sf.title = this.importData.series.title
+            sf.title = this.importData.series.title.value
+            if (this.importData.series.title.language) {
+              sf.titleLanguage = this.importData.series.title.language
+            }
           }
           if (this.importData.series.volume) {
             sf.volume = this.importData.series.volume
