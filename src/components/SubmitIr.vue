@@ -1254,10 +1254,19 @@ export default {
       return jsonLd.form2json(this.form)
     },
     submit: async function () {
-      // TODO check if token is valid
-      if (!this.user.token) {
-        this.loginDialog = true
-        return
+      try {
+        let response = await this.$http.get(this.$store.state.config.api + '/keepalive', {
+          headers: {
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          }
+        })
+       } catch (error) {
+        console.log(error)
+        if (error.response.status === 401) {
+          console.log('submitform: logged out, show login dialog')
+          this.loginDialog = true
+          return
+        }
       }
 
       this.loading = true

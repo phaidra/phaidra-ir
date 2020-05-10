@@ -26,7 +26,10 @@
                 :placeholder="$t('Paste keywords')"
               >
                 <template v-slot:append-outer>
-                  <v-btn @click="parseKeywordsPaste()" color="primary">{{ $t('Parse') }}</v-btn>
+                  <v-row>
+                    <v-btn class="ma-2" @click="parseKeywordsPaste()" color="primary">{{ $t('Parse') }}</v-btn>
+                    <v-btn class="ma-2" @click="loadToPaste()" color="primary">{{ $t('Load') }}</v-btn>
+                  </v-row>
                 </template>
               </v-textarea>
             </v-col>
@@ -143,6 +146,7 @@ export default {
   watch: {
     keywordsValue (val) {
       this.model = this.keywordsValue
+      this.keywordspaste = ''
     }
   },
   methods: {
@@ -151,6 +155,9 @@ export default {
       arr = arr.map(e => e.trim())
       this.model = arr
       this.$emit('input-keywords', arr)
+    },
+    loadToPaste () {
+      this.keywordspaste = this.keywordsValue.join(';')
     },
     onInput (value) {
       let arr = []

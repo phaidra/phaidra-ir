@@ -2,10 +2,13 @@
   <div>
 
     <template v-if="importData">
-      <v-alert v-if="(importData.unknownpredicates.length > 0)" :type="'error'">
+      <v-alert v-if="(importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" :type="'error'">
         {{ $t('This object contains metadata not supperted by institutional repository. Please check metadata in Phaidra metadataeditor!') }}
         <ul>
           <li v-for="(pred, i) in importData.unknownpredicates" :key="'up'+i">{{ pred }}</li>
+        </ul>
+        <ul>
+          <li v-for="(err, i) in importData.errors" :key="'er'+i">{{ err }}</li>
         </ul>
       </v-alert>
     </template>
@@ -513,7 +516,7 @@
       </v-stepper-items>
 
     </v-stepper>
-    <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
+    <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
   </div>
 </template>
 
@@ -831,9 +834,19 @@ export default {
       return jsonLd.form2json(this.form)
     },
     submit: async function () {
-      if (!this.user.token) {
-        this.loginDialog = true
-        return
+      try {
+        let response = await this.$http.get(this.$store.state.config.api + '/keepalive', {
+          headers: {
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          }
+        })
+      } catch (error) {
+        console.log(error)
+        if (error.response.status === 401) {
+          console.log('submitform: logged out, show login dialog')
+          this.loginDialog = true
+          return
+        }
       }
 
       this.loading = true
@@ -1493,7 +1506,10 @@ export default {
           }
           if (this.importData.containedin.series) {
             if (this.importData.containedin.series.title) {
-              sf.seriesTitle = this.importData.containedin.series.title
+              sf.seriesTitle = this.importData.containedin.series.title.vaue
+              if (this.importData.containedin.series.title.language) {
+                sf.seriesTitleLanguage = this.importData.containedin.series.title.vaue
+              }
             }
             if (this.importData.containedin.series.volume) {
               sf.seriesVolume = this.importData.containedin.series.volume
