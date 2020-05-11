@@ -279,7 +279,7 @@
 
                     <template v-else-if="f.component === 'p-entity-extended'">
                       <p-i-entity-extended
-                      v-show="f.role !== 'role:uploader'"
+                        v-show="f.role !== 'role:uploader'"
                         v-bind.sync="f"
                         v-on:change-type="f.type = $event"
                         v-on:input-firstname="f.firstname = $event"
@@ -835,7 +835,7 @@ export default {
     },
     submit: async function () {
       try {
-        let response = await this.$http.get(this.$store.state.config.api + '/keepalive', {
+        await this.$http.get(this.$store.state.config.api + '/keepalive', {
           headers: {
             'X-XSRF-TOKEN': this.$store.state.user.token
           }
@@ -1506,9 +1506,9 @@ export default {
           }
           if (this.importData.containedin.series) {
             if (this.importData.containedin.series.title) {
-              sf.seriesTitle = this.importData.containedin.series.title.vaue
+              sf.seriesTitle = this.importData.containedin.series.title.value
               if (this.importData.containedin.series.title.language) {
-                sf.seriesTitleLanguage = this.importData.containedin.series.title.vaue
+                sf.seriesTitleLanguage = this.importData.containedin.series.title.language
               }
             }
             if (this.importData.containedin.series.volume) {

@@ -280,25 +280,25 @@ export default {
                   switch (key1) {
                     case '@type':
                       if (values1 !== 'schema:CreativeWork') {
-                        importData.errors.push('Unsupported rdau:P60101 type: ' + values1)
+                        importData.errors.push('Unsupported rdau:P60193 type: ' + values1)
                       }
                       break
                     case 'dce:title':
                       for (let v of values1) {
                         if (importData['series'].title) {
-                          importData.errors.push('Multiple series titles: ' + JSON.stringify(v))
+                          importData.errors.push('Multiple rdau:P60193 > dce:title: ' + JSON.stringify(v))
                         } else {
                           Object.entries(v).forEach(([key2, values2]) => {
                             switch (key2) {
                               case '@type':
                                 if (values2 !== 'bf:Title') {
-                                  importData.errors.push('Unsupported series title type: ' + values2)
+                                  importData.errors.push('Unsupported rdau:P60193 > dce:title type: ' + values2)
                                 }
                                 break
                               case 'bf:mainTitle':
                                 for (let title of values2) {
                                   if (importData['series']['title']) {
-                                    importData.errors.push('Multiple series titles: ' + title['@value'])
+                                    importData.errors.push('Multiple rdau:P60193 > dce:title: ' + title['@value'])
                                   } else {
                                     importData['series']['title'] = {}
                                     importData['series']['title']['value'] = title['@value']
@@ -309,7 +309,7 @@ export default {
                                 }
                                 break
                               default:
-                                importData.errors.push('Unsupported series dce:title property: ' + key2)
+                                importData.errors.push('Unsupported rdau:P60193 > dce:title property: ' + key2)
                                 break
                             }
                           })
@@ -326,7 +326,7 @@ export default {
                         importData['series'].issue = v
                       }
                       break
-                    case 'bibo:issued':
+                    case 'dcterms:issued':
                       for (let v of values1) {
                         importData['series'].issued = v
                       }
@@ -342,7 +342,7 @@ export default {
                       }
                       break
                     default:
-                      importData.errors.push('Unsupported series property: ' + key1)
+                      importData.errors.push('Unsupported rdau:P60193 property: ' + key1)
                       break
                   }
                 })
@@ -365,16 +365,22 @@ export default {
                 importData['containedin']['roles'] = []
                 Object.entries(obj).forEach(([key1, values1]) => {
                   switch (key1) {
+                    case '@type':
+                      if (values1 !== 'schema:CreativeWork') {
+                        importData.errors.push('Unsupported rdau:P60101 type: ' + values1)
+                      }
+                      break
                     case 'dce:title':
                       for (let v of values1) {
                         Object.entries(v).forEach(([key2, values2]) => {
                           switch (key2) {
                             case '@type':
                               if (values2 !== 'bf:Title') {
-                                importData.errors.push('Unsupported title type: ' + values2)
+                                importData.errors.push('Unsupported rdau:P60101 > dce:title type: ' + values2)
                               }
                               break
                             case 'bf:mainTitle':
+                              importData['containedin']['title'] = {}
                               for (let title of values2) {
                                 importData['containedin']['title']['value'] = title['@value']
                                 if (title['@language']) {
@@ -388,7 +394,7 @@ export default {
                               }
                               break
                             default:
-                              importData.errors.push('Unsupported rdau:P60101 dce:title property: ' + key2)
+                              importData.errors.push('Unsupported rdau:P60101 > dce:title property: ' + key2)
                               break
                           }
                         })
@@ -411,8 +417,8 @@ export default {
                               break
                             case 'dce:title':
                               for (let v1 of values2) {
-                                if (importData['containedin']['series'].title) {
-                                  importData.errors.push('Multiple rdau:P60101 > rdau:P60193 titles: ' + JSON.stringify(v))
+                                if (importData['containedin']['series']['title']) {
+                                  importData.errors.push('Multiple rdau:P60101 > rdau:P60193 > dce:title: ' + JSON.stringify(v))
                                 } else {
                                   Object.entries(v1).forEach(([key3, values3]) => {
                                     switch (key3) {
@@ -423,9 +429,10 @@ export default {
                                         break
                                       case 'bf:mainTitle':
                                         for (let title of values3) {
-                                          if (importData['containedin']['series'].title) {
-                                            importData.errors.push('Multiple series titles: ' + title['@value'])
+                                          if (importData['containedin']['series']['title']) {
+                                            importData.errors.push('Multiple rdau:P60101 > rdau:P60193 > dce:title: ' + title['@value'])
                                           } else {
+                                            importData['containedin']['series']['title'] = {}
                                             importData['containedin']['series']['title']['value'] = title['@value']
                                             if (title['@language']) {
                                               importData['containedin']['series']['title']['language'] = title['@language']
@@ -451,7 +458,7 @@ export default {
                                 importData['containedin']['series'].issue = v
                               }
                               break
-                            case 'bibo:issued':
+                            case 'dcterms:issued':
                               for (let v of values2) {
                                 importData['containedin']['series'].issued = v
                               }
@@ -597,7 +604,7 @@ export default {
               // edm:rights
               case 'edm:rights':
                 if (importData['license']) {
-                  importData.errors.push('Multiple licenses: ' + obj)
+                  importData.errors.push('Multiple edm:rights: ' + obj)
                 } else {
                   importData['license'] = obj
                 }
@@ -606,7 +613,7 @@ export default {
               // dce:rights
               case 'dce:rights':
                 if (importData['rights']) {
-                  importData.errors.push('Multiple rights statements: ' + JSON.stringify(obj))
+                  importData.errors.push('Multiple dce:rights: ' + JSON.stringify(obj))
                 } else {
                   importData['rights'] = {}
                   importData['rights']['value'] = obj['@value']
@@ -639,7 +646,7 @@ export default {
                             case 'schema:name':
                               for (let name of values2) {
                                 if (importData['publisher']['name']) {
-                                  importData.errors.push('Multiple bf:provisionActivity > bf:agent -> schema:name: ' + JSON.stringify(name))
+                                  importData.errors.push('Multiple bf:provisionActivity > bf:agent > schema:name: ' + JSON.stringify(name))
                                 } else {
                                   importData['publisher']['name'] = name['@value']
                                 }
@@ -650,7 +657,7 @@ export default {
                                 if (id.startsWith('https://pid.phaidra.org/')) {
                                   importData['publisher']['type'] = 'select'
                                   if (importData['publisher']['orgunit']) {
-                                    importData.errors.push('Multiple bf:provisionActivity > bf:agent -> skos:exactMatch: ' + JSON.stringify(id))
+                                    importData.errors.push('Multiple bf:provisionActivity > bf:agent > skos:exactMatch: ' + JSON.stringify(id))
                                   } else {
                                     importData['publisher']['orgunit'] = id
                                   }
@@ -743,7 +750,7 @@ export default {
 
               case 'ebucore:filename':
                 if (importData['filename']) {
-                  importData.errors.push('Multiple filenames: ' + JSON.stringify(obj))
+                  importData.errors.push('Multiple ebucore:filename: ' + JSON.stringify(obj))
                 } else {
                   importData['filename'] = obj
                 }
@@ -751,7 +758,7 @@ export default {
 
               case 'ebucore:hasMimeType':
                 if (importData['mimetype']) {
-                  importData.errors.push('Multiple mimetypes: ' + JSON.stringify(obj))
+                  importData.errors.push('Multiple ebucore:hasMimeType: ' + JSON.stringify(obj))
                 } else {
                   importData['mimetype'] = obj
                 }
@@ -786,7 +793,7 @@ export default {
               case 'dcterms:available':
                 if (typeof obj === 'string') {
                   if (importData['embargodate']) {
-                    importData.errors.push('Multiple embargo dates: ' + JSON.stringify(obj))
+                    importData.errors.push('Multiple dcterms:available dates: ' + JSON.stringify(obj))
                   } else {
                     importData['embargodate'] = obj
                   }
@@ -805,110 +812,108 @@ export default {
 
                 // role
                 if (key.startsWith('role')) {
-                  for (let role of values) {
-                    let entity = {
-                      role: key
-                    }
-                    Object.entries(role).forEach(([key1, values1]) => {
-                      switch (key1) {
-                        case '@type':
-                          if (values1 !== 'schema:Person') {
-                            importData.errors.push('Unsupported role type: ' + role['@type'])
+                  let entity = {
+                    role: key
+                  }
+                  Object.entries(obj).forEach(([key1, values1]) => {
+                    switch (key1) {
+                      case '@type':
+                        if (values1 !== 'schema:Person') {
+                          importData.errors.push('Unsupported role type: ' + role['@type'])
+                        }
+                        break
+                      case 'schema:givenName':
+                        for (let firstname of values1) {
+                          if (entity.firstname) {
+                            importData.errors.push('Multiple role > schema:givenName: ' + JSON.stringify(firstname))
+                          } else {
+                            entity.firstname = firstname['@value']
                           }
-                          break
-                        case 'schema:givenName':
-                          for (let firstname of values1) {
-                            if (entity.firstname) {
-                              importData.errors.push('Multiple role > schema:givenName: ' + JSON.stringify(firstname))
-                            } else {
-                              entity.firstname = firstname['@value']
-                            }
+                        }
+                        break
+                      case 'schema:familyName':
+                        for (let lastname of values1) {
+                          if (entity.lastname) {
+                            importData.errors.push('Multiple role > schema:familyName: ' + JSON.stringify(lastname))
+                          } else {
+                            entity.lastname = lastname['@value']
                           }
-                          break
-                        case 'schema:familyName':
-                          for (let lastname of values1) {
-                            if (entity.lastname) {
-                              importData.errors.push('Multiple role > schema:familyName: ' + JSON.stringify(lastname))
-                            } else {
-                              entity.lastname = lastname['@value']
-                            }
+                        }
+                        break
+                      case 'skos:exactMatch':
+                        for (let id of values1) {
+                          if (entity.identifier) {
+                            importData.errors.push('Multiple role > skos:exactMatch: ' + JSON.stringify(id))
+                          } else {
+                            entity.identifier = {}
+                            entity.identifier['type'] = id['@type']
+                            entity.identifier['value'] = id['@value']
                           }
-                          break
-                        case 'skos:exactMatch':
-                          for (let id of values1) {
-                            if (entity.identifier) {
-                              importData.errors.push('Multiple role > skos:exactMatch: ' + JSON.stringify(id))
-                            } else {
-                              entity.identifier = {}
-                              entity.identifier['type'] = id['@type']
-                              entity.identifier['value'] = id['@value']
-                            }
-                          }
-                          break
-                        case 'schema:affiliation':
-                          for (let af of values1) {
-                            if (entity.affiliation) {
-                              importData.errors.push('Multiple role > schema:affiliation: ' + JSON.stringify(af))
-                            } else {
-                              entity.affiliation = {}
-                              entity.affiliation['type'] = 'other'
-                              if (af.hasOwnProperty('skos:exactMatch')) {
-                                for (let id of af['skos:exactMatch']) {
-                                  if (id.startsWith('https://pid.phaidra.org/')) {
-                                    entity.affiliation['type'] = 'select'
-                                  }
+                        }
+                        break
+                      case 'schema:affiliation':
+                        for (let af of values1) {
+                          if (entity.affiliation) {
+                            importData.errors.push('Multiple role > schema:affiliation: ' + JSON.stringify(af))
+                          } else {
+                            entity.affiliation = {}
+                            entity.affiliation['type'] = 'other'
+                            if (af.hasOwnProperty('skos:exactMatch')) {
+                              for (let id of af['skos:exactMatch']) {
+                                if (id.startsWith('https://pid.phaidra.org/')) {
+                                  entity.affiliation['type'] = 'select'
                                 }
                               }
-                              Object.entries(af).forEach(([key2, values2]) => {
-                                switch (key2) {
-                                  case '@type':
-                                    if (values2 !== 'schema:Organization') {
-                                      importData.errors.push('Unsupported role > schema:affiliation type: ' + values2)
-                                    }
-                                    break
-                                  case 'skos:exactMatch':
-                                    for (let id of values2) {
-                                      if ((entity.affiliation['type'] === 'select') && (entity.affiliation['value'])) {
-                                        importData.errors.push('Multiple role > schema:affiliation > skos:exactMatch: ' + JSON.stringify(id))
+                            }
+                            Object.entries(af).forEach(([key2, values2]) => {
+                              switch (key2) {
+                                case '@type':
+                                  if (values2 !== 'schema:Organization') {
+                                    importData.errors.push('Unsupported role > schema:affiliation type: ' + values2)
+                                  }
+                                  break
+                                case 'skos:exactMatch':
+                                  for (let id of values2) {
+                                    if ((entity.affiliation['type'] === 'select') && (entity.affiliation['value'])) {
+                                      importData.errors.push('Multiple role > schema:affiliation > skos:exactMatch: ' + JSON.stringify(id))
+                                    } else {
+                                      if (id.startsWith('https://pid.phaidra.org/')) {
+                                        entity.affiliation['value'] = id
                                       } else {
-                                        if (id.startsWith('https://pid.phaidra.org/')) {
-                                          entity.affiliation['value'] = id
-                                        } else {
-                                          if (af['schema:name']) {
-                                            for (let name of af['schema:name']) {
-                                              entity.affiliation['value'] = name['@value']
-                                            }
+                                        if (af['schema:name']) {
+                                          for (let name of af['schema:name']) {
+                                            entity.affiliation['value'] = name['@value']
                                           }
                                         }
                                       }
                                     }
-                                    break
-                                  case 'schema:name':
-                                    if (entity.affiliation['type'] !== 'select') {
-                                      for (let name of values2) {
-                                        if ((entity.affiliation['type'] === 'other') && (entity.affiliation['value'])) {
-                                          importData.errors.push('Multiple role > schema:affiliation > schema:name: ' + JSON.stringify(name))
-                                        } else {
-                                          entity.affiliation['value'] = name['@value']
-                                        }
+                                  }
+                                  break
+                                case 'schema:name':
+                                  if (entity.affiliation['type'] !== 'select') {
+                                    for (let name of values2) {
+                                      if ((entity.affiliation['type'] === 'other') && (entity.affiliation['value'])) {
+                                        importData.errors.push('Multiple role > schema:affiliation > schema:name: ' + JSON.stringify(name))
+                                      } else {
+                                        entity.affiliation['value'] = name['@value']
                                       }
                                     }
-                                    break
-                                  default:
-                                    importData.errors.push('Unsupported role > schema:affiliation property: ' + key2)
-                                    break
-                                }
-                              })
-                            }
+                                  }
+                                  break
+                                default:
+                                  importData.errors.push('Unsupported role > schema:affiliation property: ' + key2)
+                                  break
+                              }
+                            })
                           }
-                          break
-                        default:
-                          importData.errors.push('Unsupported role property: ' + key1)
-                          break
-                      }
-                    })
-                    importData['roles'].push(entity)
-                  }
+                        }
+                        break
+                      default:
+                        importData.errors.push('Unsupported role property: ' + key1)
+                        break
+                    }
+                  })
+                  importData['roles'].push(entity)
                 } else {
                   // unknown predicate
                   importData['unknownpredicates'].push(key)
