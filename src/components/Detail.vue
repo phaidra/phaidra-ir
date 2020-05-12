@@ -34,7 +34,7 @@
           <v-row class="mb-6" v-show="stats.detail || stats.download">
             <v-col>
               <v-row>
-                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Usage statistics') }}</h3>
+                <h3 class="title font-weight-light pl-3 primary--text"><router-link :to="{ name: 'stats', params: { pid: objectInfo.pid } }">{{ $t('Usage statistics') }}</router-link></h3>
               </v-row>
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">

@@ -5,7 +5,7 @@
       <v-slide-y-transition hide-on-leave>
         <div v-if="license === 'http://rightsstatements.org/vocab/InC/1.0/'" class="license-desc">
           <p>
-            Wenn Sie keine Lizenz w&auml;hlen, darf Ihr Schutzgegenstand lediglich im Rahmen der Schranken des <a href="http://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001848" target="_blank">Urheberrechts</a> verwertet werden. Darüber hinaus gestatten Sie weder eine kommerzielle noch eine nicht kommerzielle Verwertung, insbesondere Vervielf&auml;ltigung, Verbreitung, Sendung, Zurverfügungstellung und Bearbeitung Ihres Schutzgegenstandes. Gegebenenfalls muss Ihr Verlag Ihnen ein einfaches Verwertungsrecht, ein Zweitver&ouml;ffentlichungsrecht, zugestanden haben.
+            Dieses Objekt ist durch das Urheberrecht und/oder verwandte Schutzrechte geschützt. Sie sind berechtigt, das Objekt in jeder Form zu nutzen, die das Urheberrechtsgesetz und/oder einschlägige verwandte Schutzrechte gestatten. Für weitere Nutzungsarten benötigen Sie die Zustimmung der/des Rechteinhaber/s. Siehe https://rightsstatements.org/page/InC/1.0/?language=de
           </p>
         </div>
       </v-slide-y-transition>
@@ -134,7 +134,7 @@
       <v-slide-y-transition hide-on-leave>
         <div v-if="license === 'http://rightsstatements.org/vocab/InC/1.0/'" class="license-desc">
           <p>
-            If you do not select a license, your protected subject matter may only be utilized in the context of the limitations of the <a href="http://www.ris.bka.gv.at/GeltendeFassung.wxe?Abfrage=Bundesnormen&Gesetzesnummer=10001848" target="_blank">copyright</a>. In addition, you do not allow commercial nor non-commercial use, in particular the reproduction, distribution, broadcasting, supplying and processing of your protected subject matter. Where applicable, your publisher must grant you the simple right of use in the form of secondary publication rights.
+            This Item is protected by copyright and/or related rights. You are free to use this Item in any way that is permitted by the copyright and related rights legislation that applies to your use. For other uses you need to obtain permission from the rights-holder(s). See <a target="_blank" href="https://rightsstatements.org/page/InC/1.0/?language=en">https://rightsstatements.org/page/InC/1.0/</a>
           </p>
         </div>
       </v-slide-y-transition>

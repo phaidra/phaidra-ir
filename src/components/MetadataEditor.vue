@@ -554,7 +554,7 @@ export default {
                             switch (key2) {
                               case '@type':
                                 if (values2 !== 'schema:Person') {
-                                  importData.errors.push('Unsupported rdau:P60101 > role type: ' + role['@type'])
+                                  importData.errors.push('Unsupported rdau:P60101 > role type: ' + values2)
                                 }
                                 break
                               case 'schema:givenName':
@@ -819,7 +819,7 @@ export default {
                     switch (key1) {
                       case '@type':
                         if (values1 !== 'schema:Person') {
-                          importData.errors.push('Unsupported role type: ' + role['@type'])
+                          importData.errors.push('Unsupported role type: ' + values1)
                         }
                         break
                       case 'schema:givenName':

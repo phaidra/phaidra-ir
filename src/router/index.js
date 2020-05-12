@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Login from '@/components/Login'
 import Search from '@/components/Search'
 import Detail from '@/components/Detail'
+import Stats from '@/components/Stats'
 import Metadata from '@/components/Metadata'
 import MetadataEditor from '@/components/MetadataEditor'
 import SubmitIr from '@/components/SubmitIr'
@@ -43,6 +44,11 @@ export function createRouter () {
         path: '/detail/:pid',
         name: 'detail',
         component: Detail
+      },
+      {
+        path: '/detail/:pid/stats',
+        name: 'stats',
+        component: Stats
       },
       {
         path: '/metadata/:pid',
