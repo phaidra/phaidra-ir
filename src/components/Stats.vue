@@ -1,12 +1,12 @@
 <template>
 
   <v-tabs>
-    <v-tab v-if="detailPageItems.length > 0">Views</v-tab>
     <v-tab v-if="downloadItems.length > 0">Downloads</v-tab>
-    <v-tab-item v-if="detailPageItems.length > 0">
+    <v-tab v-if="detailPageItems.length > 0">Views</v-tab>
+    <v-tab-item v-if="downloadItems.length > 0">
       <v-data-iterator
-        :items="detailPageItems"
-        :search="searchViews"
+        :items="downloadItems"
+        :search="searchDownloads"
         :item-key="'country'"
         :sort-by="'total'"
         :sort-desc="true"
@@ -14,10 +14,10 @@
       >
         <template v-slot:header>
           <v-toolbar dark color="grey darken-3" class="mb-1">
-            <v-toolbar-title>Views of object {{ routepid }}</v-toolbar-title>
+            <v-toolbar-title>Downloads of object {{ routepid }}</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-text-field
-              v-model="searchViews"
+              v-model="searchDownloads"
               clearable
               flat
               solo-inverted
@@ -47,10 +47,10 @@
         </template>
       </v-data-iterator>
     </v-tab-item>
-    <v-tab-item v-if="downloadItems.length > 0">
+    <v-tab-item v-if="detailPageItems.length > 0">
       <v-data-iterator
-        :items="downloadItems"
-        :search="searchDownloads"
+        :items="detailPageItems"
+        :search="searchViews"
         :item-key="'country'"
         :sort-by="'total'"
         :sort-desc="true"
@@ -58,10 +58,10 @@
       >
         <template v-slot:header>
           <v-toolbar dark color="grey darken-3" class="mb-1">
-            <v-toolbar-title>Downloads of object {{ routepid }}</v-toolbar-title>
+            <v-toolbar-title>Views of object {{ routepid }}</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-text-field
-              v-model="searchDownloads"
+              v-model="searchViews"
               clearable
               flat
               solo-inverted

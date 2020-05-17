@@ -11,7 +11,7 @@
 
           <v-row no-gutters>
             <v-col cols="12" md="11">
-              <p-d-jsonld v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+              <p-d-jsonld :labelColMd="'3'" :valueColMd="'9'" v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
             </v-col>
             <v-col cols="12" md="1"></v-col>
           </v-row>
@@ -31,17 +31,17 @@
             </v-col>
           </v-row>
 
-          <v-row class="mb-6" v-show="stats.detail || stats.download">
+          <v-row class="mb-6">
             <v-col>
               <v-row>
                 <h3 class="title font-weight-light pl-3 primary--text"><router-link :to="{ name: 'stats', params: { pid: objectInfo.pid } }">{{ $t('Usage statistics') }}</router-link></h3>
               </v-row>
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">
-                <v-col cols="3" v-show="stats.detail">
+                <v-col cols="3">
                   <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
                 </v-col>
-                <v-col cols="3" v-show="stats.download">
+                <v-col cols="3">
                   <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
                 </v-col>
                 <v-spacer></v-spacer>
@@ -107,8 +107,8 @@ export default {
       alternativeVersions: [],
       alternativeFormats: [],
       stats: {
-        download: null,
-        detail: null
+        download: '-',
+        detail: '-'
       }
     }
   },

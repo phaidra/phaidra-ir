@@ -493,6 +493,13 @@ export default {
                             case 'bf:agent':
                               importData['containedin']['publisher']['type'] = 'other'
                               for (let v1 of values2) {
+                                if (v1.hasOwnProperty('skos:exactMatch')) {
+                                  for (let id of v1['skos:exactMatch']) {
+                                    if (id.startsWith('https://pid.phaidra.org/')) {
+                                      importData['containedin']['publisher']['type'] = 'select'
+                                    }
+                                  }
+                                }
                                 Object.entries(v1).forEach(([key3, values3]) => {
                                   switch (key3) {
                                     case '@type':
@@ -501,18 +508,19 @@ export default {
                                       }
                                       break
                                     case 'schema:name':
-                                      for (let name of values3) {
-                                        if (importData['containedin']['publisher']['name']) {
-                                          importData.errors.push('Multiple rdau:P60101 > bf:provisionActivity > bf:agent -> schema:name: ' + JSON.stringify(name))
-                                        } else {
-                                          importData['containedin']['publisher']['name'] = name['@value']
+                                      if (importData['containedin']['publisher']['type'] !== 'select') {
+                                        for (let name of values3) {
+                                          if (importData['containedin']['publisher']['name']) {
+                                            importData.errors.push('Multiple rdau:P60101 > bf:provisionActivity > bf:agent -> schema:name: ' + JSON.stringify(name))
+                                          } else {
+                                            importData['containedin']['publisher']['name'] = name['@value']
+                                          }
                                         }
                                       }
                                       break
                                     case 'skos:exactMatch':
-                                      for (let id of values3) {
-                                        if (id.startsWith('https://pid.phaidra.org/')) {
-                                          importData['containedin']['publisher']['type'] = 'select'
+                                      if (importData['containedin']['publisher']['type'] === 'select') {
+                                        for (let id of values3) {
                                           if (importData['containedin']['publisher']['orgunit']) {
                                             importData.errors.push('Multiple rdau:P60101 > bf:provisionActivity > bf:agent -> skos:exactMatch: ' + JSON.stringify(id))
                                           } else {
@@ -636,6 +644,13 @@ export default {
                       break
                     case 'bf:agent':
                       for (let agent of values1) {
+                        if (agent.hasOwnProperty('skos:exactMatch')) {
+                          for (let id of agent['skos:exactMatch']) {
+                            if (id.startsWith('https://pid.phaidra.org/')) {
+                              importData['publisher']['type'] = 'select'
+                            }
+                          }
+                        }
                         Object.entries(agent).forEach(([key2, values2]) => {
                           switch (key2) {
                             case '@type':
@@ -644,18 +659,19 @@ export default {
                               }
                               break
                             case 'schema:name':
-                              for (let name of values2) {
-                                if (importData['publisher']['name']) {
-                                  importData.errors.push('Multiple bf:provisionActivity > bf:agent > schema:name: ' + JSON.stringify(name))
-                                } else {
-                                  importData['publisher']['name'] = name['@value']
+                              if (importData['publisher']['type'] !== 'select') {
+                                for (let name of values2) {
+                                  if (importData['publisher']['name']) {
+                                    importData.errors.push('Multiple bf:provisionActivity > bf:agent > schema:name: ' + JSON.stringify(name))
+                                  } else {
+                                    importData['publisher']['name'] = name['@value']
+                                  }
                                 }
                               }
                               break
                             case 'skos:exactMatch':
-                              for (let id of values2) {
-                                if (id.startsWith('https://pid.phaidra.org/')) {
-                                  importData['publisher']['type'] = 'select'
+                              if (importData['publisher']['type'] === 'select') {
+                                for (let id of values2) {
                                   if (importData['publisher']['orgunit']) {
                                     importData.errors.push('Multiple bf:provisionActivity > bf:agent > skos:exactMatch: ' + JSON.stringify(id))
                                   } else {

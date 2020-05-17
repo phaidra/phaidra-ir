@@ -1255,12 +1255,12 @@ export default {
     },
     submit: async function () {
       try {
-        let response = await this.$http.get(this.$store.state.config.api + '/keepalive', {
+        await this.$http.get(this.$store.state.config.api + '/keepalive', {
           headers: {
             'X-XSRF-TOKEN': this.$store.state.user.token
           }
         })
-       } catch (error) {
+      } catch (error) {
         console.log(error)
         if (error.response.status === 401) {
           console.log('submitform: logged out, show login dialog')
@@ -1336,7 +1336,7 @@ export default {
       var newField = arrays.duplicate(arr, f)
       if (newField) {
         newField.id = (new Date()).getTime()
-        if (this.submitformparam === 'journal-article') {
+        if (this.submitformparam === 'journal-article' || this.submitformparam === 'book-part') {
           newField.role = 'role:aut'
         } else {
           newField.role = ''
@@ -1347,7 +1347,7 @@ export default {
         newField.identifierText = ''
         newField.affiliation = ''
         newField.affiliationText = ''
-        newField.affiliationType = 'select'
+        newField.affiliationType = ''
         newField.organization = ''
         newField.organizationText = ''
         newField.organizationType = 'select'
@@ -1722,6 +1722,7 @@ export default {
       smf.push(f)
 
       let tf = fields.getField('title')
+      tf.hideSubtitle = this.submitformparam === 'journal-article'
       if (doiImportData && doiImportData.title) {
         tf.title = doiImportData.title
       }
@@ -1815,6 +1816,7 @@ export default {
         let sf = fields.getField('contained-in')
         sf.label = 'Appeared in'
         sf.multilingual = false
+        sf.rolesVocabulary = 'irrolepredicate'
         sf.hideSeriesIssn = true
         sf.collapseSeries = true
         sf.hidePages = false

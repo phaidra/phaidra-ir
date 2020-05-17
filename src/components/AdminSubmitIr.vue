@@ -953,7 +953,7 @@ export default {
       var newField = arrays.duplicate(arr, f)
       if (newField) {
         newField.id = (new Date()).getTime()
-        if (this.submitformparam === 'journal-article') {
+        if (this.submitformparam === 'journal-article' || this.submitformparam === 'book-part') {
           newField.role = 'role:aut'
         } else {
           newField.role = ''
@@ -964,7 +964,7 @@ export default {
         newField.identifierText = ''
         newField.affiliation = ''
         newField.affiliationText = ''
-        newField.affiliationType = 'select'
+        newField.affiliationType = ''
         newField.organization = ''
         newField.organizationText = ''
         newField.organizationType = 'select'
@@ -1463,6 +1463,7 @@ export default {
         let sf = fields.getField('contained-in')
         sf.label = 'Appeared in'
         sf.multilingual = false
+        sf.rolesVocabulary = 'irrolepredicate'
         sf.hideSeriesIssn = true
         sf.collapseSeries = true
         sf.hidePages = false
@@ -1706,14 +1707,16 @@ export default {
       }
 
       if (this.importData && this.importData.identifiers) {
+        let i = 0
         for (let id of this.importData.identifiers) {
+          i++
           let aif = fields.getField('alternate-identifier')
           aif.label = 'Identifier'
           aif.identifierLabel = 'Identifier'
           aif.vocabulary = 'irobjectidentifiertypenoisbn'
           aif.multiplicable = true
           aif.addOnly = true
-          aif.subloopFlag = true
+          aif.subloopFlag = i === 1
           if (id.type) {
             aif.type = id.type
           }
