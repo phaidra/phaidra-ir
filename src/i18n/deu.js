@@ -637,5 +637,8 @@ export default {
   'Book details': 'Details zum Buch',
   'Book chapter details': 'Details zum Buchkapitel',
   'Publication date': 'Erscheinungsdatum',
-  'This object contains metadata not supperted by institutional repository. Please check metadata in Phaidra metadataeditor!': 'Unerwartete Angaben vorhanden. Bitte Metadaten im Phaidra-MDE überprüfen!'
+  'This object contains metadata not supperted by institutional repository. Please check metadata in Phaidra metadataeditor!': 'Unerwartete Angaben vorhanden. Bitte Metadaten im Phaidra-MDE überprüfen!',
+  'Not available via {name}': 'Über {name} nicht zugänglich',
+  'Not publicly available via {name}': 'Über {name} nicht öffentlich zugänglich',
+  'Not available via {name} until {embargoEnd}': 'Über {name} bis {embargoEnd} nicht zugänglich'
 }

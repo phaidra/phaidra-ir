@@ -26,12 +26,23 @@
               </v-row>
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">
-                <v-btn color="primary" @click="trackDownload()" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
+                <template v-if="objectInfo.readrights && accessRights === 'open'">
+                  <v-btn color="primary" @click="trackDownload()" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
+                </template>
+                <template v-else-if="(!objectInfo.readrights && accessRights === 'open') || (accessRights === 'restricted')">
+                  <p>{{ $t('Not publicly available via {name}', { name: config.title }) }}</p>
+                </template>
+                <template v-else-if="accessRights === 'embargoed'">
+                  <p>{{ $t('Not available via {name} until {embargoEnd}', { name: config.title, embargoEnd: embargoEnd }) }}</p>
+                </template>
+                <template v-else-if="accessRights === 'closed'">
+                  <p>{{ $t('Not available via {name}', { name: config.title }) }}</p>
+                </template>
               </v-row>
             </v-col>
           </v-row>
 
-          <v-row class="mb-6">
+          <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
             <v-col>
               <v-row>
                 <h3 class="title font-weight-light pl-3 primary--text"><router-link :to="{ name: 'stats', params: { pid: objectInfo.pid } }">{{ $t('Usage statistics') }}</router-link></h3>
@@ -56,6 +67,7 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { context } from '../mixins/context'
 import { config } from '../mixins/config'
@@ -100,6 +112,53 @@ export default {
     },
     isApproved: function () {
       return (this.objectInfo.owner.username === this.config.iraccount) && this.objectInfo.ispartof && this.objectInfo.ispartof.includes(this.config.ircollection)
+    },
+    accessRights: function () {
+      let access
+      if (this.objectInfo.dshash['JSON-LD']) {
+        Object.entries(this.objectInfo.metadata['JSON-LD']).forEach(([predicate, value]) => {
+          if (predicate === 'dcterms:accessRights') {
+            for (let v of value) {
+              if (v.hasOwnProperty('skos:exactMatch') && Array.isArray(v['skos:exactMatch'])) {
+                for (let id of v['skos:exactMatch']) {
+                  switch (id) {
+                    case 'https://pid.phaidra.org/vocabulary/QNGE-V02H':
+                      access = 'closed'
+                      break
+                    case 'https://pid.phaidra.org/vocabulary/KC3K-CCGM':
+                      access = 'restricted'
+                      break
+                    case 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ':
+                      access = 'embargoed'
+                      break
+                    case 'https://pid.phaidra.org/vocabulary/QW5R-NG4J':
+                      access = 'open'
+                      break
+                    default:
+                      console.error('unknown dcterms:accessRights value: ' + id)
+                      access = 'unknown'
+                      break
+                  }
+                }
+              }
+            }
+          }
+        })
+      }
+      return access
+    },
+    embargoEnd: function () {
+      let embargo
+      if (this.objectInfo.dshash['JSON-LD']) {
+        Object.entries(this.objectInfo.metadata['JSON-LD']).forEach(([predicate, value]) => {
+          if (predicate === 'dcterms:available') {
+            for (let v of value) {
+              embargo = moment(String(v)).format('DD.MM.YYYY')
+            }
+          }
+        })
+      }
+      return embargo
     }
   },
   data () {
