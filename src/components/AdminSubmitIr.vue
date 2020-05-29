@@ -626,9 +626,12 @@ export default {
         this.updateJsonld()
       }
     },
-    importData (val) {
-      this.resetSubmission(this)
-      this.step = 5
+    importData: {
+      handler: function (val) {
+        this.resetSubmission(this)
+        this.step = 5
+      },
+      deep: true
     }
   },
   methods: {

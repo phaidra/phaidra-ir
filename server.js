@@ -1,5 +1,4 @@
 /* eslint-disable */
-const config = require('./src/config/phaidra-ir.json')
 const Vue = require('vue')
 const server = require('express')()
 const renderer = require('vue-server-renderer').createRenderer({

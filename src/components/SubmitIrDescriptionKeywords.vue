@@ -144,9 +144,12 @@ export default {
     }
   },
   watch: {
-    keywordsValue (val) {
-      this.model = this.keywordsValue
-      this.keywordspaste = ''
+    keywordsValue: {
+      handler: function (val) {
+        this.model = this.keywordsValue
+        this.keywordspaste = ''
+      },
+      deep: true
     }
   },
   methods: {
