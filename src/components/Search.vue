@@ -136,6 +136,10 @@ export default {
         delete options.collection
       }
 
+      if (this.$store.state.route.params.q) {
+
+      }
+
       Object.assign(this, options)
 
       let { searchdefarr, ands } = buildSearchDef(this)
@@ -289,6 +293,11 @@ export default {
     if (to.query.reset) {
       this.resetSearchParams()
     }
+    if (to.query.q) {
+      this.q = to.query.q
+    } else {
+      this.q = ''
+    }
     if (to.query.owner) {
       this.owner = to.query.owner
     } else {
@@ -311,6 +320,11 @@ export default {
         vm.owner = to.query.owner
       } else {
         vm.owner = ''
+      }
+      if (to.query.q) {
+        vm.q = to.query.q
+      } else {
+        vm.q = ''
       }
       if (to.query.collection) {
         vm.inCollection = to.query.collection

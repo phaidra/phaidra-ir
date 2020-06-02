@@ -104,6 +104,8 @@
 
           </v-row>
 
+          <banner v-if="$route.name === 'home'"></banner>
+
           <v-row no-gutters class="mt-2">
             <v-col cols="12">
               <p-breadcrumbs :items="breadcrumbs" class="mt-2"></p-breadcrumbs>
@@ -165,6 +167,7 @@
 import Vue from 'vue'
 import '@/assets/css/material-icons.css'
 import PBreadcrumbs from '@/components/PBreadcrumbs'
+import Banner from '@/components/info/Banner'
 import Quicklinks from '@/components/Quicklinks'
 import QuicklinksFooter from '@/components/QuicklinksFooter'
 import '@/compiled-icons/material-social-person'
@@ -183,7 +186,8 @@ export default {
     Quicklinks,
     QuicklinksFooter,
     ClientOnly,
-    PBreadcrumbs
+    PBreadcrumbs,
+    Banner
   },
   data () {
     return {

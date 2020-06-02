@@ -640,5 +640,6 @@ export default {
   'This object contains metadata not supperted by institutional repository. Please check metadata in Phaidra metadataeditor!': 'Unerwartete Angaben vorhanden. Bitte Metadaten im Phaidra-MDE überprüfen!',
   'Not available via {name}': 'Über {name} nicht zugänglich',
   'Not publicly available via {name}': 'Über {name} nicht öffentlich zugänglich',
-  'Not available via {name} until {embargoEnd}': 'Über {name} bis {embargoEnd} nicht zugänglich'
+  'Not available via {name} until {embargoEnd}': 'Über {name} bis {embargoEnd} nicht zugänglich',
+  'University of Vienna\'s Institutional Repository': 'Institutional Repository der Universität Wien'
 }
