@@ -280,8 +280,8 @@ export default {
     this.$nextTick(async function () {
       if (!this.vocabularies['orgunits'].loaded) {
         await this.$store.dispatch('loadOrgUnits', this.$i18n.locale)
-        facetQueries.push(buildAssociationFacet(this.vocabularies['orgunits'].tree))
       }
+      facetQueries.push(buildAssociationFacet(this.vocabularies['orgunits'].tree))
       this.search()
     })
     // This call is delayed because at this point
