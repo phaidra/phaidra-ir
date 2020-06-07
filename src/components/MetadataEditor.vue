@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import fields from 'phaidra-vue-components/src/utils/fields'
 import { context } from '../mixins/context'
 import { config } from '../mixins/config'
 import AdminSubmitIr from './AdminSubmitIr'
@@ -837,108 +838,190 @@ export default {
 
                 // role
                 if (key.startsWith('role')) {
-                  let entity = {
-                    role: key
-                  }
-                  Object.entries(obj).forEach(([key1, values1]) => {
-                    switch (key1) {
-                      case '@type':
-                        if (values1 !== 'schema:Person') {
-                          importData.errors.push('Unsupported role type: ' + values1)
+                  if (key === 'role:uploader') {
+                    let f = fields.getField('role-extended')
+                    f.role = key
+                    f.type = obj['@type']
+                    if (obj['@type'] === 'schema:Person') {
+                      if (obj['schema:name']) {
+                        for (let name of obj['schema:name']) {
+                          f.name = name['@value']
+                          f.showname = true
                         }
-                        break
-                      case 'schema:givenName':
-                        for (let firstname of values1) {
-                          if (entity.firstname) {
-                            importData.errors.push('Multiple role > schema:givenName: ' + JSON.stringify(firstname))
-                          } else {
-                            entity.firstname = firstname['@value']
-                          }
+                      }
+                      if (obj['schema:familyName']) {
+                        for (let lastname of obj['schema:familyName']) {
+                          f.lastname = lastname['@value']
                         }
-                        break
-                      case 'schema:familyName':
-                        for (let lastname of values1) {
-                          if (entity.lastname) {
-                            importData.errors.push('Multiple role > schema:familyName: ' + JSON.stringify(lastname))
-                          } else {
-                            entity.lastname = lastname['@value']
-                          }
+                      }
+                      if (obj['schema:givenName']) {
+                        for (let firstname of obj['schema:givenName']) {
+                          f.firstname = firstname['@value']
                         }
-                        break
-                      case 'skos:exactMatch':
-                        for (let id of values1) {
-                          if (entity.identifier) {
-                            importData.errors.push('Multiple role > skos:exactMatch: ' + JSON.stringify(id))
-                          } else {
-                            entity.identifier = {}
-                            entity.identifier['type'] = id['@type']
-                            entity.identifier['value'] = id['@value']
-                          }
+                      }
+                      if (obj['skos:exactMatch']) {
+                        for (let id of obj['skos:exactMatch']) {
+                          f.identifierType = id['@type']
+                          f.identifierText = id['@value']
                         }
-                        break
-                      case 'schema:affiliation':
-                        for (let af of values1) {
-                          if (entity.affiliation) {
-                            importData.errors.push('Multiple role > schema:affiliation: ' + JSON.stringify(af))
-                          } else {
-                            entity.affiliation = {}
-                            entity.affiliation['type'] = 'other'
-                            if (af.hasOwnProperty('skos:exactMatch')) {
-                              for (let id of af['skos:exactMatch']) {
-                                if (id.startsWith('https://pid.phaidra.org/')) {
-                                  entity.affiliation['type'] = 'select'
+                      }
+                      if (obj['schema:affiliation']) {
+                        for (let af of obj['schema:affiliation']) {
+                          if (af['skos:exactMatch']) {
+                            for (let id of af['skos:exactMatch']) {
+                              if (id.startsWith('https://pid.phaidra.org/')) {
+                                f.affiliationType = 'select'
+                                f.affiliation = id
+                              } else {
+                                f.affiliationType = 'other'
+                                if (af['schema:name']) {
+                                  for (let name of af['schema:name']) {
+                                    f.affiliationText = name['@value']
+                                  }
                                 }
                               }
                             }
-                            Object.entries(af).forEach(([key2, values2]) => {
-                              switch (key2) {
-                                case '@type':
-                                  if (values2 !== 'schema:Organization') {
-                                    importData.errors.push('Unsupported role > schema:affiliation type: ' + values2)
+                          } else {
+                            if (af['schema:name']) {
+                              f.affiliationType = 'other'
+                              for (let name of af['schema:name']) {
+                                f.affiliationText = name['@value']
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                    if (obj['@type'] === 'schema:Organization') {
+                      if (obj['skos:exactMatch']) {
+                        for (let id of obj['skos:exactMatch']) {
+                          if (id.startsWith('https://pid.phaidra.org/')) {
+                            f.organizationType = 'select'
+                            f.organization = id
+                          } else {
+                            f.organizationType = 'other'
+                            f.identifierText = id
+                            if (obj['schema:name']) {
+                              for (let name of obj['schema:name']) {
+                                f.organizationText = name['@value']
+                              }
+                            }
+                          }
+                        }
+                      } else {
+                        if (obj['schema:name']) {
+                          for (let name of obj['schema:name']) {
+                            f.organizationType = 'other'
+                            f.organizationText = name['@value']
+                          }
+                        }
+                      }
+                    }
+                    importData['uploader'] = f
+                  } else {
+                    let entity = {
+                      role: key
+                    }
+                    Object.entries(obj).forEach(([key1, values1]) => {
+                      switch (key1) {
+                        case '@type':
+                          if (values1 !== 'schema:Person') {
+                            importData.errors.push('Unsupported role type: ' + values1)
+                          }
+                          break
+                        case 'schema:givenName':
+                          for (let firstname of values1) {
+                            if (entity.firstname) {
+                              importData.errors.push('Multiple role > schema:givenName: ' + JSON.stringify(firstname))
+                            } else {
+                              entity.firstname = firstname['@value']
+                            }
+                          }
+                          break
+                        case 'schema:familyName':
+                          for (let lastname of values1) {
+                            if (entity.lastname) {
+                              importData.errors.push('Multiple role > schema:familyName: ' + JSON.stringify(lastname))
+                            } else {
+                              entity.lastname = lastname['@value']
+                            }
+                          }
+                          break
+                        case 'skos:exactMatch':
+                          for (let id of values1) {
+                            if (entity.identifier) {
+                              importData.errors.push('Multiple role > skos:exactMatch: ' + JSON.stringify(id))
+                            } else {
+                              entity.identifier = {}
+                              entity.identifier['type'] = id['@type']
+                              entity.identifier['value'] = id['@value']
+                            }
+                          }
+                          break
+                        case 'schema:affiliation':
+                          for (let af of values1) {
+                            if (entity.affiliation) {
+                              importData.errors.push('Multiple role > schema:affiliation: ' + JSON.stringify(af))
+                            } else {
+                              entity.affiliation = {}
+                              entity.affiliation['type'] = 'other'
+                              if (af.hasOwnProperty('skos:exactMatch')) {
+                                for (let id of af['skos:exactMatch']) {
+                                  if (id.startsWith('https://pid.phaidra.org/')) {
+                                    entity.affiliation['type'] = 'select'
                                   }
-                                  break
-                                case 'skos:exactMatch':
-                                  for (let id of values2) {
-                                    if ((entity.affiliation['type'] === 'select') && (entity.affiliation['value'])) {
-                                      importData.errors.push('Multiple role > schema:affiliation > skos:exactMatch: ' + JSON.stringify(id))
-                                    } else {
-                                      if (id.startsWith('https://pid.phaidra.org/')) {
-                                        entity.affiliation['value'] = id
+                                }
+                              }
+                              Object.entries(af).forEach(([key2, values2]) => {
+                                switch (key2) {
+                                  case '@type':
+                                    if (values2 !== 'schema:Organization') {
+                                      importData.errors.push('Unsupported role > schema:affiliation type: ' + values2)
+                                    }
+                                    break
+                                  case 'skos:exactMatch':
+                                    for (let id of values2) {
+                                      if ((entity.affiliation['type'] === 'select') && (entity.affiliation['value'])) {
+                                        importData.errors.push('Multiple role > schema:affiliation > skos:exactMatch: ' + JSON.stringify(id))
                                       } else {
-                                        if (af['schema:name']) {
-                                          for (let name of af['schema:name']) {
-                                            entity.affiliation['value'] = name['@value']
+                                        if (id.startsWith('https://pid.phaidra.org/')) {
+                                          entity.affiliation['value'] = id
+                                        } else {
+                                          if (af['schema:name']) {
+                                            for (let name of af['schema:name']) {
+                                              entity.affiliation['value'] = name['@value']
+                                            }
                                           }
                                         }
                                       }
                                     }
-                                  }
-                                  break
-                                case 'schema:name':
-                                  if (entity.affiliation['type'] !== 'select') {
-                                    for (let name of values2) {
-                                      if ((entity.affiliation['type'] === 'other') && (entity.affiliation['value'])) {
-                                        importData.errors.push('Multiple role > schema:affiliation > schema:name: ' + JSON.stringify(name))
-                                      } else {
-                                        entity.affiliation['value'] = name['@value']
+                                    break
+                                  case 'schema:name':
+                                    if (entity.affiliation['type'] !== 'select') {
+                                      for (let name of values2) {
+                                        if ((entity.affiliation['type'] === 'other') && (entity.affiliation['value'])) {
+                                          importData.errors.push('Multiple role > schema:affiliation > schema:name: ' + JSON.stringify(name))
+                                        } else {
+                                          entity.affiliation['value'] = name['@value']
+                                        }
                                       }
                                     }
-                                  }
-                                  break
-                                default:
-                                  importData.errors.push('Unsupported role > schema:affiliation property: ' + key2)
-                                  break
-                              }
-                            })
+                                    break
+                                  default:
+                                    importData.errors.push('Unsupported role > schema:affiliation property: ' + key2)
+                                    break
+                                }
+                              })
+                            }
                           }
-                        }
-                        break
-                      default:
-                        importData.errors.push('Unsupported role property: ' + key1)
-                        break
-                    }
-                  })
-                  importData['roles'].push(entity)
+                          break
+                        default:
+                          importData.errors.push('Unsupported role property: ' + key1)
+                          break
+                      }
+                    })
+                    importData['roles'].push(entity)
+                  }
                 } else {
                   // unknown predicate
                   importData['unknownpredicates'].push(key)

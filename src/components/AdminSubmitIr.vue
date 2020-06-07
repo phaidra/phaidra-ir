@@ -1347,6 +1347,10 @@ export default {
         uploader.firstname = this.user.firstname
         uploader.lastname = this.user.lastname
         smf.push(uploader)
+      } else {
+        if (this.importData['uploader']) {
+          smf.push(this.importData['uploader'])
+        }
       }
 
       if (this.importData && this.importData.roles) {
@@ -1427,9 +1431,28 @@ export default {
         if (doiImportData && doiImportData.dateIssued) {
           issued.value = doiImportData.dateIssued
         }
-        issued.dateLabel = 'Date issued'
+        issued.type = 'dcterms:issued'
       }
-      issued.type = 'dcterms:issued'
+      switch (issued.type) {
+        case 'dcterms:created':
+          issued.dateLabel = 'Date created'
+          break
+        case 'dcterms:dateSubmitted':
+          issued.dateLabel = 'Date submitted'
+          break
+        case 'dcterms:dateAccepted':
+          issued.dateLabel = 'Date accepted'
+          break
+        case 'dcterms:issued':
+          issued.dateLabel = 'Date issued'
+          break
+        case 'dcterms:modified':
+          issued.dateLabel = 'Date modified'
+          break
+        case 'dcterms:date':
+          issued.dateLabel = 'Date'
+          break
+      }
       issued.hideType = true
       issued.multiplicable = false
       smf.push(issued)
