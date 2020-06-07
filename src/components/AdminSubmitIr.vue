@@ -1666,6 +1666,7 @@ export default {
         embargoDate.value = this.importData.embargodate
         self.showEmbargoDate = true
       }
+      embargoDate.multiplicable = false
       smf.push(embargoDate)
 
       let lic = fields.getField('license')

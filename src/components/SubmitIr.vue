@@ -1887,6 +1887,7 @@ export default {
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
+      embargoDate.multiplicable = false
       smf.push(embargoDate)
 
       smf.push(fields.getField('license'))
