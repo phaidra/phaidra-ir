@@ -17,6 +17,7 @@
       single-line
       :solo="solo"
       append-icon="mdi-magnify"
+      @click:append="onSelect({ term: type })"
       :messages="messages"
     />
     <div :class="`${getClassName('list')} autocomplete autocomplete-list elevation-2`" v-show="showList && suggestions && suggestions.length">
@@ -30,6 +31,8 @@
 </template>
 
 <script>
+import qs from 'qs'
+
 export default {
   props: {
     id: String,
@@ -225,14 +228,19 @@ export default {
         wt: 'json',
         'suggest.q': value
       }
-
-      let response = await this.$http.request({
-        method: 'POST',
-        url: this.solr + '/suggest',
-        params: params
-      })
-
-      this.suggestions = response.data.suggest[this.suggester][value].suggestions
+      try {
+        let response = await this.$http.request({
+          method: 'POST',
+          url: this.solr + '/suggest',
+          data: qs.stringify(params, { arrayFormat: 'repeat' }),
+          headers: {
+            'content-type': 'application/x-www-form-urlencoded'
+          }
+        })
+        this.suggestions = response.data.suggest[this.suggester][value].suggestions
+      } catch (error) {
+        console.log(error)
+      }
     }
   },
 
