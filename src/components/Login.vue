@@ -70,7 +70,7 @@ export default {
         if (this.signedin) {
           this.credentials.username = ''
           this.credentials.password = ''
-          this.$router.push('/')
+          this.$router.push('submit')
         }
       } catch (error) {
         console.log(error)
