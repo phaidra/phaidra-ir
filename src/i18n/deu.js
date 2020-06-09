@@ -641,5 +641,7 @@ export default {
   'Not available via {name}': 'Über {name} nicht zugänglich',
   'Not publicly available via {name}': 'Über {name} nicht öffentlich zugänglich',
   'Not available via {name} until {embargoEnd}': 'Über {name} bis {embargoEnd} nicht zugänglich',
-  'University of Vienna\'s Institutional Repository': 'Institutional Repository der Universität Wien'
+  'University of Vienna\'s Institutional Repository': 'Institutional Repository der Universität Wien',
+  'Object with this ID was not found.': 'Ein Objekt mit dieser ID wurde nicht gefunden.',
+  'To resource': 'Zur Ressource'
 }

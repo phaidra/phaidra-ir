@@ -20,6 +20,9 @@ export default {
       console.log('[' + pid + '] fetching object info done')
       commit('setObjectInfo', response.data.info)
     } catch (error) {
+      if (error.response.status === 404) {
+        commit('setAlerts', [ { type: 'info', msg: 'Object with this ID was not found.' } ])
+      }
       console.log(error)
     }
   },

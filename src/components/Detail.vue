@@ -11,7 +11,7 @@
 
           <v-row no-gutters>
             <v-col cols="12" md="11">
-              <p-d-jsonld :labelColMd="'3'" :valueColMd="'9'" v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+              <p-d-jsonld :labelColMd="'3'" :valueColMd="'9'" v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="objectInfo.cmodel === 'Resource' ? ['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader', 'oaire:version', 'dcterms:accessRights', 'edm:rights'] : ['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
             </v-col>
             <v-col cols="12" md="1"></v-col>
           </v-row>
@@ -27,7 +27,8 @@
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">
                 <template v-if="objectInfo.readrights && accessRights === 'open'">
-                  <v-btn color="primary" @click="trackDownload()" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
+                  <v-btn v-if="objectInfo.cmodel === 'Resource'" color="primary" :href="config.api + '/object/' + objectInfo.pid + '/diss/Resource/get'" primary>{{ $t('To resource') }}</v-btn>
+                  <v-btn v-else color="primary" @click="trackDownload()" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
                 </template>
                 <template v-else-if="(!objectInfo.readrights && accessRights === 'open') || (accessRights === 'restricted')">
                   <p>{{ $t('Not publicly available via {name}', { name: config.title }) }}</p>
@@ -52,7 +53,7 @@
                 <v-col cols="3">
                   <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
                 </v-col>
-                <v-col cols="3">
+                <v-col cols="3" v-if="objectInfo.cmodel !== 'Resource'">
                   <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
                 </v-col>
                 <v-spacer></v-spacer>
@@ -200,7 +201,9 @@ export default {
       if (objectInfo.metadata) {
         if (objectInfo.metadata['JSON-LD']) {
           if (objectInfo.metadata['JSON-LD']['ebucore:hasMimeType']) {
-            return this.getLocalizedTermLabel('mimetypes', objectInfo.metadata['JSON-LD']['ebucore:hasMimeType'][0])
+            let lab = 'Data'
+            lab = this.getLocalizedTermLabel('mimetypes', objectInfo.metadata['JSON-LD']['ebucore:hasMimeType'][0])
+            return lab
           }
         }
       }

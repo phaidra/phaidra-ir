@@ -141,9 +141,9 @@
                     :descriptionLabel="$t('Abstract')"
                     :keywordsLabel="$t('Keywords')"
                     :keywordParser="true"
-                    :keywordsValue="typeof importData !== 'undefined' ? importData.keywords : []"
-                    :descriptionValue="typeof importData !== 'undefined' ? importData.abstract.value : ''"
-                    :language="typeof importData !== 'undefined' ? importData.abstract.language : ''"
+                    :keywordsValue="keywordsValue"
+                    :descriptionValue="descriptionValue"
+                    :language="kwDescLanguage"
                     v-on:input-description="setDescription(s, $event)"
                     v-on:input-keywords="setKeywords(s, $event)"
                     v-on:input-language="setDescriptionAndKeywordsLanguage(s, $event)"
@@ -614,7 +614,10 @@ export default {
         password: ''
       },
       submitformLoading: false,
-      jsonld: {}
+      jsonld: {},
+      keywordsValue: [],
+      descriptionValue: '',
+      kwDecsLanguage: ''
     }
   },
   watch: {
@@ -1215,7 +1218,8 @@ export default {
               if (
                 (field.predicate === 'dce:title') ||
                 (field.predicate === 'bf:note') ||
-                (field.predicate === 'dce:subject')
+                (field.predicate === 'dce:subject') ||
+                (field.predicate === 'dce:rights')
               ) {
                 field.language = event['@id']
               }
@@ -1271,6 +1275,7 @@ export default {
           f.value = value
         }
       }
+      this.descriptionValue = value
     },
     setKeywords: function (section, value) {
       for (let f of section.fields) {
@@ -1278,6 +1283,7 @@ export default {
           f.value = value
         }
       }
+      this.keywordsValue = value
     },
     setDescriptionAndKeywordsLanguage: function (section, event) {
       for (let f of section.fields) {
@@ -1288,6 +1294,7 @@ export default {
           f.language = event['@id']
         }
       }
+      this.kwDecsLanguage = event['@id']
     },
     resetForm: function (self, doiImportData) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
@@ -1689,12 +1696,17 @@ export default {
 
       // handled by submit-ir-description-keyword component
       let abst = fields.getField('abstract')
+      this.descriptionValue = ''
+      this.kwDecsLanguage = ''
+      this.keywordsValue = []
       if (this.importData && this.importData.abstract) {
         if (this.importData.abstract.value) {
           abst.value = this.importData.abstract.value
+          this.descriptionValue = this.importData.abstract.value
         }
         if (this.importData.abstract.language) {
           abst.language = this.importData.abstract.language
+          this.kwDecsLanguage = this.importData.abstract.language
         }
       }
       sof.push(abst)
@@ -1702,6 +1714,7 @@ export default {
       if (this.importData && this.importData.keywords) {
         if (this.importData.keywords) {
           keyws.value = this.importData.keywords
+          this.keywordsValue = this.importData.keywords
         }
       }
       sof.push(keyws)

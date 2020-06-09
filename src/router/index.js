@@ -18,6 +18,7 @@ import Impressum from '@/components/info/Impressum'
 import MetadataPolicy from '@/components/info/MetadataPolicy'
 import TermsOfUse from '@/components/info/TermsOfUse'
 import Home from '@/components/info/Home'
+import NotFound from '@/components/NotFound'
 
 Vue.use(Router)
 
@@ -114,6 +115,11 @@ export function createRouter () {
         path: '/info/terms',
         name: 'terms',
         component: TermsOfUse
+      },
+      {
+        path: '*',
+        name: 'notfound',
+        component: NotFound
       }
     ],
     scrollBehavior () {
