@@ -441,7 +441,7 @@ export default {
   'SELECTION_LIMIT': 'Cannot select more than {limit} results.',
 
   'SUBMIT_NOT_ALLOWED': 'Uploads of more than {0} contributions to u:scholar must be coordinated with the Open Access Office beforehand due to the necessary rights assessment. Please contact us immediately via email ({1}) or via telephone: {2}.',
-  'SUBMIT_START_1': 'All members of Vienna University are invited to upload their academic publications to u:scholar-sandbox, the university\'s institutional repository. Almost all file formats are allowed. Details can be found in our {0}.',
+  'SUBMIT_START_1': 'All University affiliates are invited to upload their academic publications to u:scholar, the University\'s institutional repository. Details can be found in our {0}.',
   'SUBMIT_START_2': 'Please note that document upload to u:scholar is only permitted {0} (e.g. as granted by the publisher or by other rights holders)!',
   'SUBMIT_START_3': 'If you plan on uploading {0}, please {1} beforehand.',
   'SUBMIT_START_4': 'If possible please upload a PDF version to allow your colleagues to read the file without too much of an inconvenience.',

@@ -11,7 +11,7 @@ import Submit from '@/components/Submit'
 import AdminSearch from '@/components/AdminSearch'
 import AdminSubmitIr from '@/components/AdminSubmitIr'
 import AdminSubmit from '@/components/AdminSubmit'
-import About from '@/components/info/About'
+import Credits from '@/components/info/Credits'
 import Policy from '@/components/info/Policy'
 import Contact from '@/components/info/Contact'
 import Impressum from '@/components/info/Impressum'
@@ -86,9 +86,9 @@ export function createRouter () {
         component: AdminSubmitIr
       },
       {
-        path: '/info/about',
-        name: 'about',
-        component: About
+        path: '/info/credits',
+        name: 'credits',
+        component: Credits
       },
       {
         path: '/info/policy',

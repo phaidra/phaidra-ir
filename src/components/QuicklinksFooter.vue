@@ -35,7 +35,7 @@
 
           <v-col cols="12" md="3">
             <div class="footer-quicklinks-list">
-              <a href="http://datamanagement.univie.ac.at/" target="_blank">
+              <a href="https://openaccess.univie.ac.at/" target="_blank">
                 <div>
                   <span>Open Access Office</span>
                   <icon name="univie-right" class="float-right"></icon>
@@ -43,7 +43,7 @@
               </a>
             </div>
             <div class="footer-quicklinks-list">
-              <a href="http://datamanagement.univie.ac.at/" target="_blank">
+              <a href="https://ucris.univie.ac.at" target="_blank">
                 <div>
                   <span>u:cris</span>
                   <icon name="univie-right" class="float-right"></icon>

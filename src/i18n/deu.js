@@ -569,7 +569,7 @@ export default {
   'Here you can sort members of this object (drag & drop).': 'Hier können Sie die Objekte innerhalb des Containers sortieren (drag & drop).',
 
   'SUBMIT_NOT_ALLOWED': 'Uploads von mehr als {0} Beiträgen nach u:scholar sind aufgrund der erforderlichen Rechteklärung nur nach vorheriger Koordination mit dem Open Access Office vorgesehen. Bitte nehmen Sie diesbezüglich umgehend via eMail ({1}) oder telefonisch Kontakt auf: {2}.',
-  'Submitting a publication': 'Publizieren mit u:scholar-sandbox',
+  'Submitting a publication': 'Publizieren mit u:scholar',
   'SUBMIT_START_1': 'Alle Angehörigen der Universität Wien sind eingeladen, ihre wissenschaftlichen Publikationen in das Institutional Repository u:scholar-sandbox hochzuladen. Genauere Angaben finden Sie in unseren {0}.',
   'guidelines': 'Leitlinien',
   'Important notice': 'Wichtiger Hinweis',

@@ -61,22 +61,6 @@
                 </v-alert>
               </v-col>
             </v-row>
-            <v-row no-gutters>
-              <i18n path="SUBMIT_START_4" tag="p">
-                <a :href="'/info/about'" target="_blank">{{ $t('Über u:scholar') }}</a>
-              </i18n>
-            </v-row>
-            <v-row no-gutters>
-              <i18n path="SUBMIT_START_5" tag="p">
-                <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
-              </i18n>
-            </v-row>
-            <v-row no-gutters>
-              <i18n path="SUBMIT_START_6" tag="p">
-                <a :href="'/info/about'" target="_blank">{{ $t('contact us') }}</a>
-                <a :href="'mailto:' + config.officecontact.email">{{ config.officecontact.email }}</a>
-              </i18n>
-            </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters justify="center">
               <v-btn color="primary" @click="step = 2; $vuetify.goTo(1)">{{ $t('Start') }}</v-btn>

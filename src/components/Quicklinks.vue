@@ -27,14 +27,14 @@
           </v-row>
 
           <v-row>
-            <a href="http://datamanagement.univie.ac.at/" target="_blank">
+            <a href="https://openaccess.univie.ac.at/" target="_blank">
               <span>Open Access Office</span>
               <icon name="univie-extern"></icon>
             </a>
           </v-row>
 
           <v-row>
-            <a href="http://datamanagement.univie.ac.at/" target="_blank">
+            <a href="https://ucris.univie.ac.at" target="_blank">
               <span>u:cris</span>
               <icon name="univie-extern"></icon>
             </a>

@@ -45,7 +45,6 @@
                       <v-btn text icon color="grey lighten-1" v-on="on"><icon name="material-navigation-menu" width="24px" height="24px"></icon></v-btn>
                     </template>
                     <v-list>
-                      <v-list-item @click="$router.push({ path: '/info/about' })"><v-list-item-title>{{ $t('ABOUT_LINK', { name: config.title })}}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/info/policy' })"><v-list-item-title>{{ $t("Policy") }}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/info/contact' })"><v-list-item-title>{{ $t("Contact") }}</v-list-item-title></v-list-item>
                       <v-list-item @click="$router.push({ path: '/search', query: { reset: true } })"><v-list-item-title>{{ $t("Search") }}</v-list-item-title></v-list-item>
@@ -75,9 +74,6 @@
             <v-toolbar flat color="white" dense class="no-padding">
               <v-spacer></v-spacer>
               <v-toolbar-items class="hidden-sm-and-down no-height-inherit">
-                <v-hover v-slot:default="{ hover }">
-                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/about' }">{{ $t('ABOUT_LINK', { name: config.title })}}</router-link>
-                </v-hover>
                 <v-hover v-slot:default="{ hover }">
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/info/policy' }">{{ $t("Policy") }}</router-link>
                 </v-hover>
@@ -153,7 +149,7 @@
               <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
             </v-col>
             <v-col class="text-right" >
-              <router-link :to="'/info/impressum'">{{ $t('Impressum') }}</router-link> | <router-link :to="'/info/metadata_policy'">{{ $t('Metadata policy') }}</router-link> | <router-link :to="'/info/terms'">{{ $t('Terms of use') }}</router-link> | powered by <a :href="'https://' + config.phaidrabaseurl">Phaidra</a>
+              <router-link :to="'/info/impressum'">{{ $t('Impressum') }}</router-link> | <router-link :to="'/info/credits'">{{ $t('Credits') }}</router-link> | <router-link :to="'/info/metadata_policy'">{{ $t('Metadata policy') }}</router-link> | <router-link :to="'/info/terms'">{{ $t('Terms of use') }}</router-link>
             </v-col>
           </v-row>
         </v-col>
