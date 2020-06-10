@@ -4,6 +4,7 @@ public/sitemap*
 .DS_Store
 node_modules
 /dist
+/public/doc
 /src/components/info
 
 # local env files

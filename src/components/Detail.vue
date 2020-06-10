@@ -11,7 +11,7 @@
 
           <v-row no-gutters>
             <v-col cols="12" md="11">
-              <p-d-jsonld :labelColMd="'3'" :valueColMd="'9'" v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="objectInfo.cmodel === 'Resource' ? ['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader', 'oaire:version', 'dcterms:accessRights', 'edm:rights'] : ['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+              <p-d-jsonld :showLang="false" :labelColMd="'3'" :valueColMd="'9'" v-if="objectInfo.dshash['JSON-LD']" :jsonld="objectInfo.metadata['JSON-LD']" :pid="objectInfo.pid" :limitRoles="4" :predicatesToHide="objectInfo.cmodel === 'Resource' ? ['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader', 'oaire:version', 'dcterms:accessRights', 'edm:rights'] : ['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
             </v-col>
             <v-col cols="12" md="1"></v-col>
           </v-row>

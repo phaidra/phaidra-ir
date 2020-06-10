@@ -32,9 +32,9 @@
           <v-row no-gutters>
 
             <v-col class="text-left mt-4" md="3" cols="9">
-              <router-link :to="'/'">
+              <a :href="config.institutionweb" target="_blank">
                 <img src="./assets/Uni_Logo_2016.png" class="logo" alt="logo" />
-              </router-link>
+              </a>
             </v-col>
 
             <v-col md="9" cols="3" :align-self="'center'">

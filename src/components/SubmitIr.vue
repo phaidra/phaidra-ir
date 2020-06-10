@@ -105,7 +105,8 @@
               </v-checkbox>
             </v-row>
             <v-row no-gutters>
-              <a class="mt-4" href="https://uscholar.univie.ac.at/static/doc/InstitutionalRepository-TermsOfUse-German.pdf" target="_blank">{{ $t('Terms of use (PDF)') }}</a>
+              <a v-if="$i18n.locale === 'eng'" class="mt-4" :href="config.toulinken" target="_blank">Terms of use (PDF)</a>
+              <a v-else class="mt-4" :href="config.toulink" target="_blank">Nutzungsbedingungen als PDF</a>
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters justify="space-between">
@@ -598,7 +599,7 @@
           <v-container>
             <v-row>
               <v-col md="10" offset-md="1">
-                <p-d-jsonld :jsonld="jsonld" :labelColMd="'3'" :valueColMd="'9'" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+                <p-d-jsonld :showLang="false" :jsonld="jsonld" :labelColMd="'3'" :valueColMd="'9'" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
               </v-col>
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>

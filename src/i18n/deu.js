@@ -529,6 +529,8 @@ export default {
   'dcterms:audience': 'Zielgruppe',
   'rdau:P60059': 'Regionalcode',
 
+  'frapo:isOutputOf': 'Projektnummer',
+
   'ebucore:filename': 'Dateiname',
   'ebucore:hasMimeType': 'MIME Typ',
 
@@ -570,7 +572,7 @@ export default {
 
   'SUBMIT_NOT_ALLOWED': 'Uploads von mehr als {0} Beiträgen nach u:scholar sind aufgrund der erforderlichen Rechteklärung nur nach vorheriger Koordination mit dem Open Access Office vorgesehen. Bitte nehmen Sie diesbezüglich umgehend via eMail ({1}) oder telefonisch Kontakt auf: {2}.',
   'Submitting a publication': 'Publizieren mit u:scholar',
-  'SUBMIT_START_1': 'Alle Angehörigen der Universität Wien sind eingeladen, ihre wissenschaftlichen Publikationen in das Institutional Repository u:scholar-sandbox hochzuladen. Genauere Angaben finden Sie in unseren {0}.',
+  'SUBMIT_START_1': 'Alle Angehörigen der Universität Wien sind eingeladen, ihre wissenschaftlichen Publikationen in das Institutional Repository u:scholar hochzuladen. Genauere Angaben finden Sie in unseren {0}.',
   'guidelines': 'Leitlinien',
   'Important notice': 'Wichtiger Hinweis',
   'SUBMIT_START_2': 'Bitte beachten Sie, dass ein Upload von Dokumenten nach u:scholar nur erlaubt ist, {0} (z.B. seitens des Verlages oder anderer Rechteinhaber*innen)!',
@@ -586,7 +588,6 @@ export default {
   'SUBMIT_TOU_2': 'Die Rechteinhaberin oder der Rechteinhaber (nachfolgend nur "Rechteinhaber") haben der Betreiberin, der Universität Wien, das nicht-ausschließliche Recht zur elektronischen Speicherung, insbesondere in Datenbanken, zur öffentlichen Zugänglichmachung und Verbreitung sowie Sendung überlassen. Auch die Archivierung und Vervielfältigung ist der Betreiberin gestattet, wenn dies für die vorgenannten Zwecke erforderlich sein sollte. Des Weiteren hat die Betreiberin das Recht zur Meldung und Weitergabe an Dritte, insbesondere zum Zwecke der Langzeitarchivierung. Aus gleichem Zweck ist der Betreiberin das Erstellen von Kopien und die Konvertierung in andere elektronische oder physische Formate unter Wahrung der inhaltlichen Integrität gestattet. Die Betreiberin behält sich das Recht vor, ohne die Zustimmung des Rechteinhabers einholen zu müssen, die technische Infrastruktur für den Betrieb an einen Dritten auszulagern, sofern keine verwertungsrechtlichen Hindernisse dem entgegenstehen.',
   'SUBMIT_TOU_3': 'Der Rechteinhaber versichert gegenüber der Betreiberin, dass durch die zu veröffentlichenden Dokumente und Materialien oder Teile davon (z. B. Bilder) sowie Abstracts keine Rechte Dritter (z.B. Miturheber, Verlage, Drittmittelgeber) verletzt werden. In Zweifelsfällen oder bei Entstehen vermeintlicher oder tatsächlicher diesbezüglicher Rechtshindernisse verpflichten sie sich, die Betreiberin hiervon unverzüglich in Kenntnis zu setzen. Der Rechteinhaber stellt die Betreiberin von etwaigen Ansprüchen Dritter frei.',
   'SUBMIT_TOU_4': 'Ich habe die Nutzungsbedingungen, die auf denen von {0} basieren, gelesen und akzeptiert.',
-  'Terms of use (PDF)': 'Nutzungsbedingungen als PDF',
   'You have to accept the terms of use.': 'Sie müssen den Nutzungsbedingungen zustimmen.',
   'Metadata-Import via DOI': 'Metadaten-Import über DOI',
   'Many electronically published journals assign persistent names, so called DOIs (Digital Object Identifiers), to their articles.': 'Den Beiträgen vieler elektronisch erscheinender Zeitschriften werden persistente Namen, sogenannte DOIs (Digital Object Identifier), zugeordnet.',
@@ -643,5 +644,8 @@ export default {
   'Not available via {name} until {embargoEnd}': 'Über {name} bis {embargoEnd} nicht zugänglich',
   'University of Vienna\'s Institutional Repository': 'Institutional Repository der Universität Wien',
   'Object with this ID was not found.': 'Ein Objekt mit dieser ID wurde nicht gefunden.',
-  'To resource': 'Zur Ressource'
+  'To resource': 'Zur Ressource',
+  'Page not found': 'Diese Seite ist nicht vorhanden',
+  'SHERPA RoMEO is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis.': 'SHERPA/RoMEO ist ein Tool, das Open-Access-Richtlinien für Verlage aus der ganzen Welt zusammenfasst und analysiert und für Autor*innen die Bedingungen für die Selbstarchivierung auf Journalebene bereitstellt.',
+  'Possible duplicate found': 'Mögliche Dublette gefunden'
 }
