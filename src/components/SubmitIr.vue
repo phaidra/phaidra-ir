@@ -38,7 +38,7 @@
             </v-row>
             <v-row no-gutters>
               <i18n path="SUBMIT_START_1" tag="p">
-                <a :href="'/info/policy'" target="_blank">{{ $t('guidelines') }}</a>
+                <a :href="'/info/policy?lang=' + $i18n.locale" target="_blank">{{ $t('guidelines') }}</a>
               </i18n>
             </v-row>
             <v-row no-gutters justify="center">
@@ -54,7 +54,7 @@
                     <li>
                       <i18n path="SUBMIT_START_3" tag="p">
                         <strong>{{ $t('a larger number of publications') }}</strong>
-                        <a :href="'/info/contact'" target="_blank">{{ $t('contact us') }}</a>
+                        <a :href="'/info/contact?lang=' + $i18n.locale" target="_blank">{{ $t('contact us') }}</a>
                       </i18n>
                     </li>
                   </ul>

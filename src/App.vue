@@ -268,6 +268,12 @@ export default {
     await this.$store.dispatch('loadOrgUnits', this.$i18n.locale)
   },
   mounted: async function () {
+    if (this.$store.state.route.query.lang === 'deu') {
+      this.$i18n.locale = 'deu'
+    }
+    if (this.$store.state.route.query.lang === 'eng') {
+      this.$i18n.locale = 'eng'
+    }
     if (!this.user.token) {
       var token = this.getCookie('X-XSRF-TOKEN')
       if (token) {
