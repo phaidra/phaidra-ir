@@ -16,9 +16,15 @@
 
           <v-col cols="12" md="3">
             <div class="footer-quicklinks-list">
-              <a href="http://datamanagement.univie.ac.at/" target="_blank">
+              <a v-if="$i18n.locale === 'deu'" href="http://datamanagement.univie.ac.at/" target="_blank">
                 <div>
                   <span>Datenmanagement</span>
+                  <icon name="univie-right" class="float-right"></icon>
+                </div>
+              </a>
+              <a v-else href="https://datamanagement.univie.ac.at/en/" target="_blank">
+                <div>
+                  <span>Datamanagement</span>
                   <icon name="univie-right" class="float-right"></icon>
                 </div>
               </a>
@@ -35,7 +41,13 @@
 
           <v-col cols="12" md="3">
             <div class="footer-quicklinks-list">
-              <a href="https://openaccess.univie.ac.at/" target="_blank">
+              <a v-if="$i18n.locale === 'deu'" href="https://openaccess.univie.ac.at/" target="_blank">
+                <div>
+                  <span>Open Access Office</span>
+                  <icon name="univie-right" class="float-right"></icon>
+                </div>
+              </a>
+              <a v-else href="https://openaccess.univie.ac.at/en/" target="_blank">
                 <div>
                   <span>Open Access Office</span>
                   <icon name="univie-right" class="float-right"></icon>
@@ -43,7 +55,7 @@
               </a>
             </div>
             <div class="footer-quicklinks-list">
-              <a href="https://ucris.univie.ac.at" target="_blank">
+              <a href="https://ucrisinfo.univie.ac.at/" target="_blank">
                 <div>
                   <span>u:cris</span>
                   <icon name="univie-right" class="float-right"></icon>

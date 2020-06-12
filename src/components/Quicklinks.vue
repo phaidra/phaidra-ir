@@ -13,8 +13,12 @@
           </v-row>
 
           <v-row>
-            <a href="http://datamanagement.univie.ac.at/" target="_blank">
+            <a v-if="$i18n.locale === 'deu'" href="http://datamanagement.univie.ac.at/" target="_blank">
               <span>Datenmanagement</span>
+              <icon name="univie-extern"></icon>
+            </a>
+            <a v-else href="https://datamanagement.univie.ac.at/en/" target="_blank">
+              <span>Datamanagement</span>
               <icon name="univie-extern"></icon>
             </a>
           </v-row>
@@ -27,14 +31,18 @@
           </v-row>
 
           <v-row>
-            <a href="https://openaccess.univie.ac.at/" target="_blank">
+            <a v-if="$i18n.locale === 'deu'" href="https://openaccess.univie.ac.at/" target="_blank">
+              <span>Open Access Office</span>
+              <icon name="univie-extern"></icon>
+            </a>
+            <a v-else href="https://openaccess.univie.ac.at/en/" target="_blank">
               <span>Open Access Office</span>
               <icon name="univie-extern"></icon>
             </a>
           </v-row>
 
           <v-row>
-            <a href="https://ucris.univie.ac.at" target="_blank">
+            <a href="https://ucrisinfo.univie.ac.at/" target="_blank">
               <span>u:cris</span>
               <icon name="univie-extern"></icon>
             </a>
