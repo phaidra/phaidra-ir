@@ -12,21 +12,21 @@
 
     <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" alt-labels>
       <v-stepper-header>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 1) && (step < 8)" :complete="step > 1" step="1">{{ $t('Start') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 1) && (step < 8)" :complete="step > 1" step="1"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Start') }}</template></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 2) && (step < 8)" :complete="touCheckbox" step="2">{{ $t('Terms of use') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 2) && (step < 8)" :complete="touCheckbox" step="2"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Terms of use') }}</template></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 3) && (step < 8)" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 3) && (step < 8)" :complete="step > 3" step="3"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Import') }}</template></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep >= 4) && (step < 8)" :complete="step > 4" step="4">{{ $t('Check rights') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' v-if="(submitformparam === 'journal-article')" :editable="(maxStep >= 4) && (step < 8)" :complete="step > 4" step="4"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Check rights') }}</template></v-stepper-step>
         <v-divider v-if="(submitformparam === 'journal-article')"></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']">{{ $t('Mandatory fields') }} <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 5) && (step < 8)" :complete="step > 5" step="5" :rules="[() => validationStatus !== 'error']"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Mandatory fields') }}</template> <small v-if="validationStatus === 'error'">{{ $t('Invalid metadata') }}</small></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 6) && (step < 8)" :complete="step > 6" step="6">{{ $t('Optional fields') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 6) && (step < 8)" :complete="step > 6" step="6"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Optional fields') }}</template></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 7) && (step < 8)" :complete="maxStep > 7" step="7" @click="updateJsonld()">{{ $t('Submit') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :editable="(maxStep >= 7) && (step < 8)" :complete="maxStep > 7" step="7" @click="updateJsonld()"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Submit') }}</template></v-stepper-step>
         <v-divider></v-divider>
-        <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 8" step="8">{{ $t('Notifications') }}</v-stepper-step>
+        <v-stepper-step edit-icon='mdi-check' :complete="maxStep > 8" step="8"><template v-if="$vuetify.breakpoint.lgAndUp">{{ $t('Notifications') }}</template></v-stepper-step>
       </v-stepper-header>
 
       <v-stepper-items>
@@ -1061,20 +1061,20 @@ export default {
             if (crossrefData['title']) {
               if (Array.isArray(crossrefData['title'])) {
                 if (crossrefData['title'].length > 0) {
-                  this.doiImportData.title = crossrefData['title'][0]
+                  this.doiImportData.title = crossrefData['title'][0].replace(/\s\s+/g, ' ').trim()
                 }
               } else {
-                this.doiImportData.title = crossrefData['title']
+                this.doiImportData.title = crossrefData['title'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
             if (crossrefData['subtitle']) {
               if (Array.isArray(crossrefData['subtitle'])) {
                 if (crossrefData['subtitle'].length > 0) {
-                  this.doiImportData.subtitle = crossrefData['subtitle'][0]
+                  this.doiImportData.subtitle = crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim()
                 }
               } else {
-                this.doiImportData.subtitle = crossrefData['subtitle']
+                this.doiImportData.subtitle = crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
@@ -1087,7 +1087,7 @@ export default {
             let authors = crossrefData['author']
             if (authors.length > 0) {
               for (let author of authors) {
-                this.doiImportData.authors.push({ firstname: author['given'], lastname: author['family'] })
+                this.doiImportData.authors.push({ firstname: author['given'].replace(/\s\s+/g, ' ').trim(), lastname: author['family'].replace(/\s\s+/g, ' ').trim() })
               }
             }
 
@@ -1153,49 +1153,49 @@ export default {
             if (crossrefData['publisher']) {
               if (Array.isArray(crossrefData['publisher'])) {
                 if (crossrefData['publisher'].length > 0) {
-                  this.doiImportData.publisher = crossrefData['publisher'][0]
+                  this.doiImportData.publisher = crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim()
                 }
               } else {
-                this.doiImportData.publisher = crossrefData['publisher']
+                this.doiImportData.publisher = crossrefData['publisher'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
             if (crossrefData['container-title']) {
               if (Array.isArray(crossrefData['container-title'])) {
                 if (crossrefData['container-title'].length > 0) {
-                  this.doiImportData.journalTitle = crossrefData['container-title'][0]
+                  this.doiImportData.journalTitle = crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim()
                 }
               } else {
-                this.doiImportData.journalTitle = crossrefData['container-title']
+                this.doiImportData.journalTitle = crossrefData['container-title'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
             if (crossrefData['ISSN']) {
               if (Array.isArray(crossrefData['ISSN'])) {
                 if (crossrefData['ISSN'].length > 0) {
-                  this.doiImportData.journalISSN = crossrefData['ISSN'][0]
+                  this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
                 }
               } else {
-                this.doiImportData.journalISSN = crossrefData['ISSN']
+                this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
             if (crossrefData['ISBN']) {
               if (Array.isArray(crossrefData['ISBN'])) {
                 if (crossrefData['ISBN'].length > 0) {
-                  this.doiImportData.ISBN = crossrefData['ISBN'][0]
+                  this.doiImportData.ISBN = crossrefData['ISBN'][0].replace(/\s\s+/g, ' ').trim()
                 }
               } else {
-                this.doiImportData.ISBN = crossrefData['ISBN']
+                this.doiImportData.ISBN = crossrefData['ISBN'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
             if (crossrefData['volume']) {
-              this.doiImportData.journalVolume = crossrefData['volume']
+              this.doiImportData.journalVolume = crossrefData['volume'].replace(/\s\s+/g, ' ').trim()
             }
 
             if (crossrefData['issue']) {
-              this.doiImportData.journalIssue = crossrefData['issue']
+              this.doiImportData.journalIssue = crossrefData['issue'].replace(/\s\s+/g, ' ').trim()
             }
 
             if (crossrefData['page']) {

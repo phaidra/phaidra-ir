@@ -708,9 +708,9 @@ export default {
 
             if (crossrefData['title']) {
               if (Array.isArray(crossrefData['title'])) {
-                this.doiImportData.title = crossrefData['title'][0]
+                this.doiImportData.title = crossrefData['title'][0].replace(/\s\s+/g, ' ').trim()
               } else {
-                this.doiImportData.title = crossrefData['title']
+                this.doiImportData.title = crossrefData['title'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
@@ -723,7 +723,7 @@ export default {
             let authors = crossrefData['author']
             if (authors.length > 0) {
               for (let author of authors) {
-                this.doiImportData.authors.push({ firstname: author['given'], lastname: author['family'] })
+                this.doiImportData.authors.push({ firstname: author['given'].replace(/\s\s+/g, ' ').trim(), lastname: author['family'].replace(/\s\s+/g, ' ').trim() })
               }
             }
 
@@ -787,27 +787,27 @@ export default {
             }
 
             if (crossrefData['publisher']) {
-              this.doiImportData.publisher = crossrefData['publisher']
+              this.doiImportData.publisher = crossrefData['publisher'].replace(/\s\s+/g, ' ').trim()
             }
 
             if (crossrefData['container-title']) {
-              this.doiImportData.journalTitle = crossrefData['container-title']
+              this.doiImportData.journalTitle = crossrefData['container-title'].replace(/\s\s+/g, ' ').trim()
             }
 
             if (crossrefData['ISSN']) {
               if (Array.isArray(crossrefData['ISSN'])) {
-                this.doiImportData.journalISSN = crossrefData['ISSN'][0]
+                this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
               } else {
-                this.doiImportData.journalISSN = crossrefData['ISSN']
+                this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
             if (crossrefData['volume']) {
-              this.doiImportData.journalVolume = crossrefData['volume']
+              this.doiImportData.journalVolume = crossrefData['volume'].replace(/\s\s+/g, ' ').trim()
             }
 
             if (crossrefData['issue']) {
-              this.doiImportData.journalIssue = crossrefData['issue']
+              this.doiImportData.journalIssue = crossrefData['issue'].replace(/\s\s+/g, ' ').trim()
             }
 
             if (crossrefData['page']) {

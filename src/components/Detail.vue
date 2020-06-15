@@ -1,7 +1,7 @@
 <template>
-  <v-container fluid>
+    <v-container v-if="objectInfo" fluid>
 
-    <v-row v-if="objectInfo">
+      <v-row v-if="isIrObject">
 
         <v-col cols="12" md="9">
 
@@ -62,9 +62,14 @@
           </v-row>
 
         </v-col>
-    </v-row>
+      </v-row>
 
-  </v-container>
+      <v-row v-else justify="center">
+        <h3 class="title font-weight-light primary--text mt-12">
+          {{ $t('This item is not part of {name}', { name: config.title }) }}
+        </h3>
+      </v-row>
+    </v-container>
 </template>
 
 <script>
@@ -113,6 +118,14 @@ export default {
     },
     isApproved: function () {
       return (this.objectInfo.owner.username === this.config.iraccount) && this.objectInfo.ispartof && this.objectInfo.ispartof.includes(this.config.ircollection)
+    },
+    isIrObject: function () {
+      if (this.objectInfo['isinadminset']) {
+        if (Array.isArray(this.objectInfo['isinadminset'])) {
+          return this.objectInfo['isinadminset'][0] === this.config.adminset
+        }
+      }
+      return false
     },
     accessRights: function () {
       let access
