@@ -210,7 +210,7 @@ export default {
         for (let rl of rlresponse.data.requestedlicenses) {
           for (let d of this.docs) {
             if (rl.pid === d.pid) {
-              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
+              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabelByNotation('alllicenses', rl.requestedlicense))
             }
           }
         }
