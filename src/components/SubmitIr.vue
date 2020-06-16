@@ -104,10 +104,6 @@
                 </template>
               </v-checkbox>
             </v-row>
-            <v-row no-gutters>
-              <a v-if="$i18n.locale === 'eng'" class="mt-4" :href="config.toulinken" target="_blank">Terms of use (PDF)</a>
-              <a v-else class="mt-4" :href="config.toulink" target="_blank">Nutzungsbedingungen als PDF</a>
-            </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters justify="space-between">
               <v-btn dark color="grey" @click="step = 1; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
