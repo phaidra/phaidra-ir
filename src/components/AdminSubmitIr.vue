@@ -517,6 +517,7 @@
 
     </v-stepper>
     <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
+    <code>{{ getMetadata() }}</code>
   </div>
 </template>
 
@@ -617,7 +618,7 @@ export default {
       jsonld: {},
       keywordsValue: [],
       descriptionValue: '',
-      kwDecsLanguage: ''
+      kwDescLanguage: ''
     }
   },
   watch: {
@@ -1294,7 +1295,7 @@ export default {
           f.language = event['@id']
         }
       }
-      this.kwDecsLanguage = event['@id']
+      this.kwDescLanguage = event['@id']
     },
     resetForm: function (self, doiImportData) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
@@ -1697,7 +1698,7 @@ export default {
       // handled by submit-ir-description-keyword component
       let abst = fields.getField('abstract')
       this.descriptionValue = ''
-      this.kwDecsLanguage = ''
+      this.kwDescLanguage = ''
       this.keywordsValue = []
       if (this.importData && this.importData.abstract) {
         if (this.importData.abstract.value) {
@@ -1706,7 +1707,7 @@ export default {
         }
         if (this.importData.abstract.language) {
           abst.language = this.importData.abstract.language
-          this.kwDecsLanguage = this.importData.abstract.language
+          this.kwDescLanguage = this.importData.abstract.language
         }
       }
       sof.push(abst)
