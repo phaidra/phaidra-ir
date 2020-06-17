@@ -105,6 +105,15 @@ export default {
       type: Boolean,
       default: false
     }
+  },
+  mounted: function () {
+    this.$nextTick(function () {
+      this.loading = !this.vocabularies['irfunders'].loaded
+      // emit input to set skos:prefLabel in parent
+      if (this.funderIdentifier) {
+        this.$emit('select-funder', this.getTerm('irfunders', this.funderIdentifier))
+      }
+    })
   }
 }
 </script>

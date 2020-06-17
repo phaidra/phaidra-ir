@@ -444,7 +444,7 @@
           <v-container>
             <v-row>
               <v-col md="10" offset-md="1">
-                <p-d-jsonld :showLang="false" :jsonld="jsonld" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+                <p-d-jsonld :showLang="false" :jsonld="jsonld" :listEntityIds="true" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
               </v-col>
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
@@ -517,7 +517,7 @@
 
     </v-stepper>
     <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
-    <code>{{ getMetadata() }}</code>
+    <code style="display:none;">{{ getMetadata() }}</code>
   </div>
 </template>
 
