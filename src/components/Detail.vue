@@ -66,7 +66,7 @@
 
       <v-row v-else justify="center">
         <h3 class="title font-weight-light primary--text mt-12">
-          {{ $t('This item is not part of {name}', { name: config.title }) }}
+          {{ $t('This item is not part of the {name} collection', { name: config.title }) }}
         </h3>
       </v-row>
     </v-container>
