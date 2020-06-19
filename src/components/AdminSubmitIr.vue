@@ -444,7 +444,7 @@
           <v-container>
             <v-row>
               <v-col md="10" offset-md="1">
-                <p-d-jsonld :showLang="false" :jsonld="jsonld" :listEntityIds="true" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
+                <p-d-jsonld :showLang="false" :jsonld="jsonld" :predicatesToHide="['ebucore:filename', 'ebucore:hasMimeType', 'role:uploader']"></p-d-jsonld>
               </v-col>
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
@@ -1526,8 +1526,11 @@ export default {
             sf.pageEnd = this.importData.containedin.pageend
           }
           if (this.importData.containedin.roles) {
+            if (this.importData.containedin.roles.length > 0) {
+              sf.roles = []
+            }
+            let roleidx = 0
             for (let role of this.importData.containedin.roles) {
-              let roleidx = 0
               roleidx++
               let entity = {
                 id: 'contained-in-role-' + roleidx,
@@ -2081,10 +2084,6 @@ export default {
               }
               if (f.title.length < 1) {
                 f.titleErrorMessages.push(this.$t('Missing title'))
-                this.validationStatus = 'error'
-              }
-              if (f.isbn.length < 1) {
-                f.isbnErrorMessages.push(this.$t('Missing ISBN'))
                 this.validationStatus = 'error'
               }
             }

@@ -557,7 +557,7 @@ export default {
                       if (key1.startsWith('role')) {
                         for (let role of values1) {
                           let entity = {
-                            role: key
+                            role: key1
                           }
                           Object.entries(role).forEach(([key2, values2]) => {
                             switch (key2) {
