@@ -1785,7 +1785,7 @@ export default {
       sof.push(keyws)
 
       // handled by submit-ir-funding-field component
-      if (self.importData && self.importData.funding && self.importData.funding.length > 0) {
+      if (self.importData && self.importData.funding && (self.importData.funding.length > 0)) {
         let i = 0
         for (let funding of self.importData.funding) {
           i++
@@ -1811,6 +1811,7 @@ export default {
         sof.push(pof)
       }
 
+      let identifiersArrayNoIsbn = []
       if ((self.submitformparam === 'book')) {
         let isbn = {
           id: 'alternate-identifier',
@@ -1826,7 +1827,7 @@ export default {
           value: ''
         }
         if (self.importData && self.importData.identifiers) {
-          let identifiersArrayNoIsbn = []
+          
           for (let id of self.importData.identifiers) {
             if (id.type === 'ids:isbn') {
               isbn.value = id.value
@@ -1834,14 +1835,13 @@ export default {
               identifiersArrayNoIsbn.push(id)
             }
           }
-          self.importData.identifiers = identifiersArrayNoIsbn
         }
         sof.push(isbn)
       }
 
-      if (self.importData && self.importData.identifiers && self.importData.identifiers.length > 0) {
+      if (self.importData && identifiersArrayNoIsbn.length > 0) {
         let i = 0
-        for (let id of self.importData.identifiers) {
+        for (let id of identifiersArrayNoIsbn) {
           i++
           let aif = fields.getField('alternate-identifier')
           aif.label = 'Identifier'
