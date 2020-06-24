@@ -186,7 +186,7 @@
 
                     <template v-else-if="f.component === 'p-select'">
                       <p-i-select
-                        v-show="(f.predicate !== 'ebucore:hasMimeType') && (f.predicate !== 'dcterms:type') && !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book')))"
+                        v-show="(f.predicate !== 'ebucore:hasMimeType') && (f.predicate !== 'dcterms:type') && (targetPid || !((f.predicate === 'edm:hasType') && ((submitformparam === 'book-part') || (submitformparam === 'book'))))"
                         v-bind.sync="f"
                         v-on:input="selectInput(s.fields, f, $event)"
                         v-on:add="addField(s.fields, f)"
@@ -222,7 +222,7 @@
                         v-on:input-identifier="f.identifier=$event"
                         v-on:input-page-start="f.pageStart=$event"
                         v-on:input-page-end="f.pageEnd=$event"
-                        v-on:add="addField(s.fields, f)"
+                        v-on:add-clear="addSeriesClear(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
                         class="my-4"
@@ -253,6 +253,7 @@
                         v-on:input-subtitle="f.subtitle=$event"
                         v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
                         v-on:input-role="containedInRoleInput(f, $event)"
+                        v-on:input-series="containedInSeriesInput(f, $event)"
                         v-on:input-series-title="f.seriesTitle=$event"
                         v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
                         v-on:input-series-volume="f.seriesVolume=$event"
@@ -269,6 +270,9 @@
                         v-on:input-publisher-select="publisherSelectInput(f, $event)"
                         v-on:input-publishing-place="f.publishingPlace=$event"
                         v-on:input-publishing-date="f.publishingDate=$event"
+                        v-on:add-series="addContainedInSeries(f.series, $event)"
+                        v-on:add-clear-series="addClearContainedInSeries(f.series, $event)"
+                        v-on:remove-series="removeContainedInSeries(f.series, $event)"
                         v-on:add-role="addContainedInRole(f.roles, $event)"
                         v-on:remove-role="removeContainedInRole(f.roles, $event)"
                         v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
@@ -575,7 +579,7 @@ export default {
     irObjectTypeVocabulary: function () {
       switch (this.submitformparam) {
         case 'journal-article':
-          return 'irobjecttypearticle'
+          return this.targetPid ? 'irobjecttype' : 'irobjecttypearticle'
         default:
           return 'irobjecttype'
       }
@@ -956,6 +960,21 @@ export default {
         newField.subloopFlag = false
       }
     },
+    addSeriesClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.title = ''
+        newField.volume = ''
+        newField.issue = ''
+        newField.issued = ''
+        newField.issn = ''
+        newField.identifier = ''
+        newField.pageStart = ''
+        newField.pageEnd = ''
+        newField.removable = true
+      }
+    },
     addEntityClear: function (arr, f) {
       var newField = arrays.duplicate(arr, f)
       if (newField) {
@@ -1068,6 +1087,58 @@ export default {
         if (this.form.sections[i + 1].type === 'member') {
           arrays.moveDown(this.form.sections, s)
         }
+      }
+    },
+    containedInSeriesInput: function (f, event) {
+      for (let s of f.series) {
+        if (s.id === event.series.id) {
+          if (event.seriesTitleLanguageTerm) {
+            s.seriesTitleLanguage = event.seriesTitleLanguageTerm['@id']
+          }
+          if (event.seriesTitle) {
+            s.seriesTitle = event.seriesTitle
+          }
+          if (event.seriesVolume) {
+            s.seriesVolume = event.seriesVolume
+          }
+          if (event.seriesIssue) {
+            s.seriesIssue = event.seriesIssue
+          }
+          if (event.seriesIssued) {
+            s.seriesIssued = event.seriesIssued
+          }
+          if (event.seriesIssn) {
+            s.seriesIssn = event.seriesIssn
+          }
+          if (event.seriesIdentifier) {
+            s.seriesIdentifier = event.seriesIdentifier
+          }
+        }
+      }
+    },
+    addContainedInSeries: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.removable = true
+      }
+    },
+    addClearContainedInSeries: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.seriesTitle = ''
+        newField.seriesVolume = ''
+        newField.seriesIssue = ''
+        newField.seriesIssued = ''
+        newField.seriesIssn = ''
+        newField.seriesIdentifier = ''
+        newField.removable = true
+      }
+    },
+    removeContainedInSeries: function (arr, f) {
+      if (arr.length > 1) {
+        arrays.remove(arr, f)
       }
     },
     addContainedInRole: function (arr, f) {
@@ -1485,11 +1556,9 @@ export default {
       }
       if (this.submitformparam === 'book') {
         otf.value = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
-        otf.disabled = true
       }
       if (this.submitformparam === 'book-part') {
         otf.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
-        otf.disabled = true
       }
       smf.push(otf)
 
@@ -1498,7 +1567,9 @@ export default {
         sf.label = 'Appeared in'
         sf.multilingual = false
         sf.rolesVocabulary = 'irrolepredicate'
+        sf.series[0].multiplicableCleared = true
         sf.hideSeriesIssn = true
+        sf.hideSeriesIssued = true
         sf.collapseSeries = true
         sf.hidePages = false
         sf.publisherSearch = false
@@ -1528,41 +1599,53 @@ export default {
           if (this.importData.containedin.roles) {
             if (this.importData.containedin.roles.length > 0) {
               sf.roles = []
-            }
-            let roleidx = 0
-            for (let role of this.importData.containedin.roles) {
-              roleidx++
-              let entity = {
-                id: 'contained-in-role-' + roleidx,
-                role: role.role,
-                firstname: role.firstname,
-                lastname: role.lastname,
-                ordergroup: 'contained-in-role'
+              let roleidx = 0
+              for (let role of this.importData.containedin.roles) {
+                roleidx++
+                let entity = {
+                  id: 'contained-in-role-' + roleidx,
+                  role: role.role,
+                  firstname: role.firstname,
+                  lastname: role.lastname,
+                  ordergroup: 'contained-in-role'
+                }
+                sf.roles.push(entity)
               }
-              sf.roles.push(entity)
             }
           }
           if (this.importData.containedin.series) {
-            if (this.importData.containedin.series.title) {
-              sf.seriesTitle = this.importData.containedin.series.title.value
-              if (this.importData.containedin.series.title.language) {
-                sf.seriesTitleLanguage = this.importData.containedin.series.title.language
+            if (this.importData.containedin.series.length > 0) {
+              sf.series = []
+              let seriesidx = 0
+              for (let ser of this.importData.containedin.series) {
+                seriesidx++
+                let series = {
+                  id: 'contained-in-series-' + seriesidx,
+                  multiplicableCleared: true
+                }
+                if (ser.title) {
+                  series.seriesTitle = ser.title.value
+                  if (ser.title.language) {
+                    series.seriesTitleLanguage = ser.title.language
+                  }
+                }
+                if (ser.volume) {
+                  series.seriesVolume = ser.volume
+                }
+                if (ser.issue) {
+                  series.seriesIssue = ser.issue
+                }
+                if (ser.issued) {
+                  series.seriesIssued = ser.issued
+                }
+                if (ser.issn) {
+                  series.seriesIssn = ser.issn
+                }
+                if (ser.identifier) {
+                  series.seriesIdentifier = ser.identifier
+                }
+                sf.series.push(series)
               }
-            }
-            if (this.importData.containedin.series.volume) {
-              sf.seriesVolume = this.importData.containedin.series.volume
-            }
-            if (this.importData.containedin.series.issue) {
-              sf.seriesIssue = this.importData.containedin.series.issue
-            }
-            if (this.importData.containedin.series.issued) {
-              sf.seriesIssued = this.importData.containedin.series.issued
-            }
-            if (this.importData.containedin.series.issn) {
-              sf.seriesIssn = this.importData.containedin.series.issn
-            }
-            if (this.importData.containedin.series.identifier) {
-              sf.seriesIdentifier = this.importData.containedin.series.identifier
             }
           }
           if (this.importData.containedin.publisher) {
@@ -1633,32 +1716,6 @@ export default {
           }
         }
         smf.push(pf)
-
-        let isbn = {
-          id: 'alternate-identifier',
-          fieldname: 'Alternate identifier',
-          predicate: 'rdam:P30004',
-          component: 'isbn',
-          type: 'ids:isbn',
-          showType: false,
-          disableType: true,
-          multiplicable: false,
-          identifierLabel: 'ISBN',
-          valueErrorMessages: [],
-          value: ''
-        }
-        if (this.importData && this.importData.identifiers) {
-          let identifiersArrayNoIsbn = []
-          for (let id of this.importData.identifiers) {
-            if (id.type === 'ids:isbn') {
-              isbn.value = id.value
-            } else {
-              identifiersArrayNoIsbn.push(id)
-            }
-          }
-          this.importData.identifiers = identifiersArrayNoIsbn
-        }
-        smf.push(isbn)
       }
 
       let arf = fields.getField('access-right')
@@ -1724,7 +1781,7 @@ export default {
       sof.push(keyws)
 
       // handled by submit-ir-funding-field component
-      if (this.importData && this.importData.funding) {
+      if (this.importData && this.importData.funding && this.importData.funding.length > 0) {
         let i = 0
         for (let funding of this.importData.funding) {
           i++
@@ -1750,7 +1807,35 @@ export default {
         sof.push(pof)
       }
 
-      if (this.importData && this.importData.identifiers) {
+      if ((this.submitformparam === 'book')) {
+        let isbn = {
+          id: 'alternate-identifier',
+          fieldname: 'Alternate identifier',
+          predicate: 'rdam:P30004',
+          component: 'isbn',
+          type: 'ids:isbn',
+          showType: false,
+          disableType: true,
+          multiplicable: false,
+          identifierLabel: 'ISBN',
+          valueErrorMessages: [],
+          value: ''
+        }
+        if (this.importData && this.importData.identifiers) {
+          let identifiersArrayNoIsbn = []
+          for (let id of this.importData.identifiers) {
+            if (id.type === 'ids:isbn') {
+              isbn.value = id.value
+            } else {
+              identifiersArrayNoIsbn.push(id)
+            }
+          }
+          this.importData.identifiers = identifiersArrayNoIsbn
+        }
+        sof.push(isbn)
+      }
+
+      if (this.importData && this.importData.identifiers && this.importData.identifiers.length > 0) {
         let i = 0
         for (let id of this.importData.identifiers) {
           i++
@@ -1796,6 +1881,7 @@ export default {
       if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book')) {
         let sf = fields.getField('series')
         sf.multilingual = false
+        sf.multiplicableCleared = this.submitformparam === 'book'
         sf.hideIdentifier = true
         sf.label = this.submitformparam === 'book' ? 'Series' : 'Journal/Series'
         sf.hidePages = this.submitformparam !== 'journal-article'
@@ -2069,7 +2155,6 @@ export default {
               f.publisherNameErrorMessages = []
               f.publisherOrgUnitErrorMessages = []
               f.titleErrorMessages = []
-              f.isbnErrorMessages = []
               if (f.publisherType === 'select') {
                 if (f.publisherOrgUnit.length < 1) {
                   f.publisherOrgUnitErrorMessages.push(this.$t('Missing publisher'))
@@ -2107,13 +2192,6 @@ export default {
               f.titleErrorMessages = []
               if (f.title.length < 1) {
                 f.titleErrorMessages.push(this.$t('Missing title'))
-                this.validationStatus = 'error'
-              }
-            }
-            if (f.component === 'isbn') {
-              f.valueErrorMessages = []
-              if (f.value.length < 1) {
-                f.valueErrorMessages.push(this.$t('Missing ISBN'))
                 this.validationStatus = 'error'
               }
             }
