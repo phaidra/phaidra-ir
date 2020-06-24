@@ -317,10 +317,6 @@ export default {
 }
 </script>
 
-<style lang="sass">
-  @require './stylus/main'
-</style>
-
 <style>
 .mdeditor-header {
   justify-content: center;
