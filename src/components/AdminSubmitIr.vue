@@ -520,6 +520,7 @@
       </v-stepper-items>
 
     </v-stepper>
+    <v-btn v-if="targetPid" style="margin-right:120px;" right fixed bottom  @click="validationEnabled = !validationEnabled" :color="validationEnabled ? 'success' : 'warning'">{{ $t(validationEnabled ? 'Validation enabled' : 'Validation disabled')}}</v-btn>
     <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
     <code style="display:none;">{{ getMetadata() }}</code>
   </div>
@@ -622,7 +623,8 @@ export default {
       jsonld: {},
       keywordsValue: [],
       descriptionValue: '',
-      kwDescLanguage: ''
+      kwDescLanguage: '',
+      validationEnabled: true
     }
   },
   watch: {
@@ -914,10 +916,12 @@ export default {
       }
     },
     save: async function () {
-      this.validateMandatory()
-      if (this.validationStatus === 'error') {
-        this.step = 5
-        return
+      if (this.validationEnabled) {
+        this.validateMandatory()
+        if (this.validationStatus === 'error') {
+          this.step = 5
+          return
+        }
       }
       this.loading = true
       var httpFormData = new FormData()
@@ -1370,7 +1374,7 @@ export default {
     },
     resetForm: function (self, doiImportData) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
-      self.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
+      self.$store.commit('enableAllVocabularyTerms', self.irObjectTypeVocabulary)
 
       self.form = {
         sections: []
@@ -1382,7 +1386,7 @@ export default {
       rt.value = 'https://pid.phaidra.org/vocabulary/69ZZ-2KGX'
       smf.push(rt)
 
-      if (!this.importData) {
+      if (!self.importData) {
         let f = fields.getField('file')
         f.multiplicable = false
         f.mimetype = 'application/pdf'
@@ -1392,14 +1396,14 @@ export default {
       }
 
       let tf = fields.getField('title')
-      tf.hideSubtitle = this.submitformparam === 'journal-article'
+      tf.hideSubtitle = self.submitformparam === 'journal-article'
       tf.multilingual = false
-      if (this.importData && this.importData.title) {
-        if (this.importData.title.value) {
-          tf.title = this.importData.title.value
+      if (self.importData && self.importData.title) {
+        if (self.importData.title.value) {
+          tf.title = self.importData.title.value
         }
-        if (this.importData.title.language) {
-          tf.language = this.importData.title.language
+        if (self.importData.title.language) {
+          tf.language = self.importData.title.language
         }
         tf.multilingual = true
       } else {
@@ -1407,8 +1411,8 @@ export default {
           tf.title = doiImportData.title
         }
       }
-      if (this.importData && this.importData.subtitle) {
-        tf.subtitle = this.importData.subtitle
+      if (self.importData && self.importData.subtitle) {
+        tf.subtitle = self.importData.subtitle
         tf.hideSubtitle = false
       } else {
         if (doiImportData && doiImportData.subtitle) {
@@ -1419,21 +1423,21 @@ export default {
       tf.multiplicable = false
       smf.push(tf)
 
-      if (!this.importData) {
+      if (!self.importData) {
         let uploader = fields.getField('role-extended')
         uploader.role = 'role:uploader'
         uploader.roleVocabulary = 'rolepredicate'
-        uploader.firstname = this.user.firstname
-        uploader.lastname = this.user.lastname
+        uploader.firstname = self.user.firstname
+        uploader.lastname = self.user.lastname
         smf.push(uploader)
       } else {
-        if (this.importData['uploader']) {
-          smf.push(this.importData['uploader'])
+        if (self.importData['uploader']) {
+          smf.push(self.importData['uploader'])
         }
       }
 
-      if (this.importData && this.importData.roles) {
-        for (let importRole of this.importData.roles) {
+      if (self.importData && self.importData.roles) {
+        for (let importRole of self.importData.roles) {
           let role = fields.getField('role-extended')
           role.type = 'schema:Person'
           role.role = importRole.role
@@ -1480,7 +1484,7 @@ export default {
           role.role = 'role:aut'
           role.type = 'schema:Person'
           role.enableTypeSelect = false
-          if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book-part')) {
+          if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
             role.hideRole = true
             role.label = 'Author'
           }
@@ -1495,17 +1499,17 @@ export default {
       }
 
       let vtf = fields.getField('version-type')
-      if (this.importData && this.importData.version) {
-        vtf.value = this.importData.version
+      if (self.importData && self.importData.version) {
+        vtf.value = self.importData.version
       }
       smf.push(vtf)
 
       let issued = fields.getField('date-edtf')
       issued.mainSubmitDate = true // we need to find this field again when changing predicates
       issued.picker = true
-      if (this.importData && this.importData.date) {
-        issued.type = this.importData.date.type
-        issued.value = this.importData.date.value
+      if (self.importData && self.importData.date) {
+        issued.type = self.importData.date.type
+        issued.value = self.importData.date.value
       } else {
         if (doiImportData && doiImportData.dateIssued) {
           issued.value = doiImportData.dateIssued
@@ -1538,31 +1542,31 @@ export default {
 
       let lmf = fields.getField('language')
       lmf.multiplicable = false
-      if (this.importData && this.importData.language) {
-        lmf.value = this.importData.language
+      if (self.importData && self.importData.language) {
+        lmf.value = self.importData.language
       }
       smf.push(lmf)
 
       let otf = fields.getField('object-type')
-      otf.vocabulary = this.irObjectTypeVocabulary
+      otf.vocabulary = self.irObjectTypeVocabulary
       otf.multiplicable = false
       otf.label = 'Type of publication'
-      if (this.importData && this.importData.date) {
-        otf.value = this.importData.objecttype
+      if (self.importData && self.importData.date) {
+        otf.value = self.importData.objecttype
       } else {
         if (doiImportData && doiImportData.publicationTypeId) {
           otf.value = doiImportData.publicationTypeId
         }
       }
-      if (this.submitformparam === 'book') {
+      if (self.submitformparam === 'book') {
         otf.value = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
       }
-      if (this.submitformparam === 'book-part') {
+      if (self.submitformparam === 'book-part') {
         otf.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
       }
       smf.push(otf)
 
-      if (this.submitformparam === 'book-part') {
+      if (self.submitformparam === 'book-part') {
         let sf = fields.getField('contained-in')
         sf.label = 'Appeared in'
         sf.multilingual = false
@@ -1577,30 +1581,30 @@ export default {
         sf.publisherShowDate = true
         sf.publisherLabel = 'PUBLISHER_VERLAG'
         sf.publishingDateLabel = 'Publication date'
-        if (this.importData && this.importData.containedin) {
-          if (this.importData.containedin.title) {
-            sf.title = this.importData.containedin.title.value
-            if (this.importData.containedin.title.language) {
-              sf.titleLanguage = this.importData.containedin.title.language
+        if (self.importData && self.importData.containedin) {
+          if (self.importData.containedin.title) {
+            sf.title = self.importData.containedin.title.value
+            if (self.importData.containedin.title.language) {
+              sf.titleLanguage = self.importData.containedin.title.language
             }
           }
-          if (this.importData.containedin.subtitle) {
-            sf.subtitle = this.importData.containedin.subtitle
+          if (self.importData.containedin.subtitle) {
+            sf.subtitle = self.importData.containedin.subtitle
           }
-          if (this.importData.containedin.isbn) {
-            sf.isbn = this.importData.containedin.isbn
+          if (self.importData.containedin.isbn) {
+            sf.isbn = self.importData.containedin.isbn
           }
-          if (this.importData.containedin.pagestart) {
-            sf.pageStart = this.importData.containedin.pagestart
+          if (self.importData.containedin.pagestart) {
+            sf.pageStart = self.importData.containedin.pagestart
           }
-          if (this.importData.containedin.pageend) {
-            sf.pageEnd = this.importData.containedin.pageend
+          if (self.importData.containedin.pageend) {
+            sf.pageEnd = self.importData.containedin.pageend
           }
-          if (this.importData.containedin.roles) {
-            if (this.importData.containedin.roles.length > 0) {
+          if (self.importData.containedin.roles) {
+            if (self.importData.containedin.roles.length > 0) {
               sf.roles = []
               let roleidx = 0
-              for (let role of this.importData.containedin.roles) {
+              for (let role of self.importData.containedin.roles) {
                 roleidx++
                 let entity = {
                   id: 'contained-in-role-' + roleidx,
@@ -1613,11 +1617,11 @@ export default {
               }
             }
           }
-          if (this.importData.containedin.series) {
-            if (this.importData.containedin.series.length > 0) {
+          if (self.importData.containedin.series) {
+            if (self.importData.containedin.series.length > 0) {
               sf.series = []
               let seriesidx = 0
-              for (let ser of this.importData.containedin.series) {
+              for (let ser of self.importData.containedin.series) {
                 seriesidx++
                 let series = {
                   id: 'contained-in-series-' + seriesidx,
@@ -1648,21 +1652,21 @@ export default {
               }
             }
           }
-          if (this.importData.containedin.publisher) {
-            if (this.importData.containedin.publisher.type) {
-              sf.publisherType = this.importData.containedin.publisher.type
-              if (this.importData.containedin.publisher.type === 'other') {
-                if (this.importData.containedin.publisher.name) {
-                  sf.publisherName = this.importData.containedin.publisher.name
+          if (self.importData.containedin.publisher) {
+            if (self.importData.containedin.publisher.type) {
+              sf.publisherType = self.importData.containedin.publisher.type
+              if (self.importData.containedin.publisher.type === 'other') {
+                if (self.importData.containedin.publisher.name) {
+                  sf.publisherName = self.importData.containedin.publisher.name
                 }
               } else {
-                if (this.importData.containedin.publisher.orgunit) {
-                  sf.publisherOrgUnit = this.importData.containedin.publisher.orgunit
+                if (self.importData.containedin.publisher.orgunit) {
+                  sf.publisherOrgUnit = self.importData.containedin.publisher.orgunit
                 }
               }
             }
-            if (this.importData.containedin.publisher.date) {
-              sf.publishingDate = this.importData.containedin.publisher.date
+            if (self.importData.containedin.publisher.date) {
+              sf.publishingDate = self.importData.containedin.publisher.date
             }
           }
         } else {
@@ -1684,28 +1688,28 @@ export default {
         smf.push(sf)
       }
 
-      if ((this.submitformparam === 'book')) {
+      if ((self.submitformparam === 'book')) {
         let pf = fields.getField('bf-publication')
         pf.publisherSearch = false
         pf.multiplicable = false
         pf.showPlace = false
         pf.showDate = true
         pf.label = 'PUBLISHER_VERLAG'
-        if (this.importData && this.importData.publisher) {
-          if (this.importData.publisher.type) {
-            pf.publisherType = this.importData.publisher.type
-            if (this.importData.publisher.type === 'other') {
-              if (this.importData.publisher.name) {
-                pf.publisherName = this.importData.publisher.name
+        if (self.importData && self.importData.publisher) {
+          if (self.importData.publisher.type) {
+            pf.publisherType = self.importData.publisher.type
+            if (self.importData.publisher.type === 'other') {
+              if (self.importData.publisher.name) {
+                pf.publisherName = self.importData.publisher.name
               }
             } else {
-              if (this.importData.publisher.orgunit) {
-                pf.publisherOrgUnit = this.importData.publisher.orgunit
+              if (self.importData.publisher.orgunit) {
+                pf.publisherOrgUnit = self.importData.publisher.orgunit
               }
             }
           }
-          if (this.importData.publisher.date) {
-            pf.publishingDate = this.importData.publisher.date
+          if (self.importData.publisher.date) {
+            pf.publishingDate = self.importData.publisher.date
           }
         } else {
           if (doiImportData && doiImportData.publisher) {
@@ -1719,8 +1723,8 @@ export default {
       }
 
       let arf = fields.getField('access-right')
-      if (this.importData && this.importData.accessrights) {
-        arf.value = this.importData.accessrights
+      if (self.importData && self.importData.accessrights) {
+        arf.value = self.importData.accessrights
       }
       arf.vocabulary = 'iraccessright'
       smf.push(arf)
@@ -1730,16 +1734,16 @@ export default {
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
-      if (this.importData && this.importData.embargodate) {
-        embargoDate.value = this.importData.embargodate
+      if (self.importData && self.importData.embargodate) {
+        embargoDate.value = self.importData.embargodate
         self.showEmbargoDate = true
       }
       embargoDate.multiplicable = false
       smf.push(embargoDate)
 
       let lic = fields.getField('license')
-      if (this.importData && this.importData.license) {
-        lic.value = this.importData.license
+      if (self.importData && self.importData.license) {
+        lic.value = self.importData.license
       }
       lic.vocabulary = 'alllicenses'
       smf.push(lic)
@@ -1757,33 +1761,33 @@ export default {
 
       // handled by submit-ir-description-keyword component
       let abst = fields.getField('abstract')
-      this.descriptionValue = ''
-      this.kwDescLanguage = ''
-      this.keywordsValue = []
-      if (this.importData && this.importData.abstract) {
-        if (this.importData.abstract.value) {
-          abst.value = this.importData.abstract.value
-          this.descriptionValue = this.importData.abstract.value
+      self.descriptionValue = ''
+      self.kwDescLanguage = ''
+      self.keywordsValue = []
+      if (self.importData && self.importData.abstract) {
+        if (self.importData.abstract.value) {
+          abst.value = self.importData.abstract.value
+          self.descriptionValue = self.importData.abstract.value
         }
-        if (this.importData.abstract.language) {
-          abst.language = this.importData.abstract.language
-          this.kwDescLanguage = this.importData.abstract.language
+        if (self.importData.abstract.language) {
+          abst.language = self.importData.abstract.language
+          self.kwDescLanguage = self.importData.abstract.language
         }
       }
       sof.push(abst)
       let keyws = fields.getField('keyword')
-      if (this.importData && this.importData.keywords) {
-        if (this.importData.keywords) {
-          keyws.value = this.importData.keywords
-          this.keywordsValue = this.importData.keywords
+      if (self.importData && self.importData.keywords) {
+        if (self.importData.keywords) {
+          keyws.value = self.importData.keywords
+          self.keywordsValue = self.importData.keywords
         }
       }
       sof.push(keyws)
 
       // handled by submit-ir-funding-field component
-      if (this.importData && this.importData.funding && this.importData.funding.length > 0) {
+      if (self.importData && self.importData.funding && self.importData.funding.length > 0) {
         let i = 0
-        for (let funding of this.importData.funding) {
+        for (let funding of self.importData.funding) {
           i++
           let pof = fields.getField('project')
           pof.label = 'Funder/Project'
@@ -1807,7 +1811,7 @@ export default {
         sof.push(pof)
       }
 
-      if ((this.submitformparam === 'book')) {
+      if ((self.submitformparam === 'book')) {
         let isbn = {
           id: 'alternate-identifier',
           fieldname: 'Alternate identifier',
@@ -1821,23 +1825,23 @@ export default {
           valueErrorMessages: [],
           value: ''
         }
-        if (this.importData && this.importData.identifiers) {
+        if (self.importData && self.importData.identifiers) {
           let identifiersArrayNoIsbn = []
-          for (let id of this.importData.identifiers) {
+          for (let id of self.importData.identifiers) {
             if (id.type === 'ids:isbn') {
               isbn.value = id.value
             } else {
               identifiersArrayNoIsbn.push(id)
             }
           }
-          this.importData.identifiers = identifiersArrayNoIsbn
+          self.importData.identifiers = identifiersArrayNoIsbn
         }
         sof.push(isbn)
       }
 
-      if (this.importData && this.importData.identifiers && this.importData.identifiers.length > 0) {
+      if (self.importData && self.importData.identifiers && self.importData.identifiers.length > 0) {
         let i = 0
-        for (let id of this.importData.identifiers) {
+        for (let id of self.importData.identifiers) {
           i++
           let aif = fields.getField('alternate-identifier')
           aif.label = 'Identifier'
@@ -1869,53 +1873,53 @@ export default {
         sof.push(aif)
       }
 
-      if (this.submitformparam === 'book') {
+      if (self.submitformparam === 'book') {
         let nop = fields.getField('number-of-pages')
         nop.multiplicable = false
-        if (this.importData && this.importData.numberofpages) {
-          nop.value = this.importData.numberofpages
+        if (self.importData && self.importData.numberofpages) {
+          nop.value = self.importData.numberofpages
         }
         sof.push(nop)
       }
 
-      if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book')) {
+      if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book')) {
         let sf = fields.getField('series')
         sf.multilingual = false
-        sf.multiplicableCleared = this.submitformparam === 'book'
+        sf.multiplicableCleared = self.submitformparam === 'book'
         sf.hideIdentifier = true
-        sf.label = this.submitformparam === 'book' ? 'Series' : 'Journal/Series'
-        sf.hidePages = this.submitformparam !== 'journal-article'
-        sf.hideIssue = this.submitformparam !== 'journal-article'
-        sf.hideIssued = this.submitformparam !== 'journal-article'
-        sf.hideIssn = this.submitformparam !== 'journal-article'
+        sf.label = self.submitformparam === 'book' ? 'Series' : 'Journal/Series'
+        sf.hidePages = self.submitformparam !== 'journal-article'
+        sf.hideIssue = self.submitformparam !== 'journal-article'
+        sf.hideIssued = self.submitformparam !== 'journal-article'
+        sf.hideIssn = self.submitformparam !== 'journal-article'
         sf.issuedDatePicker = true
-        if (this.importData && this.importData.series) {
-          if (this.importData.series.title) {
-            sf.title = this.importData.series.title.value
-            if (this.importData.series.title.language) {
-              sf.titleLanguage = this.importData.series.title.language
+        if (self.importData && self.importData.series) {
+          if (self.importData.series.title) {
+            sf.title = self.importData.series.title.value
+            if (self.importData.series.title.language) {
+              sf.titleLanguage = self.importData.series.title.language
             }
           }
-          if (this.importData.series.volume) {
-            sf.volume = this.importData.series.volume
+          if (self.importData.series.volume) {
+            sf.volume = self.importData.series.volume
           }
-          if (this.importData.series.issue) {
-            sf.issue = this.importData.series.issue
+          if (self.importData.series.issue) {
+            sf.issue = self.importData.series.issue
           }
-          if (this.importData.series.issued) {
-            sf.issued = this.importData.series.issued
+          if (self.importData.series.issued) {
+            sf.issued = self.importData.series.issued
           }
-          if (this.importData.series.issn) {
-            sf.issn = this.importData.series.issn
+          if (self.importData.series.issn) {
+            sf.issn = self.importData.series.issn
           }
-          if (this.importData.series.identifier) {
-            sf.identifier = this.importData.series.identifier
+          if (self.importData.series.identifier) {
+            sf.identifier = self.importData.series.identifier
           }
-          if (this.importData.series.pagestart) {
-            sf.pageStart = this.importData.series.pagestart
+          if (self.importData.series.pagestart) {
+            sf.pageStart = self.importData.series.pagestart
           }
-          if (this.importData.series.pageend) {
-            sf.pageEnd = this.importData.series.pageend
+          if (self.importData.series.pageend) {
+            sf.pageEnd = self.importData.series.pageend
           }
         } else {
           if (doiImportData) {
@@ -1945,27 +1949,27 @@ export default {
         sof.push(sf)
       }
 
-      if (this.submitformparam === 'journal-article') {
+      if (self.submitformparam === 'journal-article') {
         let pf = fields.getField('bf-publication')
         pf.multiplicable = false
         pf.showPlace = false
         pf.showDate = false
-        pf.label = this.$t('PUBLISHER_VERLAG')
-        if (this.importData && this.importData.publisher) {
-          if (this.importData.publisher.type) {
-            pf.publisherType = this.importData.publisher.type
-            if (this.importData.publisher.type === 'other') {
-              if (this.importData.publisher.name) {
-                pf.publisherName = this.importData.publisher.name
+        pf.label = self.$t('PUBLISHER_VERLAG')
+        if (self.importData && self.importData.publisher) {
+          if (self.importData.publisher.type) {
+            pf.publisherType = self.importData.publisher.type
+            if (self.importData.publisher.type === 'other') {
+              if (self.importData.publisher.name) {
+                pf.publisherName = self.importData.publisher.name
               }
             } else {
-              if (this.importData.publisher.orgunit) {
-                pf.publisherOrgUnit = this.importData.publisher.orgunit
+              if (self.importData.publisher.orgunit) {
+                pf.publisherOrgUnit = self.importData.publisher.orgunit
               }
             }
           }
-          if (this.importData.publisher.date) {
-            pf.publishingDate = this.importData.publisher.date
+          if (self.importData.publisher.date) {
+            pf.publishingDate = self.importData.publisher.date
           }
         } else {
           if (doiImportData && doiImportData.publisher) {
@@ -1976,26 +1980,26 @@ export default {
       }
 
       let rights = fields.getField('rights')
-      if (this.importData && this.importData.rights) {
-        if (this.importData.rights.value) {
-          rights.value = this.importData.rights.value
+      if (self.importData && self.importData.rights) {
+        if (self.importData.rights.value) {
+          rights.value = self.importData.rights.value
         }
-        if (this.importData.rights.language) {
-          rights.language = this.importData.rights.language
+        if (self.importData.rights.language) {
+          rights.language = self.importData.rights.language
         }
       }
       sof.push(rights)
 
-      if (this.importData) {
-        if (this.importData.filename) {
+      if (self.importData) {
+        if (self.importData.filename) {
           let fn = fields.getField('filename-readonly')
-          fn.value = this.importData.filename
+          fn.value = self.importData.filename
           sof.push(fn)
         }
-        if (this.importData.mimetype) {
+        if (self.importData.mimetype) {
           let mim = fields.getField('mime-type')
           mim.readonly = true
-          mim.value = this.importData.mimetype
+          mim.value = self.importData.mimetype
           sof.push(mim)
         }
       }
@@ -2009,7 +2013,7 @@ export default {
         }
       )
 
-      this.$nextTick().then(function () {
+      self.$nextTick().then(function () {
         // put things here which might be overwritten
         // when components re-initialize
         // some use nextTick to wait for vocabularies or
@@ -2017,7 +2021,7 @@ export default {
         // eg by selectInput here, but they fire AFTER resetForm
         // while still having old values set
         self.license = null
-        self.showEmbargoDate = false
+        self.showEmbargoDate = self.importData && self.importData.embargodate
       })
     },
     backForm: function (step) {
@@ -2037,7 +2041,9 @@ export default {
         this.step = step + 1
       } else {
         if (step === 5) {
-          this.validateMandatory()
+          if (this.validationEnabled) {
+            this.validateMandatory()
+          }
         }
         if (this.validationStatus !== 'error') {
           this.step = step + 1
@@ -2216,6 +2222,7 @@ export default {
       self.doiImportErrors = []
       self.validationStatus = ''
       self.validationErrors = []
+      self.validationEnabled = true
       self.resetForm(self, null)
     },
     resetDOIImport: function () {
