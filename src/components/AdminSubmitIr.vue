@@ -1827,7 +1827,6 @@ export default {
           value: ''
         }
         if (self.importData && self.importData.identifiers) {
-          
           for (let id of self.importData.identifiers) {
             if (id.type === 'ids:isbn') {
               isbn.value = id.value
