@@ -26,6 +26,12 @@
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">
             <v-icon dark>history</v-icon>
           </v-btn>
+          <v-btn v-if="doc.datastreams.includes('POLICY')" icon :color="'error'" @click="openRights(doc.pid)">
+            <v-icon dark>mdi-lock</v-icon>
+          </v-btn>
+          <v-btn v-else icon :color="'grey darken-1'" @click="openRights(doc.pid)">
+            <v-icon dark>mdi-lock-open-outline</v-icon>
+          </v-btn>
         </v-col>
         <v-col cols="3">
           <v-spacer></v-spacer>
@@ -43,21 +49,41 @@
         <v-card-title>
           <h3 class="title font-weight-light primary--text">{{ $t('History') }}</h3>
         </v-card-title>
+        <v-divider></v-divider>
         <v-card-text>
           <v-container>
-            <template v-for="(e, i) in this.events">
+            <template v-for="(e, i) in events">
               <v-row :key="'row'+i">
                 <v-col>{{ e.event }}</v-col>
                 <v-col>{{ e.username }}</v-col>
                 <v-col>{{ e.ts | time }}</v-col>
               </v-row>
-              <v-divider :key="'div'+i"></v-divider>
+              <v-divider v-if="i < (events.length - 1)" :key="'div'+i"></v-divider>
             </template>
           </v-container>
         </v-card-text>
+        <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color="primary" text @click.stop="historyDialog=false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog v-model="rightsDialog" max-width="1200px">
+      <v-card>
+        <v-card-title>
+          <h3 class="title font-weight-light primary--text">{{ $t('Access rights') }}</h3>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-container>
+            <p-m-rights :pid="rightsPid" :rights="rights" :enableGroups="false" v-on:load-rights="loadRights()"></p-m-rights>
+          </v-container>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn color="primary" text @click.stop="rightsDialog=false">Close</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -66,7 +92,6 @@
 
 <script>
 import Vue from 'vue'
-import axios from 'axios'
 import { config } from '@/mixins/config'
 import { context } from '@/mixins/context'
 
@@ -82,9 +107,12 @@ export default {
   },
   data () {
     return {
-      historyDialog: false,
       loading: {},
-      events: []
+      historyDialog: false,
+      events: [],
+      rightsDialog: false,
+      rights: {},
+      rightsPid: {}
     }
   },
   methods: {
@@ -97,10 +125,60 @@ export default {
     isNew: function (doc) {
       return doc.owner !== this.config.iraccount
     },
+    loadRights: async function () {
+      Vue.set(this.loading, this.rightsPid, true)
+      try {
+        let response = await this.$http.request({
+          method: 'GET',
+          url: this.config.api + '/object/' + this.rightsPid + '/rights',
+          headers: {
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          }
+        })
+        if (response.status === 200) {
+          this.rights = response.data.metadata.rights
+        } else {
+          if (response.data.alerts && response.data.alerts.length > 0) {
+            this.$store.commit('setAlerts', response.data.alerts)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      } finally {
+        Vue.set(this.loading, this.rightsPid, false)
+      }
+    },
+    openRights: async function (pid) {
+      this.rightsPid = pid
+      Vue.set(this.loading, this.rightsPid, true)
+      try {
+        let response = await this.$http.request({
+          method: 'GET',
+          url: this.config.api + '/object/' + this.rightsPid + '/rights',
+          headers: {
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          }
+        })
+        if (response.status === 200) {
+          this.rights = response.data.metadata.rights
+          this.rightsDialog = true
+        } else {
+          if (response.data.alerts && response.data.alerts.length > 0) {
+            this.$store.commit('setAlerts', response.data.alerts)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      } finally {
+        Vue.set(this.loading, this.rightsPid, false)
+      }
+    },
     openHistory: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.get(this.config.api + '/ir/' + pid + '/events',
+        let response = await this.$http.get(this.config.api + '/ir/' + pid + '/events',
           {
             headers: {
               'X-XSRF-TOKEN': this.user.token
@@ -123,7 +201,7 @@ export default {
     approve: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.post(this.config.api + '/ir/' + pid + '/approve',
+        let response = await this.$http.post(this.config.api + '/ir/' + pid + '/approve',
           null,
           {
             headers: {
@@ -144,7 +222,7 @@ export default {
     accept: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.post(this.config.api + '/ir/' + pid + '/accept',
+        let response = await this.$http.post(this.config.api + '/ir/' + pid + '/accept',
           null,
           {
             headers: {
@@ -165,7 +243,7 @@ export default {
     reject: async function (pid) {
       Vue.set(this.loading, pid, true)
       try {
-        let response = await axios.post(this.config.api + '/ir/' + pid + '/reject',
+        let response = await this.$http.post(this.config.api + '/ir/' + pid + '/reject',
           null,
           {
             headers: {
