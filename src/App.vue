@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container fluid>
-      <quicklinks :showquicklinks="quicklinksenabled"></quicklinks>
+      <quicklinks v-if="config.quicklinks" :showquicklinks="quicklinksenabled"></quicklinks>
       <v-row no-gutters>
         <v-col cols="12" md="8" offset-md="2">
 
@@ -26,15 +26,13 @@
               </v-list>
             </v-menu>
 
-            <a id="quicklinks-button" class="ph-button hidden-sm-and-down quicklinks" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
+            <a  v-if="config.quicklinks" id="quicklinks-button" class="ph-button hidden-sm-and-down quicklinks" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
           </v-row>
 
           <v-row no-gutters>
 
             <v-col class="text-left mt-4" md="3" cols="9">
-              <a :href="config.institutionweb" target="_blank">
-                <img src="./assets/Uni_Logo_2016.png" class="logo" alt="logo" />
-              </a>
+              <logo></logo>
             </v-col>
 
             <v-col md="9" cols="3" :align-self="'center'">
@@ -138,7 +136,7 @@
         </v-col>
       </v-row>
 
-      <v-row>
+      <v-row v-if="config.quicklinks">
         <quicklinks-footer></quicklinks-footer>
       </v-row>
 
@@ -164,6 +162,7 @@ import Vue from 'vue'
 import '@/assets/css/material-icons.css'
 import PBreadcrumbs from '@/components/PBreadcrumbs'
 import Banner from '@/components/info/Banner'
+import Logo from '@/components/info/Logo'
 import Quicklinks from '@/components/Quicklinks'
 import QuicklinksFooter from '@/components/QuicklinksFooter'
 import '@/compiled-icons/material-social-person'
@@ -183,7 +182,8 @@ export default {
     QuicklinksFooter,
     ClientOnly,
     PBreadcrumbs,
-    Banner
+    Banner,
+    Logo
   },
   data () {
     return {

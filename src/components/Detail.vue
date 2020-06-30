@@ -43,23 +43,25 @@
             </v-col>
           </v-row>
 
-          <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
-            <v-col>
-              <v-row>
-                <h3 class="title font-weight-light pl-3 primary--text"><router-link :to="{ name: 'stats', params: { pid: objectInfo.pid } }">{{ $t('Usage statistics') }}</router-link></h3>
-              </v-row>
-              <v-divider></v-divider>
-              <v-row no-gutters class="pt-2">
-                <v-col cols="3">
-                  <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
-                </v-col>
-                <v-col cols="3" v-if="objectInfo.cmodel !== 'Resource'">
-                  <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
-                </v-col>
-                <v-spacer></v-spacer>
-              </v-row>
-            </v-col>
-          </v-row>
+          <client-only>
+            <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
+              <v-col>
+                <v-row>
+                  <h3 class="title font-weight-light pl-3 primary--text"><router-link :to="{ name: 'stats', params: { pid: objectInfo.pid } }">{{ $t('Usage statistics') }}</router-link></h3>
+                </v-row>
+                <v-divider></v-divider>
+                <v-row no-gutters class="pt-2">
+                  <v-col cols="3">
+                    <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
+                  </v-col>
+                  <v-col cols="3" v-if="objectInfo.cmodel !== 'Resource'">
+                    <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
+                  </v-col>
+                  <v-spacer></v-spacer>
+                </v-row>
+              </v-col>
+            </v-row>
+          </client-only>
 
         </v-col>
       </v-row>
@@ -73,6 +75,7 @@
 </template>
 
 <script>
+import ClientOnly from 'vue-client-only'
 import moment from 'moment'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { context } from '../mixins/context'
@@ -81,6 +84,9 @@ import { config } from '../mixins/config'
 export default {
   name: 'detail',
   mixins: [ context, config, vocabulary ],
+  components: {
+    ClientOnly
+  },
   computed: {
     routepid: function () {
       return this.$store.state.route.params.pid
