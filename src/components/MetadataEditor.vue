@@ -407,8 +407,9 @@ export default {
                       }
                       break
                     case 'rdau:P60193':
-                      importData['containedin']['series'] = {}
+                      importData['containedin']['series'] = []
                       for (let v of values1) {
+                        let ser = {}
                         Object.entries(v).forEach(([key2, values2]) => {
                           switch (key2) {
                             case '@type':
@@ -418,60 +419,52 @@ export default {
                               break
                             case 'dce:title':
                               for (let v1 of values2) {
-                                if (importData['containedin']['series']['title']) {
-                                  importData.errors.push('Multiple rdau:P60101 > rdau:P60193 > dce:title: ' + JSON.stringify(v))
-                                } else {
-                                  Object.entries(v1).forEach(([key3, values3]) => {
-                                    switch (key3) {
-                                      case '@type':
-                                        if (values3 !== 'bf:Title') {
-                                          importData.errors.push('Unsupported rdau:P60101 > rdau:P60193 title type: ' + values3)
+                                Object.entries(v1).forEach(([key3, values3]) => {
+                                  switch (key3) {
+                                    case '@type':
+                                      if (values3 !== 'bf:Title') {
+                                        importData.errors.push('Unsupported rdau:P60101 > rdau:P60193 title type: ' + values3)
+                                      }
+                                      break
+                                    case 'bf:mainTitle':
+                                      for (let title of values3) {
+                                        ser['title'] = {}
+                                        ser['title']['value'] = title['@value']
+                                        if (title['@language']) {
+                                          ser['title']['language'] = title['@language']
                                         }
-                                        break
-                                      case 'bf:mainTitle':
-                                        for (let title of values3) {
-                                          if (importData['containedin']['series']['title']) {
-                                            importData.errors.push('Multiple rdau:P60101 > rdau:P60193 > dce:title: ' + title['@value'])
-                                          } else {
-                                            importData['containedin']['series']['title'] = {}
-                                            importData['containedin']['series']['title']['value'] = title['@value']
-                                            if (title['@language']) {
-                                              importData['containedin']['series']['title']['language'] = title['@language']
-                                            }
-                                          }
-                                        }
-                                        break
-                                      default:
-                                        importData.errors.push('Unsupported rdau:P60101 > rdau:P60193 > dce:title property: ' + key3)
-                                        break
-                                    }
-                                  })
-                                }
+                                      }
+                                      break
+                                    default:
+                                      importData.errors.push('Unsupported rdau:P60101 > rdau:P60193 > dce:title property: ' + key3)
+                                      break
+                                  }
+                                })
                               }
                               break
                             case 'bibo:volume':
                               for (let v of values2) {
-                                importData['containedin']['series'].volume = v
+                                ser.volume = v
                               }
                               break
                             case 'bibo:issue':
                               for (let v of values2) {
-                                importData['containedin']['series'].issue = v
+                                ser.issue = v
                               }
                               break
                             case 'dcterms:issued':
                               for (let v of values2) {
-                                importData['containedin']['series'].issued = v
+                                ser.issued = v
                               }
                               break
                             case 'ids:issn':
                               for (let v of values2) {
-                                importData['containedin']['series'].issn = v
+                                ser.issn = v
                               }
                               break
                             case 'skos:exactMatch':
                               for (let v of values2) {
-                                importData['containedin']['series'].identifier = v
+                                ser.identifier = v
                               }
                               break
                             default:
@@ -479,6 +472,7 @@ export default {
                               break
                           }
                         })
+                        importData['containedin']['series'].push(ser)
                       }
                       break
                     case 'bf:provisionActivity':

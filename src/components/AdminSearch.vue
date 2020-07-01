@@ -86,7 +86,6 @@
 
 <script>
 import Vue from 'vue'
-import axios from 'axios'
 import Autocomplete from './Autocomplete'
 import AdminSearchResults from './AdminSearchResults'
 import PPagination from 'phaidra-vue-components/src/components/utils/PPagination'
@@ -167,7 +166,7 @@ export default {
       let { ands } = adminBuildSearchDef(this)
       ands.push('isinadminset:"' + this.config.adminset + '"')
       let params = adminBuildParams(this, ands)
-      let response = await axios.post(this.config.solr + '/select',
+      let response = await this.$http.post(this.config.solr + '/select',
         {
           params: params
         }
@@ -194,7 +193,7 @@ export default {
         pagePids.push(d.pid)
       }
       // call add requested licenses
-      let rlresponse = await axios.post(this.config.api + '/ir/requestedlicenses',
+      let rlresponse = await this.$http.post(this.config.api + '/ir/requestedlicenses',
         null,
         {
           headers: {
@@ -210,7 +209,7 @@ export default {
         for (let rl of rlresponse.data.requestedlicenses) {
           for (let d of this.docs) {
             if (rl.pid === d.pid) {
-              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabelByNotation('alllicenses', rl.requestedlicense))
+              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
             }
           }
         }

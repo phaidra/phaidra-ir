@@ -11,20 +11,20 @@
                   v-on:keyup.enter="login()"
                   :disabled="loading"
                   :label="$t('Username')"
+                  :placeholder="' '"
                   v-model="credentials.username"
                   required
                   filled
-                  single-line
                   :autocomplete="'username'"
                 ></v-text-field>
                 <v-text-field
                   v-on:keyup.enter="login()"
                   :disabled="loading"
                   :label="$t('Password')"
+                  :placeholder="' '"
                   v-model="credentials.password"
                   required
                   filled
-                  single-line
                   :append-icon="e1 ? 'mdi-eye' : 'mdi-eye-off'"
                   @click:append="toggleVisibility"
                   :type="e1 ? 'password' : 'text'"

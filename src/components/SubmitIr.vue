@@ -1851,7 +1851,6 @@ export default {
 
       if (this.submitformparam === 'book-part') {
         let sf = fields.getField('contained-in')
-        sf.label = 'Appeared in'
         sf.multilingual = false
         sf.rolesVocabulary = 'irrolepredicate'
         sf.series[0].multiplicableCleared = true
