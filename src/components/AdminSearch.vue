@@ -182,6 +182,8 @@ export default {
             for (let l of d.dc_license) {
               if (l.startsWith('http')) {
                 Vue.set(d, 'currentlicense', this.getLocalizedTermLabel('alllicenses', l))
+              } else {
+                Vue.set(d, 'currentlicense', this.getLocalizedTermLabelByNotation('alllicenses', l))
               }
             }
           }
