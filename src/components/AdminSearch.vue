@@ -182,8 +182,6 @@ export default {
             for (let l of d.dc_license) {
               if (l.startsWith('http')) {
                 Vue.set(d, 'currentlicense', this.getLocalizedTermLabel('alllicenses', l))
-              } else {
-                Vue.set(d, 'currentlicense', this.getLocalizedTermLabelByNotation('alllicenses', l))
               }
             }
           }
@@ -211,7 +209,11 @@ export default {
         for (let rl of rlresponse.data.requestedlicenses) {
           for (let d of this.docs) {
             if (rl.pid === d.pid) {
-              Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
+              if (rl.requestedlicense.startsWith('http')) {
+                Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
+              } else {
+                Vue.set(d, 'requestedlicense', this.getLocalizedTermLabelByNotation('alllicenses', rl.requestedlicense))
+              }
             }
           }
         }
