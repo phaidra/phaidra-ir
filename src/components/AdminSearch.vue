@@ -85,6 +85,7 @@
 </template>
 
 <script>
+import qs from 'qs'
 import Vue from 'vue'
 import Autocomplete from './Autocomplete'
 import AdminSearchResults from './AdminSearchResults'
@@ -193,17 +194,18 @@ export default {
         pagePids.push(d.pid)
       }
       // call add requested licenses
-      let rlresponse = await this.$http.post(this.config.api + '/ir/requestedlicenses',
-        null,
-        {
-          headers: {
-            'X-XSRF-TOKEN': this.user.token
-          },
-          params: {
-            pids: pagePids
-          }
+      let rlparams = {
+        'pids[]': pagePids
+      }
+      let rlresponse = await this.$http.request({
+        method: 'POST',
+        url: this.config.api + '/ir/requestedlicenses',
+        data: qs.stringify(rlparams, { arrayFormat: 'repeat' }),
+        headers: {
+          'content-type': 'application/x-www-form-urlencoded',
+          'X-XSRF-TOKEN': this.$store.state.user.token
         }
-      )
+      })
 
       if (rlresponse.data.requestedlicenses) {
         for (let rl of rlresponse.data.requestedlicenses) {
