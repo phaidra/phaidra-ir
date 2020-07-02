@@ -68,7 +68,7 @@
           </v-col>
         </v-row>
         <v-row justify="start">
-          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page"/>
+          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage"/>
           <v-spacer></v-spacer>
         </v-row>
         <v-divider class="my-3"></v-divider>
@@ -78,7 +78,7 @@
             :total="total"
             :search="search">
           </admin-search-results>
-          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page" class="mb-3" />
+          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
         </v-row>
       </v-col>
     </v-row>
@@ -123,13 +123,14 @@ export default {
     }
   },
   computed: {
-    page: {
+    currentPage: {
       get () {
-        return this.currentPage
+        return this.page
       },
       set (value) {
-        this.currentPage = value
+        this.page = value
         this.search()
+        this.$vuetify.goTo(1)
       }
     },
     totalPages: function () {
@@ -142,7 +143,7 @@ export default {
       limitdialog: false,
       linkdialog: false,
       q: '',
-      currentPage: 1,
+      page: 1,
       pagesize: 10,
       sortdef,
       lang: 'en',
@@ -260,6 +261,7 @@ export default {
     resetSearchParams: function () {
       this.q = ''
       this.currentPage = 1
+      this.page = 1
       this.pagesize = 10
       for (let fq of this.adminFacetQueries) {
         // resetable might be set to false in case this search should

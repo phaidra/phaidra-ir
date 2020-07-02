@@ -56,7 +56,7 @@
             :total="total"
             :getallresults="getAllResults">
           </search-results>
-          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="page" class="mb-3" />
+          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
         </v-row>
       </v-col>
       <v-col cols="3" class="pa-2 hidden-sm-and-down">
@@ -103,13 +103,14 @@ export default {
     PPagination
   },
   computed: {
-    page: {
+    currentPage: {
       get () {
-        return this.currentPage
+        return this.page
       },
       set (value) {
-        this.currentPage = value
+        this.page = value
         this.search()
+        this.$vuetify.goTo(1)
       }
     },
     totalPages: function () {
@@ -260,7 +261,7 @@ export default {
       filterdialog: false,
       q: '',
       inCollection: this.collection,
-      currentPage: 1,
+      page: 1,
       pagesize: 10,
       sortdef,
       lang: 'en',
