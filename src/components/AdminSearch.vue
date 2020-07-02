@@ -203,7 +203,7 @@ export default {
         url: this.config.api + '/ir/requestedlicenses',
         data: qs.stringify(rlparams, { arrayFormat: 'repeat' }),
         headers: {
-          'content-type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/x-www-form-urlencoded',
           'X-XSRF-TOKEN': this.$store.state.user.token
         }
       })

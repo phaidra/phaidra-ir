@@ -47,6 +47,7 @@
                 deletable-chips
                 :filled="inputStyle==='filled'"
                 :outlined="inputStyle==='outlined'"
+                :hint="config.keywordshint.length > 0 ? $t(config.keywordshint) : undefined"
               >
                 <template
                   slot="selection"
@@ -100,6 +101,7 @@
 </template>
 
 <script>
+import { config } from '@/mixins/config'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { fieldproperties } from 'phaidra-vue-components/src/mixins/fieldproperties'
 import xmlUtils from 'phaidra-vue-components/src/utils/xml'
@@ -107,7 +109,7 @@ import arrayUtils from 'phaidra-vue-components/src/utils/arrays'
 
 export default {
   name: 'submit-ir-description-keywords',
-  mixins: [vocabulary, fieldproperties],
+  mixins: [config, vocabulary, fieldproperties],
   props: {
     label: {
       type: String
