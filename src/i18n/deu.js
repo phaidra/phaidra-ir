@@ -652,7 +652,7 @@ export default {
   'Author': 'Autor*in',
   'Notifications': 'Benachrichtigung',
   'University of Music and Performing Arts Graz': 'Universität für Musik und darstellende Kunst Graz',
-  'Back': 'züruck',
+  'Back': 'zurück',
   'Continue': 'weiter',
   'Skip': 'überspringen',
   'Invalid metadata': 'ungültige Metadaten',
