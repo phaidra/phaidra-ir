@@ -47,7 +47,7 @@
                 deletable-chips
                 :filled="inputStyle==='filled'"
                 :outlined="inputStyle==='outlined'"
-                :hint="config.keywordshint.length > 0 ? $t(config.keywordshint) : undefined"
+                :hint="$t('Confirm each keyword by pressing enter')"
               >
                 <template
                   slot="selection"
