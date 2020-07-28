@@ -150,13 +150,35 @@ export function buildAssociationFacet (orgUnitsTree) {
 
             if (l3Unit.subunits) {
               for (let l4Unit of l3Unit.subunits) {
+                let l5Facet = {
+                  label: 'Subunits of ' + l4Unit['@id'],
+                  field: 'association_id',
+                  resetable: true,
+                  id: 'l4-' + l4Unit['@id'],
+                  queries: []
+                }
+
+                if (l4Unit.subunits) {
+                  for (let l5Unit of l4Unit.subunits) {
+                    l5Facet.queries.push({
+                      query: 'association_id:"' + l5Unit['@id'] + '"',
+                      active: false,
+                      id: l5Unit['@id'],
+                      label: {
+                        'skos:prefLabel': l5Unit['skos:prefLabel']
+                      }
+                    })
+                  }
+                }
+
                 l4Facet.queries.push({
                   query: 'association_id:"' + l4Unit['@id'] + '"',
                   active: false,
                   id: l4Unit['@id'],
                   label: {
                     'skos:prefLabel': l4Unit['skos:prefLabel']
-                  }
+                  },
+                  childFacet: l5Facet
                 })
               }
             }
@@ -167,7 +189,8 @@ export function buildAssociationFacet (orgUnitsTree) {
               id: l3Unit['@id'],
               label: {
                 'skos:prefLabel': l3Unit['skos:prefLabel']
-              }
+              },
+              childFacet: l4Facet
             })
           }
         }
@@ -302,6 +325,14 @@ export function updateFacetQueries (facetQueriesSolr, facetQueries) {
                       if (lvl3.queries[m].query === key) {
                         Vue.set(lvl3.queries[m], 'count', facetQueriesSolr[key])
                       }
+                      if (lvl3.queries[m].childFacet) {
+                        let lvl4 = lvl3.queries[m].childFacet
+                        for (let n = 0; n < lvl4.queries.length; n++) {
+                          if (lvl4.queries[n].query === key) {
+                            Vue.set(lvl4.queries[n], 'count', facetQueriesSolr[key])
+                          }
+                        }
+                      }
                     }
                   }
                 }
@@ -337,6 +368,12 @@ export function deactivateFacetQueries (f) {
           var lvl2 = lvl1.queries[j].childFacet
           for (var k = 0; k < lvl2.queries.length; k++) {
             lvl2.queries[k].active = false
+            if (lvl2.queries[k].childFacet) {
+              var lvl3 = lvl2.queries[k].childFacet
+              for (var l = 0; l < lvl3.queries.length; l++) {
+                lvl3.queries[l].active = false
+              }
+            }
           }
         }
       }

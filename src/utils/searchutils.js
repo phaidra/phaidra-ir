@@ -34,8 +34,22 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
               for (let l = 0; l < lvl2.queries.length; l++) {
                 if (lvl2.queries[l].active) {
                   foundActiveLvl2Query = true
-                  ors.push(lvl2.queries[l].query)
-                  searchdefarr.push('fq=' + facetQueries[i].id + '_' + lvl2.queries[l].id)
+
+                  let lvl3 = lvl2.queries[l].childFacet
+                  let foundActiveLvl3Query = false
+
+                  for (let m = 0; m < lvl3.queries.length; m++) {
+                    if (lvl3.queries[m].active) {
+                      foundActiveLvl3Query = true
+                      ors.push(lvl3.queries[m].query)
+                      searchdefarr.push('fq=' + facetQueries[i].id + '_' + lvl3.queries[m].id)
+                    }
+                  }
+
+                  if (!foundActiveLvl3Query) {
+                    ors.push(lvl2.queries[l].query)
+                    searchdefarr.push('fq=' + facetQueries[i].id + '_' + lvl2.queries[l].id)
+                  }
                 }
               }
 
@@ -136,11 +150,15 @@ export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries },
             if (childFacetLvl1.queries[k].active && childFacetLvl1.queries[k].childFacet) {
               let childFacetLvl2 = childFacetLvl1.queries[k].childFacet
               for (let l = 0; l < childFacetLvl2.queries.length; l++) {
-                // days
+                if (childFacetLvl2.queries[l].active && childFacetLvl2.queries[l].childFacet) {
+                  let childFacetLvl3 = childFacetLvl2.queries[l].childFacet
+                  for (let m = 0; m < childFacetLvl3.queries.length; m++) {
+                    params['facet.query'].push(childFacetLvl3.queries[m].query)
+                  }
+                }
                 params['facet.query'].push(childFacetLvl2.queries[l].query)
               }
             }
-            // months
             params['facet.query'].push(childFacetLvl1.queries[k].query)
           }
         }
@@ -192,8 +210,22 @@ export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQue
               for (let l = 0; l < lvl2.queries.length; l++) {
                 if (lvl2.queries[l].active) {
                   foundActiveLvl2Query = true
-                  ors.push(lvl2.queries[l].query)
-                  searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + lvl2.queries[l].id)
+
+                  let lvl3 = lvl2.queries[l].childFacet
+                  let foundActiveLvl3Query = false
+
+                  for (let m = 0; m < lvl3.queries.length; m++) {
+                    if (lvl3.queries[m].active) {
+                      foundActiveLvl3Query = true
+                      ors.push(lvl3.queries[m].query)
+                      searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + lvl3.queries[m].id)
+                    }
+                  }
+
+                  if (!foundActiveLvl3Query) {
+                    ors.push(lvl2.queries[l].query)
+                    searchdefarr.push('fq=' + adminFacetQueries[i].id + '_' + lvl2.queries[l].id)
+                  }
                 }
               }
 

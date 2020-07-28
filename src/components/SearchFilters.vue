@@ -42,18 +42,31 @@
                       <span class="facet-count grey--text" v-if="q2.count>0">({{q2.count}})</span>
                     </span>
                     <ul v-if="q2.active && q2.childFacet" >
-                    <li v-for="(q3, m) in q2.childFacet.queries" :key="m+q3.id">
-                      <span @click="toggleFacetAndSearch(q3,q2.childFacet)">
-                        <icon v-if="q3.active" name="univie-stop2" class="primary--text"></icon>
-                        <icon v-if="!q3.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
-                        <span :class="{ active: q3.active }" class="facet-label primary--text">
-                          <template v-if="q3.label['skos:prefLabel']">{{ q3.label['skos:prefLabel'][$i18n.locale] }}</template>
-                          <template v-else>{{ $t(q3.label) }}</template>
+                      <li v-for="(q3, m) in q2.childFacet.queries" :key="m+q3.id">
+                        <span @click="toggleFacetAndSearch(q3,q2.childFacet)">
+                          <icon v-if="q3.active" name="univie-stop2" class="primary--text"></icon>
+                          <icon v-if="!q3.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
+                          <span :class="{ active: q3.active }" class="facet-label primary--text">
+                            <template v-if="q3.label['skos:prefLabel']">{{ q3.label['skos:prefLabel'][$i18n.locale] }}</template>
+                            <template v-else>{{ $t(q3.label) }}</template>
+                          </span>
+                          <span class="facet-count grey--text" v-if="q3.count>0">({{q3.count}})</span>
                         </span>
-                        <span class="facet-count grey--text" v-if="q3.count>0">({{q3.count}})</span>
-                      </span>
-                    </li>
-                  </ul>
+                        <ul v-if="q3.active && q3.childFacet" >
+                          <li v-for="(q4, m) in q3.childFacet.queries" :key="m+q3.id">
+                            <span @click="toggleFacetAndSearch(q4,q3.childFacet)">
+                              <icon v-if="q4.active" name="univie-stop2" class="primary--text"></icon>
+                              <icon v-if="!q4.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
+                              <span :class="{ active: q4.active }" class="facet-label primary--text">
+                                <template v-if="q4.label['skos:prefLabel']">{{ q4.label['skos:prefLabel'][$i18n.locale] }}</template>
+                                <template v-else>{{ $t(q4.label) }}</template>
+                              </span>
+                              <span class="facet-count grey--text" v-if="q4.count>0">({{q4.count}})</span>
+                            </span>
+                          </li>
+                        </ul>
+                      </li>
+                    </ul>
                   </li>
                 </ul>
               </li>

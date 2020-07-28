@@ -51,10 +51,10 @@
                 </v-row>
                 <v-divider></v-divider>
                 <v-row no-gutters class="pt-2">
-                  <v-col cols="3">
+                  <v-col>
                     <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
                   </v-col>
-                  <v-col cols="3" v-if="objectInfo.cmodel !== 'Resource'">
+                  <v-col v-if="objectInfo.cmodel !== 'Resource'">
                     <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
                   </v-col>
                   <v-spacer></v-spacer>
@@ -62,6 +62,34 @@
               </v-col>
             </v-row>
           </client-only>
+
+          <v-row v-if="objectInfo.alternativeversions.length > 0" class="mb-6">
+            <v-col>
+              <v-row>
+                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Alternative versions') }}</h3>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row no-gutters class="pt-2" v-for="(rel, i) in objectInfo.alternativeversions" :key="'version'+i">
+                <v-col cols="12" md="12">
+                  <router-link :to="{ name: 'detail', params: { pid: rel.pid } }">{{ getLocalizedTermLabel('versiontypes', rel.oaire_version_id[0]) }}</router-link>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
+
+          <v-row v-if="objectInfo.alternativeformats.length > 0" class="mb-6">
+            <v-col>
+              <v-row>
+                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Alternative formats') }}</h3>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row no-gutters class="pt-2" v-for="(rel, i) in objectInfo.alternativeformats" :key="'formats'+i">
+                <v-col cols="12" md="12">
+                  <router-link :to="{ name: 'detail', params: { pid: rel.pid } }">{{ getLocalizedTermLabel('mimetypes', rel.dc_format[0]) }}</router-link>
+                </v-col>
+              </v-row>
+            </v-col>
+          </v-row>
 
         </v-col>
       </v-row>
@@ -197,11 +225,11 @@ export default {
       this.$matomo.setDocumentTitle('Download ' + this.routepid)
       this.$matomo.trackPageView()
     },
-    async fetchUsageStats (self) {
+    async fetchUsageStats (self, pid) {
       self.stats.download = null
       self.stats.detail = null
       try {
-        let response = await self.$http.get(self.config.api + '/ir/stats/' + self.routepid,
+        let response = await self.$http.get(self.config.api + '/ir/stats/' + pid,
           {
             headers: {
               'X-XSRF-TOKEN': self.user.token
@@ -242,7 +270,7 @@ export default {
       vm.$store.commit('setLoading', true)
       vm.$store.commit('setObjectInfo', null)
       await vm.fetchAsyncData(vm, to.params.pid)
-      vm.fetchUsageStats(vm)
+      vm.fetchUsageStats(vm, to.params.pid)
       vm.$store.commit('setLoading', false)
     })
   },
@@ -250,7 +278,7 @@ export default {
     this.$store.commit('setLoading', true)
     this.$store.commit('setObjectInfo', null)
     await this.fetchAsyncData(this, to.params.pid)
-    this.fetchUsageStats(this)
+    this.fetchUsageStats(this, to.params.pid)
     this.$store.commit('setLoading', false)
     next()
   }
