@@ -681,5 +681,9 @@ export default {
   'Issued': 'Erscheinungsdatum',
   'Embargo date': 'Verfügbarkeitsdatum',
   'Contribution': 'Rolle',
-  'Confirm each keyword by pressing enter': 'Jedes Stichwort ist durch Drücken der Eingabetaste zu bestätigen'
+  'Confirm each keyword by pressing enter': 'Jedes Stichwort ist durch Drücken der Eingabetaste zu bestätigen',
+  'Scholarly article': 'Wissenschaftlicher Artikel',
+  'This includes: Journal articles, reports, reviews, working papers, conference papers ...': 'Dazu gehören: Beiträge in Zeitschriften, Forschungsberichte, Rezensionen, Working Papers, Konferenzbeiträge ...',
+  'This includes: Individual chapters from monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Einzelne Kapitel in Monografien, Sammelbänden, Konferenzbänden ...',
+  'This includes: Complete monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Vollständige Monografien, Sammelbände, Konferenzbände ...'
 }
