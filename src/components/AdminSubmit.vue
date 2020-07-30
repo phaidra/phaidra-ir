@@ -3,7 +3,7 @@
     <v-row>
       <v-col>
         <v-btn raised color="primary mr-2" :to="{ name: 'adminsubmitform', params: { submitform: 'journal-article' } }">
-          {{$t('Journal article')}}
+          {{$t('Scholarly article')}}
         </v-btn>
         <v-divider class="my-4"></v-divider>
         <v-btn raised color="primary mr-2" :to="{ name: 'adminsubmitform', params: { submitform: 'book-part' } }">
