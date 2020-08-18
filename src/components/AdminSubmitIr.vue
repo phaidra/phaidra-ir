@@ -70,6 +70,10 @@
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.title }}</v-col>
                         </v-row>
+                        <v-row v-if="doiImportData.subtitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.subtitle }}</v-col>
+                        </v-row>
                         <v-row v-if="doiImportData.dateIssued">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.dateIssued }}</v-col>
@@ -77,7 +81,20 @@
                         <v-row v-for="(author, i) of doiImportData.authors" :key="'aut'+i">
                           <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
                           <v-col v-else md="2" cols="12"></v-col>
-                          <v-col md="10" cols="12">{{ author.firstname + ' ' + author.lastname }}</v-col>
+                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
+                            <template v-if="author['affiliation']">
+                              <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
+                            </template>
+                          </v-col>
+                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.keywords">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
+                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportData.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.language">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.language }}</v-col>
                         </v-row>
                         <v-row v-if="doiImportData.publicationType">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
@@ -110,6 +127,14 @@
                         <v-row v-if="doiImportData.pageEnd">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.pageEnd }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.ISBN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.ISBN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.license">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.license }}</v-col>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -222,6 +247,7 @@
                         v-on:input-identifier="f.identifier=$event"
                         v-on:input-page-start="f.pageStart=$event"
                         v-on:input-page-end="f.pageEnd=$event"
+                        v-on:add="addField(s.fields, f)"
                         v-on:add-clear="addSeriesClear(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
@@ -533,9 +559,10 @@ import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeyword
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
 import fields from 'phaidra-vue-components/src/utils/fields'
+import lang3to2map from 'phaidra-vue-components/src/utils/lang3to2map'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
-import { vocabulary } from 'phaidra-vue-components/src//mixins/vocabulary'
+import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 
 export default {
@@ -551,6 +578,12 @@ export default {
     importData: Object
   },
   computed: {
+    lang2to3map: function () {
+      return Object.keys(lang3to2map).reduce((ret, key) => {
+        ret[lang3to2map[key]] = key
+        return ret
+      }, {})
+    },
     doiToImport: function () {
       if (this.doiImportInput) {
         let doi = this.doiImportInput.replace('https://', '')
@@ -715,9 +748,21 @@ export default {
 
             if (crossrefData['title']) {
               if (Array.isArray(crossrefData['title'])) {
-                this.doiImportData.title = crossrefData['title'][0].replace(/\s\s+/g, ' ').trim()
+                if (crossrefData['title'].length > 0) {
+                  this.doiImportData.title = crossrefData['title'][0].replace(/\s\s+/g, ' ').trim()
+                }
               } else {
                 this.doiImportData.title = crossrefData['title'].replace(/\s\s+/g, ' ').trim()
+              }
+            }
+
+            if (crossrefData['subtitle']) {
+              if (Array.isArray(crossrefData['subtitle'])) {
+                if (crossrefData['subtitle'].length > 0) {
+                  this.doiImportData.subtitle = crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim()
+                }
+              } else {
+                this.doiImportData.subtitle = crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
@@ -727,10 +772,50 @@ export default {
               }
             }
 
+            if (crossrefData['language']) {
+              if (this.lang2to3map[crossrefData['language']]) {
+                this.doiImportData.language = this.lang2to3map[crossrefData['language']]
+              }
+            }
+
             let authors = crossrefData['author']
             if (authors.length > 0) {
               for (let author of authors) {
-                this.doiImportData.authors.push({ firstname: author['given'].replace(/\s\s+/g, ' ').trim(), lastname: author['family'].replace(/\s\s+/g, ' ').trim() })
+                if (author['given'] || author['family']) {
+                  let auth = {
+                    type: 'schema:Person',
+                    firstname: author['given'] ? author['given'].replace(/\s\s+/g, ' ').trim() : '',
+                    lastname: author['family'] ? author['family'].replace(/\s\s+/g, ' ').trim() : ''
+                  }
+                  if (author['affiliation']) {
+                    if (Array.isArray(author['affiliation'])) {
+                      auth.affiliation = []
+                      for (let af of author['affiliation']) {
+                        auth.affiliation.push(af['name'])
+                      }
+                    }
+                  }
+                  if (author['ORCID']) {
+                    auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
+                  }
+                  this.doiImportData.authors.push(auth)
+                }
+                if (author['name']) {
+                  let auth = {
+                    type: 'schema:Organization',
+                    name: author['name']
+                  }
+                  this.doiImportData.authors.push(auth)
+                }
+              }
+            }
+
+            if (crossrefData['subject']) {
+              if (Array.isArray(crossrefData['subject'])) {
+                this.doiImportData.keywords = []
+                for (let kw of crossrefData['subject']) {
+                  this.doiImportData.keywords.push(kw)
+                }
               }
             }
 
@@ -794,18 +879,42 @@ export default {
             }
 
             if (crossrefData['publisher']) {
-              this.doiImportData.publisher = crossrefData['publisher'].replace(/\s\s+/g, ' ').trim()
+              if (Array.isArray(crossrefData['publisher'])) {
+                if (crossrefData['publisher'].length > 0) {
+                  this.doiImportData.publisher = crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim()
+                }
+              } else {
+                this.doiImportData.publisher = crossrefData['publisher'].replace(/\s\s+/g, ' ').trim()
+              }
             }
 
             if (crossrefData['container-title']) {
-              this.doiImportData.journalTitle = crossrefData['container-title'].replace(/\s\s+/g, ' ').trim()
+              if (Array.isArray(crossrefData['container-title'])) {
+                if (crossrefData['container-title'].length > 0) {
+                  this.doiImportData.journalTitle = crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim()
+                }
+              } else {
+                this.doiImportData.journalTitle = crossrefData['container-title'].replace(/\s\s+/g, ' ').trim()
+              }
             }
 
             if (crossrefData['ISSN']) {
               if (Array.isArray(crossrefData['ISSN'])) {
-                this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
+                if (crossrefData['ISSN'].length > 0) {
+                  this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
+                }
               } else {
                 this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
+              }
+            }
+
+            if (crossrefData['ISBN']) {
+              if (Array.isArray(crossrefData['ISBN'])) {
+                if (crossrefData['ISBN'].length > 0) {
+                  this.doiImportData.ISBN = crossrefData['ISBN'][0].replace(/\s\s+/g, ' ').trim()
+                }
+              } else {
+                this.doiImportData.ISBN = crossrefData['ISBN'].replace(/\s\s+/g, ' ').trim()
               }
             }
 
@@ -831,9 +940,22 @@ export default {
                 }
               }
             }
+
+            if (crossrefData['license']) {
+              if (Array.isArray(crossrefData['license'])) {
+                for (let lic of crossrefData['license']) {
+                  if (lic['URL']) {
+                    if (this.getTerm('alllicenses', lic['URL'])) {
+                      this.doiImportData.license = lic['URL']
+                    }
+                  }
+                }
+              }
+            }
             this.resetForm(this, this.doiImportData)
           }
         } catch (error) {
+          console.error(error)
           this.doiImportErrors.push(error)
         } finally {
           this.loading = false
@@ -1467,16 +1589,34 @@ export default {
         if (doiImportData && doiImportData.authors.length > 0) {
           for (let author of doiImportData.authors) {
             let role = fields.getField('role-extended')
-            role.type = 'schema:Person'
+            role.type = author.type
             role.role = 'role:aut'
+            if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
+              role.hideRole = true
+              role.label = 'Author'
+            }
             role.roleVocabulary = 'irrolepredicate'
             role.ordergroup = 'roles'
-            role.firstname = author.firstname
-            role.lastname = author.lastname
+            role.firstname = author['firstname'] ? author['firstname'] : ''
+            role.lastname = author['lastname'] ? author['lastname'] : ''
             role.showIdentifierType = false
             role.identifierType = 'ids:orcid'
             role.identifierLabel = 'ORCID'
-            role.affiliationType = ''
+            role.identifierText = author['orcid'] ? author['orcid'] : ''
+            if (author['affiliation']) {
+              role.affiliationType = 'other'
+              // iterate, although currently multiple affiliations are not supported
+              for (let af of author['affiliation']) {
+                role.affiliationText = af
+                break
+              }
+            } else {
+              role.affiliationType = ''
+            }
+            if (author.type === 'schema:Organization') {
+              role.organizationType = 'other'
+              role.organizationText = author['name']
+            }
             smf.push(role)
           }
         } else {
@@ -1544,6 +1684,10 @@ export default {
       lmf.multiplicable = false
       if (self.importData && self.importData.language) {
         lmf.value = self.importData.language
+      } else {
+        if (doiImportData && doiImportData.language) {
+          lmf.value = doiImportData.language
+        }
       }
       smf.push(lmf)
 
@@ -1573,6 +1717,7 @@ export default {
         sf.rolesVocabulary = 'irrolepredicate'
         sf.series[0].multiplicableCleared = true
         sf.hideSeriesIssn = true
+        sf.hideSeriesIssue = true
         sf.hideSeriesIssued = true
         sf.collapseSeries = true
         sf.hidePages = false
@@ -1744,6 +1889,10 @@ export default {
       let lic = fields.getField('license')
       if (self.importData && self.importData.license) {
         lic.value = self.importData.license
+      } else {
+        if (doiImportData && doiImportData.license) {
+          lic.value = doiImportData.license
+        }
       }
       lic.vocabulary = 'alllicenses'
       smf.push(lic)
@@ -1780,6 +1929,13 @@ export default {
         if (self.importData.keywords) {
           keyws.value = self.importData.keywords
           self.keywordsValue = self.importData.keywords
+        }
+      } else {
+        if (doiImportData) {
+          if (doiImportData.keywords) {
+            keyws.value = doiImportData.keywords
+            self.keywordsValue = doiImportData.keywords
+          }
         }
       }
       sof.push(keyws)
@@ -2213,7 +2369,7 @@ export default {
         self = this
       }
       self.submitResponse = null
-      self.$store.dispatch('loadLanguages', this.$i18n.locale)
+      self.$store.dispatch('loadLanguages', self.$i18n.locale)
       self.step = 3
       self.maxStep = 0
       self.doiImportInput = null

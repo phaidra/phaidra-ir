@@ -48,7 +48,7 @@
             </v-card>
           </v-bottom-sheet>
         </v-row>
-        <v-row no-gutters>
+        <v-row no-gutters justify="center">
           <v-col v-if="inCollection" class="title font-weight-light primary--text">{{ $t('Members of') }} {{ inCollection }} <icon name="material-navigation-close" class="primary--text" height="100%" @click.native="removeCollectionFilter()"></icon></v-col>
           <search-results
             class="ml-2"
@@ -56,7 +56,7 @@
             :total="total"
             :getallresults="getAllResults">
           </search-results>
-          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
+          <v-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
         </v-row>
       </v-col>
       <v-col cols="3" class="pa-2 hidden-sm-and-down">
@@ -78,7 +78,6 @@ import Autocomplete from './Autocomplete'
 import SearchResults from './SearchResults'
 import SearchFilters from './SearchFilters'
 import SearchToolbar from './SearchToolbar'
-import PPagination from 'phaidra-vue-components/src/components/utils/PPagination'
 import '@/compiled-icons/fontello-sort-name-up'
 import '@/compiled-icons/fontello-sort-name-down'
 import '@/compiled-icons/fontello-sort-number-up'
@@ -99,8 +98,7 @@ export default {
     Autocomplete,
     SearchResults,
     SearchFilters,
-    SearchToolbar,
-    PPagination
+    SearchToolbar
   },
   computed: {
     currentPage: {

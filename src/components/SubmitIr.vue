@@ -157,7 +157,20 @@
                         <v-row v-for="(author, i) of doiImportData.authors" :key="'aut'+i">
                           <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
                           <v-col v-else md="2" cols="12"></v-col>
-                          <v-col md="10" cols="12">{{ author.firstname + ' ' + author.lastname }}</v-col>
+                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
+                            <template v-if="author['affiliation']">
+                              <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
+                            </template>
+                          </v-col>
+                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.keywords">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
+                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportData.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.language">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.language }}</v-col>
                         </v-row>
                         <v-row v-if="doiImportData.publicationType">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
@@ -194,6 +207,10 @@
                         <v-row v-if="doiImportData.ISBN">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
                           <v-col md="10" cols="12">{{ doiImportData.ISBN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportData.license">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportData.license }}</v-col>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -289,6 +306,7 @@
                     :label="submitformparam === 'journal-article' ? $t('Article details') : (submitformparam === 'book' ? $t('Book details') : $t('Book chapter details'))"
                     :descriptionLabel="$t('Abstract')"
                     :keywordsLabel="$t('Keywords')"
+                    :keywordsValue="keywordsValue"
                     v-on:input-description="setDescription(s, $event)"
                     v-on:input-keywords="setKeywords(s, $event)"
                     :inputStyle="inputStyle"
@@ -366,6 +384,7 @@
                         v-on:input-page-start="f.pageStart=$event"
                         v-on:input-page-end="f.pageEnd=$event"
                         v-on:add="addField(s.fields, f)"
+                        v-on:add-clear="addSeriesClear(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
                         class="my-4"
@@ -740,9 +759,10 @@ import PublisherPolicyVersions from '@/components/PublisherPolicyVersions'
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
 import fields from 'phaidra-vue-components/src/utils/fields'
+import lang3to2map from 'phaidra-vue-components/src/utils/lang3to2map'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
-import { vocabulary } from 'phaidra-vue-components/src//mixins/vocabulary'
+import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 
 export default {
@@ -756,6 +776,12 @@ export default {
     PublisherPolicyVersions
   },
   computed: {
+    lang2to3map: function () {
+      return Object.keys(lang3to2map).reduce((ret, key) => {
+        ret[lang3to2map[key]] = key
+        return ret
+      }, {})
+    },
     doiToImport: function () {
       if (this.doiImportInput) {
         let doi = this.doiImportInput.replace('https://', '')
@@ -881,6 +907,7 @@ export default {
         nruploads: null
       },
       jsonld: {},
+      keywordsValue: [],
       journalSearchQuery: null,
       journalSearchISSN: null,
       journalSearchLoading: false,
@@ -1084,10 +1111,50 @@ export default {
               }
             }
 
+            if (crossrefData['language']) {
+              if (this.lang2to3map[crossrefData['language']]) {
+                this.doiImportData.language = this.lang2to3map[crossrefData['language']]
+              }
+            }
+
             let authors = crossrefData['author']
             if (authors.length > 0) {
               for (let author of authors) {
-                this.doiImportData.authors.push({ firstname: author['given'].replace(/\s\s+/g, ' ').trim(), lastname: author['family'].replace(/\s\s+/g, ' ').trim() })
+                if (author['given'] || author['family']) {
+                  let auth = {
+                    type: 'schema:Person',
+                    firstname: author['given'] ? author['given'].replace(/\s\s+/g, ' ').trim() : '',
+                    lastname: author['family'] ? author['family'].replace(/\s\s+/g, ' ').trim() : ''
+                  }
+                  if (author['affiliation']) {
+                    if (Array.isArray(author['affiliation'])) {
+                      auth.affiliation = []
+                      for (let af of author['affiliation']) {
+                        auth.affiliation.push(af['name'])
+                      }
+                    }
+                  }
+                  if (author['ORCID']) {
+                    auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
+                  }
+                  this.doiImportData.authors.push(auth)
+                }
+                if (author['name']) {
+                  let auth = {
+                    type: 'schema:Organization',
+                    name: author['name']
+                  }
+                  this.doiImportData.authors.push(auth)
+                }
+              }
+            }
+
+            if (crossrefData['subject']) {
+              if (Array.isArray(crossrefData['subject'])) {
+                this.doiImportData.keywords = []
+                for (let kw of crossrefData['subject']) {
+                  this.doiImportData.keywords.push(kw)
+                }
               }
             }
 
@@ -1212,6 +1279,18 @@ export default {
                 }
               }
             }
+
+            if (crossrefData['license']) {
+              if (Array.isArray(crossrefData['license'])) {
+                for (let lic of crossrefData['license']) {
+                  if (lic['URL']) {
+                    if (this.getTerm('alllicenses', lic['URL'])) {
+                      this.doiImportData.license = lic['URL']
+                    }
+                  }
+                }
+              }
+            }
             this.resetForm(this, this.doiImportData)
             if (this.doiImportData.journalISSN) {
               this.journalSearchISSN = this.doiImportData.journalISSN
@@ -1219,6 +1298,7 @@ export default {
             }
           }
         } catch (error) {
+          console.error(error)
           this.doiImportErrors.push(error)
         } finally {
           this.loading = false
@@ -1315,6 +1395,21 @@ export default {
         newField.identifierText = ''
         newField.removable = true
         newField.subloopFlag = false
+      }
+    },
+    addSeriesClear: function (arr, f) {
+      var newField = arrays.duplicate(arr, f)
+      if (newField) {
+        newField.id = (new Date()).getTime()
+        newField.title = ''
+        newField.volume = ''
+        newField.issue = ''
+        newField.issued = ''
+        newField.issn = ''
+        newField.identifier = ''
+        newField.pageStart = ''
+        newField.pageEnd = ''
+        newField.removable = true
       }
     },
     addEntityClear: function (arr, f) {
@@ -1736,10 +1831,11 @@ export default {
           f.value = value
         }
       }
+      this.keywordsValue = value
     },
     resetForm: function (self, doiImportData) {
       self.$store.commit('enableAllVocabularyTerms', 'versiontypes')
-      self.$store.commit('enableAllVocabularyTerms', this.irObjectTypeVocabulary)
+      self.$store.commit('enableAllVocabularyTerms', self.irObjectTypeVocabulary)
 
       self.form = {
         sections: []
@@ -1759,7 +1855,7 @@ export default {
       smf.push(f)
 
       let tf = fields.getField('title')
-      tf.hideSubtitle = this.submitformparam === 'journal-article'
+      tf.hideSubtitle = self.submitformparam === 'journal-article'
       if (doiImportData && doiImportData.title) {
         tf.title = doiImportData.title
       }
@@ -1774,23 +1870,41 @@ export default {
       let uploader = fields.getField('role-extended')
       uploader.role = 'role:uploader'
       uploader.roleVocabulary = 'rolepredicate'
-      uploader.firstname = this.user.firstname
-      uploader.lastname = this.user.lastname
+      uploader.firstname = self.user.firstname
+      uploader.lastname = self.user.lastname
       smf.push(uploader)
 
       if (doiImportData && doiImportData.authors.length > 0) {
         for (let author of doiImportData.authors) {
           let role = fields.getField('role-extended')
-          role.type = 'schema:Person'
+          role.type = author.type
           role.role = 'role:aut'
+          if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
+            role.hideRole = true
+            role.label = 'Author'
+          }
           role.roleVocabulary = 'irrolepredicate'
           role.ordergroup = 'roles'
-          role.firstname = author.firstname
-          role.lastname = author.lastname
+          role.firstname = author['firstname'] ? author['firstname'] : ''
+          role.lastname = author['lastname'] ? author['lastname'] : ''
           role.showIdentifierType = false
           role.identifierType = 'ids:orcid'
           role.identifierLabel = 'ORCID'
-          role.affiliationType = ''
+          role.identifierText = author['orcid'] ? author['orcid'] : ''
+          if (author['affiliation']) {
+            role.affiliationType = 'other'
+            // iterate, although currently multiple affiliations are not supported
+            for (let af of author['affiliation']) {
+              role.affiliationText = af
+              break
+            }
+          } else {
+            role.affiliationType = ''
+          }
+          if (author.type === 'schema:Organization') {
+            role.organizationType = 'other'
+            role.organizationText = author['name']
+          }
           smf.push(role)
         }
       } else {
@@ -1798,7 +1912,7 @@ export default {
         role.role = 'role:aut'
         role.type = 'schema:Person'
         role.enableTypeSelect = false
-        if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book-part')) {
+        if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
           role.hideRole = true
           role.label = 'Author'
         }
@@ -1829,32 +1943,37 @@ export default {
 
       let lmf = fields.getField('language')
       lmf.multiplicable = false
+      if (doiImportData && doiImportData.language) {
+        lmf.value = doiImportData.language
+      }
       smf.push(lmf)
 
       let otf = fields.getField('object-type')
-      otf.vocabulary = this.irObjectTypeVocabulary
+      otf.vocabulary = self.irObjectTypeVocabulary
       otf.multiplicable = false
       otf.label = 'Type of publication'
       otf.showValueDefinition = true
       if (doiImportData && doiImportData.publicationTypeId) {
         otf.value = doiImportData.publicationTypeId
       }
-      if (this.submitformparam === 'book') {
+      if (self.submitformparam === 'book') {
         otf.value = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
         otf.disabled = true
       }
-      if (this.submitformparam === 'book-part') {
+      if (self.submitformparam === 'book-part') {
         otf.value = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
         otf.disabled = true
       }
       smf.push(otf)
 
-      if (this.submitformparam === 'book-part') {
+      if (self.submitformparam === 'book-part') {
         let sf = fields.getField('contained-in')
+        sf.label = 'Appeared in'
         sf.multilingual = false
         sf.rolesVocabulary = 'irrolepredicate'
         sf.series[0].multiplicableCleared = true
         sf.hideSeriesIssn = true
+        sf.hideSeriesIssue = true
         sf.hideSeriesIssued = true
         sf.collapseSeries = true
         sf.hidePages = false
@@ -1880,7 +1999,7 @@ export default {
         smf.push(sf)
       }
 
-      if ((this.submitformparam === 'book')) {
+      if ((self.submitformparam === 'book')) {
         let pf = fields.getField('bf-publication')
         pf.publisherSearch = false
         pf.multiplicable = false
@@ -1910,7 +2029,11 @@ export default {
       embargoDate.multiplicable = false
       smf.push(embargoDate)
 
-      smf.push(fields.getField('license'))
+      let lic = fields.getField('license')
+      if (doiImportData && doiImportData.license) {
+        lic.value = doiImportData.license
+      }
+      smf.push(lic)
 
       self.form.sections.push(
         {
@@ -1925,7 +2048,15 @@ export default {
 
       // handled by submit-ir-description-keyword component
       sof.push(fields.getField('abstract'))
-      sof.push(fields.getField('keyword'))
+      self.keywordsValue = []
+      let keyws = fields.getField('keyword')
+      if (doiImportData) {
+        if (doiImportData.keywords) {
+          keyws.value = doiImportData.keywords
+          self.keywordsValue = doiImportData.keywords
+        }
+      }
+      sof.push(keyws)
 
       // handled by submit-ir-funding-field component
       let pof = fields.getField('project')
@@ -1935,7 +2066,7 @@ export default {
       pof.subloopFlag = true
       sof.push(pof)
 
-      if ((this.submitformparam === 'book')) {
+      if ((self.submitformparam === 'book')) {
         let isbn = {
           id: 'alternate-identifier',
           fieldname: 'Alternate identifier',
@@ -1968,21 +2099,22 @@ export default {
       }
       sof.push(aif)
 
-      if (this.submitformparam === 'book') {
+      if (self.submitformparam === 'book') {
         let nop = fields.getField('number-of-pages')
         nop.multiplicable = false
         sof.push(nop)
       }
 
-      if ((this.submitformparam === 'journal-article') || (this.submitformparam === 'book')) {
+      if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book')) {
         let sf = fields.getField('series')
         sf.multilingual = false
+        sf.multiplicableCleared = self.submitformparam === 'book'
         sf.hideIdentifier = true
-        sf.label = this.submitformparam === 'book' ? 'Series' : 'Journal/Series'
-        sf.hidePages = this.submitformparam !== 'journal-article'
-        sf.hideIssue = this.submitformparam !== 'journal-article'
-        sf.hideIssued = this.submitformparam !== 'journal-article'
-        sf.hideIssn = this.submitformparam !== 'journal-article'
+        sf.label = self.submitformparam === 'book' ? 'Series' : 'Journal/Series'
+        sf.hidePages = self.submitformparam !== 'journal-article'
+        sf.hideIssue = self.submitformparam !== 'journal-article'
+        sf.hideIssued = self.submitformparam !== 'journal-article'
+        sf.hideIssn = self.submitformparam !== 'journal-article'
         sf.issuedDatePicker = true
         if (doiImportData) {
           if (doiImportData.journalTitle) {
@@ -2010,12 +2142,12 @@ export default {
         sof.push(sf)
       }
 
-      if (this.submitformparam === 'journal-article') {
+      if (self.submitformparam === 'journal-article') {
         let pf = fields.getField('bf-publication')
         pf.multiplicable = false
         pf.showPlace = false
         pf.showDate = false
-        pf.label = this.$t('PUBLISHER_VERLAG')
+        pf.label = self.$t('PUBLISHER_VERLAG')
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -2031,7 +2163,7 @@ export default {
         }
       )
 
-      this.$nextTick().then(function () {
+      self.$nextTick().then(function () {
         // put things here which might be overwritten
         // when components re-initialize
         // some use nextTick to wait for vocabularies or

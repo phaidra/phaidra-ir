@@ -68,7 +68,7 @@
           </v-col>
         </v-row>
         <v-row justify="start">
-          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage"/>
+          <v-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage"/>
           <v-spacer></v-spacer>
         </v-row>
         <v-divider class="my-3"></v-divider>
@@ -78,7 +78,7 @@
             :total="total"
             :search="search">
           </admin-search-results>
-          <p-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
+          <v-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
         </v-row>
       </v-col>
     </v-row>
@@ -89,7 +89,6 @@ import qs from 'qs'
 import Vue from 'vue'
 import Autocomplete from './Autocomplete'
 import AdminSearchResults from './AdminSearchResults'
-import PPagination from 'phaidra-vue-components/src/components/utils/PPagination'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import '@/compiled-icons/fontello-sort-name-up'
 import '@/compiled-icons/fontello-sort-name-down'
@@ -109,8 +108,7 @@ export default {
   mixins: [ config, context, vocabulary ],
   components: {
     Autocomplete,
-    AdminSearchResults,
-    PPagination
+    AdminSearchResults
   },
   props: {
     collection: {
