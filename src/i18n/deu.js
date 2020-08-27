@@ -687,5 +687,6 @@ export default {
   'Scholarly article': 'Wissenschaftlicher Artikel',
   'This includes: Journal articles, reports, reviews, working papers, conference papers ...': 'Dazu gehören: Beiträge in Zeitschriften, Forschungsberichte, Rezensionen, Working Papers, Konferenzbeiträge ...',
   'This includes: Individual chapters from monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Einzelne Kapitel in Monografien, Sammelbänden, Konferenzbänden ...',
-  'This includes: Complete monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Vollständige Monografien, Sammelbände, Konferenzbände ...'
+  'This includes: Complete monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Vollständige Monografien, Sammelbände, Konferenzbände ...',
+  'The abstract is always publicly available regardless of any restrictions or embargo periods etc. imposed on your publication.': 'Das Abstract Ihrer Publikation ist immer öffentlich einsehbar unabhängig von etwaigen Einschränkungen, Embargofristen etc. auf die Publikation.'
 }
