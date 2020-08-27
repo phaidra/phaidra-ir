@@ -2081,7 +2081,7 @@ export default {
         sf.publicationType = 'other'
         sf.publisherSearch = false
         sf.publisherShowDate = true
-        sf.publisherShowPlace = self.config.bookpubliserplace
+        sf.publisherShowPlace = self.config.bookpublisherplace
         sf.publisherHideType = !self.config.enableorgpublisher
         sf.publishingDateLabel = self.config.bookpublisherdatelabel
         sf.publishingDatePicker = self.config.bookpublisherdatepicker
