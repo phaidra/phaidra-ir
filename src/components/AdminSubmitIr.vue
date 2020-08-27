@@ -1982,7 +1982,7 @@ export default {
         pf.publisherSearch = false
         pf.multiplicable = false
         pf.showDate = true
-        pf.showPlace = self.config.bookpubliserplace
+        pf.showPlace = self.config.bookpublisherplace
         pf.hideType = !self.config.enableorgpublisher
         pf.publishingDateLabel = self.config.bookpublisherdatelabel
         pf.publishingDatePicker = self.config.bookpublisherdatepicker
