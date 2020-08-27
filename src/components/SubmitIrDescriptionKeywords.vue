@@ -15,6 +15,7 @@
                 :label="$t(descriptionLabel)"
                 :filled="inputStyle==='filled'"
                 :outlined="inputStyle==='outlined'"
+                :hint="descriptionHint ? $t(descriptionHint) : undefined"
               ></v-textarea>
             </v-col>
           </v-row>
@@ -119,6 +120,10 @@ export default {
     },
     descriptionValue: {
       type: String
+    },
+    descriptionHint: {
+      type: String,
+      default: undefined
     },
     descriptionLabel: {
       type: String

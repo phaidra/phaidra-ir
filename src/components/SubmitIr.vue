@@ -307,6 +307,7 @@
                     :descriptionLabel="$t('Abstract')"
                     :keywordsLabel="$t('Keywords')"
                     :keywordsValue="keywordsValue"
+                    :descriptionHint="config.descriptionhint"
                     v-on:input-description="setDescription(s, $event)"
                     v-on:input-keywords="setKeywords(s, $event)"
                     :inputStyle="inputStyle"
