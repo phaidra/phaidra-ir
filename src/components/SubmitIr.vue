@@ -869,7 +869,6 @@ export default {
   data () {
     return {
       inputStyle: 'filled',
-      mandatoryBgColor: '#f1f9ff',
       form: {
         sections: []
       },
@@ -909,7 +908,6 @@ export default {
       },
       jsonld: {},
       keywordsValue: [],
-      validateSeries: false,
       journalSearchQuery: null,
       journalSearchISSN: null,
       journalSearchLoading: false,
@@ -1382,6 +1380,7 @@ export default {
           this.step = 8
         }
       } catch (error) {
+        console.log(error)
         this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
       } finally {
         this.$vuetify.goTo(0)
@@ -1816,10 +1815,8 @@ export default {
       // if journal-article && *not* AO
       if ((objectType === 'https://pid.phaidra.org/vocabulary/VKA6-9XTY') && (versionType !== 'https://pid.phaidra.org/vocabulary/TV31-080M')) {
         this.moveSeriesTo('mandatory')
-        this.validateSeries = true
       } else {
         this.moveSeriesTo('optional')
-        this.validateSeries = false
       }
     },
     getSeriesIdx: function (s) {
@@ -1869,7 +1866,7 @@ export default {
       let aiidx = this.getAltIdsIdx()
       if (sidx > -1) {
         if (moveTo === 'mandatory') {
-          optionalSection.fields[sidx].titleBackgroundColor = this.mandatoryBgColor
+          optionalSection.fields[sidx].titleBackgroundColor = this.config.mandatorybgcolor
           mandatorySection.fields.splice(otidx + 1, 0, optionalSection.fields[sidx])
           optionalSection.fields.splice(sidx, 1)
         }
@@ -1943,13 +1940,13 @@ export default {
       let f = fields.getField('file')
       f.multiplicable = false
       f.mimetype = 'application/pdf'
-      f.backgroundColor = self.mandatoryBgColor
+      f.backgroundColor = self.config.mandatorybgcolor
       f.autoMimetype = true
       f.showMimetype = false
       smf.push(f)
 
       let tf = fields.getField('title')
-      tf.titleBackgroundColor = self.mandatoryBgColor
+      tf.titleBackgroundColor = self.config.mandatorybgcolor
       tf.hideSubtitle = self.submitformparam === 'journal-article'
       if (doiImportData && doiImportData.title) {
         tf.title = doiImportData.title
@@ -1966,11 +1963,11 @@ export default {
         for (let author of doiImportData.authors) {
           let role = fields.getField('role-extended')
           role.type = author.type
-          role.nameBackgroundColor = self.mandatoryBgColor
-          role.firstnameBackgroundColor = self.mandatoryBgColor
-          role.lastnameBackgroundColor = self.mandatoryBgColor
-          role.roleBackgroundColor = self.mandatoryBgColor
-          role.affiliationBackgroundColor = self.mandatoryBgColor
+          role.nameBackgroundColor = self.config.mandatorybgcolor
+          role.firstnameBackgroundColor = self.config.mandatorybgcolor
+          role.lastnameBackgroundColor = self.config.mandatorybgcolor
+          role.roleBackgroundColor = self.config.mandatorybgcolor
+          role.affiliationBackgroundColor = self.config.mandatorybgcolor
           role.role = 'role:aut'
           if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
             role.hideRole = true
@@ -2002,11 +1999,11 @@ export default {
         }
       } else {
         let role = fields.getField('role-extended')
-        role.nameBackgroundColor = self.mandatoryBgColor
-        role.firstnameBackgroundColor = self.mandatoryBgColor
-        role.lastnameBackgroundColor = self.mandatoryBgColor
-        role.roleBackgroundColor = self.mandatoryBgColor
-        role.affiliationBackgroundColor = self.mandatoryBgColor
+        role.nameBackgroundColor = self.config.mandatorybgcolor
+        role.firstnameBackgroundColor = self.config.mandatorybgcolor
+        role.lastnameBackgroundColor = self.config.mandatorybgcolor
+        role.roleBackgroundColor = self.config.mandatorybgcolor
+        role.affiliationBackgroundColor = self.config.mandatorybgcolor
         role.role = 'role:aut'
         role.type = 'schema:Person'
         role.enableTypeSelect = false
@@ -2025,7 +2022,7 @@ export default {
 
       let vtf = fields.getField('version-type')
       vtf.showValueDefinition = true
-      vtf.backgroundColor = self.mandatoryBgColor
+      vtf.backgroundColor = self.config.mandatorybgcolor
       smf.push(vtf)
 
       let issued = fields.getField('date-edtf')
@@ -2035,7 +2032,7 @@ export default {
       issued.hideType = true
       issued.dateLabel = 'Date issued'
       issued.multiplicable = false
-      issued.backgroundColor = self.mandatoryBgColor
+      issued.backgroundColor = self.config.mandatorybgcolor
       if (doiImportData && doiImportData.dateIssued) {
         issued.value = doiImportData.dateIssued
       }
@@ -2046,7 +2043,7 @@ export default {
       if (doiImportData && doiImportData.language) {
         lmf.value = doiImportData.language
       }
-      lmf.backgroundColor = self.mandatoryBgColor
+      lmf.backgroundColor = self.config.mandatorybgcolor
       smf.push(lmf)
 
       let otf = fields.getField('object-type')
@@ -2054,7 +2051,7 @@ export default {
       otf.multiplicable = false
       otf.label = 'Type of publication'
       otf.showValueDefinition = true
-      otf.backgroundColor = self.mandatoryBgColor
+      otf.backgroundColor = self.config.mandatorybgcolor
       if (doiImportData && doiImportData.publicationTypeId) {
         otf.value = doiImportData.publicationTypeId
       }
@@ -2070,8 +2067,8 @@ export default {
 
       if (self.submitformparam === 'book-part') {
         let sf = fields.getField('contained-in')
-        sf.titleBackgroundColor = self.mandatoryBgColor
-        sf.publisherBackgroundColor = self.mandatoryBgColor
+        sf.titleBackgroundColor = self.config.mandatorybgcolor
+        sf.publisherBackgroundColor = self.config.mandatorybgcolor
         sf.label = 'Appeared in'
         sf.multilingual = false
         sf.rolesVocabulary = self.config.containedinrolevocab
@@ -2108,8 +2105,8 @@ export default {
 
       if ((self.submitformparam === 'book')) {
         let pf = fields.getField('bf-publication')
-        pf.publisherBackgroundColor = self.mandatoryBgColor
-        pf.publishingDateBackgroundColor = self.mandatoryBgColor
+        pf.publisherBackgroundColor = self.config.mandatorybgcolor
+        pf.publishingDateBackgroundColor = self.config.mandatorybgcolor
         pf.publisherSearch = false
         pf.multiplicable = false
         pf.showDate = true
@@ -2129,13 +2126,13 @@ export default {
 
       let arf = fields.getField('access-right')
       arf.vocabulary = self.config.accessrightsvocab
-      arf.backgroundColor = self.mandatoryBgColor
+      arf.backgroundColor = self.config.mandatorybgcolor
       arf.showValueDefinition = true
       smf.push(arf)
 
       let embargoDate = fields.getField('date-edtf')
       embargoDate.picker = true
-      embargoDate.backgroundColor = self.mandatoryBgColor
+      embargoDate.backgroundColor = self.config.mandatorybgcolor
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
@@ -2146,7 +2143,7 @@ export default {
       if (doiImportData && doiImportData.license) {
         lic.value = doiImportData.license
       }
-      lic.backgroundColor = self.mandatoryBgColor
+      lic.backgroundColor = self.config.mandatorybgcolor
       smf.push(lic)
 
       self.form.sections.push(
