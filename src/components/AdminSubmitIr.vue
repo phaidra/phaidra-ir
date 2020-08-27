@@ -1901,6 +1901,7 @@ export default {
         {
           title: self.$t('Mandatory fields'),
           type: 'digitalobject',
+          obligation: 'mandatory',
           id: 5,
           fields: smf
         }
@@ -1993,10 +1994,13 @@ export default {
         }
         sof.push(isbn)
       }
+      if (identifiersArrayNoIsbn.length > 0) {
+        self.importData.identifiers = identifiersArrayNoIsbn
+      }
 
-      if (self.importData && identifiersArrayNoIsbn.length > 0) {
+      if (self.importData && self.importData.identifiers.length > 0) {
         let i = 0
-        for (let id of identifiersArrayNoIsbn) {
+        for (let id of self.importData.identifiers) {
           i++
           let aif = fields.getField('alternate-identifier')
           aif.label = 'Identifier'
@@ -2163,6 +2167,7 @@ export default {
         {
           title: self.$t('Optional fields'),
           type: 'digitalobject',
+          obligation: 'optional',
           id: 6,
           fields: sof
         }

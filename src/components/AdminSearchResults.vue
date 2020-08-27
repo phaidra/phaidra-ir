@@ -6,7 +6,7 @@
           {{ doc.created | date }}
         </v-col>
         <v-col cols="1">
-          <span v-if="doc.bib_roles_pers_uploader && doc.bib_roles_pers_uploader[0]">{{ doc.bib_roles_pers_uploader[0] }}</span>
+          <span v-if="doc.uploader">{{ doc.uploader }}</span>
           <span v-else>{{ doc.owner }}</span>
         </v-col>
         <v-col cols="1">

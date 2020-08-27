@@ -919,9 +919,10 @@ export default {
                     Object.entries(obj).forEach(([key1, values1]) => {
                       switch (key1) {
                         case '@type':
-                          if (values1 !== 'schema:Person') {
+                          if ((values1 !== 'schema:Person') && (values1 !== 'schema:Organization')) {
                             importData.errors.push('Unsupported role type: ' + values1)
                           }
+                          entity.type = values1
                           break
                         case 'schema:givenName':
                           for (let firstname of values1) {
@@ -938,6 +939,15 @@ export default {
                               importData.errors.push('Multiple role > schema:familyName: ' + JSON.stringify(lastname))
                             } else {
                               entity.lastname = lastname['@value']
+                            }
+                          }
+                          break
+                        case 'schema:name':
+                          for (let name of values1) {
+                            if (entity.name) {
+                              importData.errors.push('Multiple role > schema:name: ' + JSON.stringify(name))
+                            } else {
+                              entity.name = name['@value']
                             }
                           }
                           break

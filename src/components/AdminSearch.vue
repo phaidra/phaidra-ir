@@ -196,9 +196,9 @@ export default {
       let rlparams = {
         'pids[]': pagePids
       }
-      let rlresponse = await this.$http.request({
+      let aldresponse = await this.$http.request({
         method: 'POST',
-        url: this.config.api + '/ir/requestedlicenses',
+        url: this.config.api + '/ir/adminlistdata',
         data: qs.stringify(rlparams, { arrayFormat: 'repeat' }),
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
@@ -206,14 +206,27 @@ export default {
         }
       })
 
-      if (rlresponse.data.requestedlicenses) {
-        for (let rl of rlresponse.data.requestedlicenses) {
+      if (aldresponse.data.requestedlicenses) {
+        for (let rl of aldresponse.data.requestedlicenses) {
           for (let d of this.docs) {
             if (rl.pid === d.pid) {
               if (rl.requestedlicense.startsWith('http')) {
                 Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
               } else {
                 Vue.set(d, 'requestedlicense', this.getLocalizedTermLabelByNotation('alllicenses', rl.requestedlicense))
+              }
+            }
+          }
+        }
+      }
+      if (aldresponse.data.submits) {
+        for (let submit of aldresponse.data.submits) {
+          for (let d of this.docs) {
+            if (submit.pid === d.pid) {
+              if (submit.user.name) {
+                Vue.set(d, 'uploader', submit.user.name)
+              } else {
+                Vue.set(d, 'uploader', submit.user.username)
               }
             }
           }

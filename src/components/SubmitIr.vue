@@ -869,6 +869,7 @@ export default {
   data () {
     return {
       inputStyle: 'filled',
+      mandatoryBgColor: '#f1f9ff',
       form: {
         sections: []
       },
@@ -908,6 +909,7 @@ export default {
       },
       jsonld: {},
       keywordsValue: [],
+      validateSeries: false,
       journalSearchQuery: null,
       journalSearchISSN: null,
       journalSearchLoading: false,
@@ -1742,6 +1744,7 @@ export default {
         if (f.predicate === 'oaire:version') {
           let dateType = null
           let dateLabel = null
+          let dateHidden = false
           switch (f.value) {
             case 'https://pid.phaidra.org/vocabulary/TV31-080M': // AO
             case 'https://pid.phaidra.org/vocabulary/83ZP-CPP2': // P
@@ -1759,6 +1762,7 @@ export default {
             case 'https://pid.phaidra.org/vocabulary/PMR8-3C8D': // VoR
               dateType = 'dcterms:issued'
               dateLabel = 'Date issued'
+              dateHidden = (this.submitformparam === 'book') || (this.submitformparam === 'book-part')
               break
             case 'https://pid.phaidra.org/vocabulary/SSQW-AP1S': // EVoR
             case 'https://pid.phaidra.org/vocabulary/MT1G-APSB': // CVoR
@@ -1775,6 +1779,10 @@ export default {
               if (formfield.mainSubmitDate) {
                 formfield.type = dateType
                 formfield.dateLabel = dateLabel
+                formfield.hidden = dateHidden
+                if (dateHidden) {
+                  formfield.value = ''
+                }
               }
             }
           }
@@ -1785,7 +1793,92 @@ export default {
         f['rdfs:label'] = []
         f['skos:notation'] = []
       }
+      this.checkSeriesPosition()
       this.$emit('form-input-' + f.component, f)
+    },
+    checkSeriesPosition: function () {
+      let objectType
+      for (let s of this.form.sections) {
+        for (let field of s.fields) {
+          if (field.predicate === 'edm:hasType') {
+            objectType = field.value
+          }
+        }
+      }
+      let versionType
+      for (let s of this.form.sections) {
+        for (let field of s.fields) {
+          if (field.predicate === 'oaire:version') {
+            versionType = field.value
+          }
+        }
+      }
+      // if journal-article && *not* AO
+      if ((objectType === 'https://pid.phaidra.org/vocabulary/VKA6-9XTY') && (versionType !== 'https://pid.phaidra.org/vocabulary/TV31-080M')) {
+        this.moveSeriesTo('mandatory')
+        this.validateSeries = true
+      } else {
+        this.moveSeriesTo('optional')
+        this.validateSeries = false
+      }
+    },
+    getSeriesIdx: function (s) {
+      for (let i = 0; i < s.fields.length; i++) {
+        if (s.fields[i].predicate === 'rdau:P60193') {
+          return i
+        }
+      }
+      return -1
+    },
+    getObjectTypeIdx: function () {
+      for (let s of this.form.sections) {
+        if (s.obligation === 'mandatory') {
+          for (let i = 0; i < s.fields.length; i++) {
+            if (s.fields[i].predicate === 'edm:hasType') {
+              return i
+            }
+          }
+        }
+      }
+      return -1
+    },
+    getAltIdsIdx: function (section) {
+      for (let s of this.form.sections) {
+        if (s.obligation === 'optional') {
+          for (let i = 0; i < s.fields.length; i++) {
+            if (s.fields[i].predicate === 'rdam:P30004') {
+              return i
+            }
+          }
+        }
+      }
+      return -1
+    },
+    getSection: function (obligation) {
+      for (let s of this.form.sections) {
+        if (s.obligation === obligation) {
+          return s
+        }
+      }
+    },
+    moveSeriesTo: function (moveTo) {
+      let optionalSection = this.getSection('optional')
+      let mandatorySection = this.getSection('mandatory')
+      let sidx = this.getSeriesIdx(moveTo === 'mandatory' ? optionalSection : mandatorySection)
+      let otidx = this.getObjectTypeIdx()
+      let aiidx = this.getAltIdsIdx()
+      if (sidx > -1) {
+        if (moveTo === 'mandatory') {
+          optionalSection.fields[sidx].titleBackgroundColor = this.mandatoryBgColor
+          mandatorySection.fields.splice(otidx + 1, 0, optionalSection.fields[sidx])
+          optionalSection.fields.splice(sidx, 1)
+        }
+        if (moveTo === 'optional') {
+          mandatorySection.fields[sidx].titleBackgroundColor = undefined
+          optionalSection.fields.splice(aiidx + 1, 0, mandatorySection.fields[sidx])
+          mandatorySection.fields.splice(sidx, 1)
+        }
+      }
     },
     roleInput: function (f, event) {
       if (event) {
@@ -1850,11 +1943,13 @@ export default {
       let f = fields.getField('file')
       f.multiplicable = false
       f.mimetype = 'application/pdf'
+      f.backgroundColor = self.mandatoryBgColor
       f.autoMimetype = true
       f.showMimetype = false
       smf.push(f)
 
       let tf = fields.getField('title')
+      tf.titleBackgroundColor = self.mandatoryBgColor
       tf.hideSubtitle = self.submitformparam === 'journal-article'
       if (doiImportData && doiImportData.title) {
         tf.title = doiImportData.title
@@ -1867,17 +1962,15 @@ export default {
       tf.multiplicable = false
       smf.push(tf)
 
-      let uploader = fields.getField('role-extended')
-      uploader.role = 'role:uploader'
-      uploader.roleVocabulary = 'rolepredicate'
-      uploader.firstname = self.user.firstname
-      uploader.lastname = self.user.lastname
-      smf.push(uploader)
-
       if (doiImportData && doiImportData.authors.length > 0) {
         for (let author of doiImportData.authors) {
           let role = fields.getField('role-extended')
           role.type = author.type
+          role.nameBackgroundColor = self.mandatoryBgColor
+          role.firstnameBackgroundColor = self.mandatoryBgColor
+          role.lastnameBackgroundColor = self.mandatoryBgColor
+          role.roleBackgroundColor = self.mandatoryBgColor
+          role.affiliationBackgroundColor = self.mandatoryBgColor
           role.role = 'role:aut'
           if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
             role.hideRole = true
@@ -1909,6 +2002,11 @@ export default {
         }
       } else {
         let role = fields.getField('role-extended')
+        role.nameBackgroundColor = self.mandatoryBgColor
+        role.firstnameBackgroundColor = self.mandatoryBgColor
+        role.lastnameBackgroundColor = self.mandatoryBgColor
+        role.roleBackgroundColor = self.mandatoryBgColor
+        role.affiliationBackgroundColor = self.mandatoryBgColor
         role.role = 'role:aut'
         role.type = 'schema:Person'
         role.enableTypeSelect = false
@@ -1927,6 +2025,7 @@ export default {
 
       let vtf = fields.getField('version-type')
       vtf.showValueDefinition = true
+      vtf.backgroundColor = self.mandatoryBgColor
       smf.push(vtf)
 
       let issued = fields.getField('date-edtf')
@@ -1936,6 +2035,7 @@ export default {
       issued.hideType = true
       issued.dateLabel = 'Date issued'
       issued.multiplicable = false
+      issued.backgroundColor = self.mandatoryBgColor
       if (doiImportData && doiImportData.dateIssued) {
         issued.value = doiImportData.dateIssued
       }
@@ -1946,6 +2046,7 @@ export default {
       if (doiImportData && doiImportData.language) {
         lmf.value = doiImportData.language
       }
+      lmf.backgroundColor = self.mandatoryBgColor
       smf.push(lmf)
 
       let otf = fields.getField('object-type')
@@ -1953,6 +2054,7 @@ export default {
       otf.multiplicable = false
       otf.label = 'Type of publication'
       otf.showValueDefinition = true
+      otf.backgroundColor = self.mandatoryBgColor
       if (doiImportData && doiImportData.publicationTypeId) {
         otf.value = doiImportData.publicationTypeId
       }
@@ -1968,20 +2070,25 @@ export default {
 
       if (self.submitformparam === 'book-part') {
         let sf = fields.getField('contained-in')
+        sf.titleBackgroundColor = self.mandatoryBgColor
+        sf.publisherBackgroundColor = self.mandatoryBgColor
         sf.label = 'Appeared in'
         sf.multilingual = false
-        sf.rolesVocabulary = 'irrolepredicate'
+        sf.rolesVocabulary = self.config.containedinrolevocab
         sf.series[0].multiplicableCleared = true
         sf.hideSeriesIssn = true
         sf.hideSeriesIssue = true
         sf.hideSeriesIssued = true
         sf.collapseSeries = true
         sf.hidePages = false
+        sf.publicationType = 'other'
         sf.publisherSearch = false
-        sf.publisherShowPlace = false
         sf.publisherShowDate = true
+        sf.publisherShowPlace = self.config.bookpubliserplace
+        sf.publisherHideType = !self.config.enableorgpublisher
+        sf.publishingDateLabel = self.config.bookpublisherdatelabel
+        sf.publishingDatePicker = self.config.bookpublisherdatepicker
         sf.publisherLabel = 'PUBLISHER_VERLAG'
-        sf.publishingDateLabel = 'Publication date'
         if (doiImportData) {
           if (doiImportData.pageStart) {
             sf.pageStart = doiImportData.pageStart
@@ -2001,12 +2108,16 @@ export default {
 
       if ((self.submitformparam === 'book')) {
         let pf = fields.getField('bf-publication')
+        pf.publisherBackgroundColor = self.mandatoryBgColor
+        pf.publishingDateBackgroundColor = self.mandatoryBgColor
         pf.publisherSearch = false
         pf.multiplicable = false
-        pf.showPlace = false
         pf.showDate = true
+        pf.showPlace = self.config.bookpubliserplace
+        pf.hideType = !self.config.enableorgpublisher
+        pf.publishingDateLabel = self.config.bookpublisherdatelabel
+        pf.publishingDatePicker = self.config.bookpublisherdatepicker
         pf.label = 'PUBLISHER_VERLAG'
-        pf.publishingDateLabel = 'Publication date'
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -2017,12 +2128,14 @@ export default {
       }
 
       let arf = fields.getField('access-right')
-      arf.vocabulary = 'iraccessright'
+      arf.vocabulary = self.config.accessrightsvocab
+      arf.backgroundColor = self.mandatoryBgColor
       arf.showValueDefinition = true
       smf.push(arf)
 
       let embargoDate = fields.getField('date-edtf')
       embargoDate.picker = true
+      embargoDate.backgroundColor = self.mandatoryBgColor
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
@@ -2033,12 +2146,14 @@ export default {
       if (doiImportData && doiImportData.license) {
         lic.value = doiImportData.license
       }
+      lic.backgroundColor = self.mandatoryBgColor
       smf.push(lic)
 
       self.form.sections.push(
         {
           title: self.$t('Mandatory fields'),
           type: 'digitalobject',
+          obligation: 'mandatory',
           id: 5,
           fields: smf
         }
@@ -2148,9 +2263,11 @@ export default {
         pf.showPlace = false
         pf.showDate = false
         pf.label = self.$t('PUBLISHER_VERLAG')
+        pf.publisherType = 'other'
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
+        pf.hideType = !self.config.enableorgpublisher
         sof.push(pf)
       }
 
@@ -2158,10 +2275,13 @@ export default {
         {
           title: self.$t('Optional fields'),
           type: 'digitalobject',
+          obligation: 'optional',
           id: 6,
           fields: sof
         }
       )
+
+      self.checkSeriesPosition()
 
       self.$nextTick().then(function () {
         // put things here which might be overwritten
@@ -2206,7 +2326,7 @@ export default {
       this.validationErrors = []
       let hasLocalAffiliation = false
       for (let s of this.form.sections) {
-        if (s.id === 5) {
+        if (s.obligation === 'mandatory') {
           for (let f of s.fields) {
             if (f.component === 'p-title') {
               f.titleErrorMessages = []
@@ -2275,7 +2395,7 @@ export default {
               }
             }
             if (f.component === 'p-date-edtf') {
-              if (this.showEmbargoDate || f.type !== 'dcterms:available') {
+              if ((this.showEmbargoDate || f.type !== 'dcterms:available') && (!f.hidden)) {
                 f.typeErrorMessages = []
                 f.valueErrorMessages = []
                 if (f.type.length < 1) {
