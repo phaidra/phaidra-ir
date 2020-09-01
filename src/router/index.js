@@ -47,7 +47,7 @@ export function createRouter () {
         component: Detail
       },
       {
-        path: '/detail/:pid/stats',
+        path: '/stats/:pid',
         name: 'stats',
         component: Stats
       },

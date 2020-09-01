@@ -2087,6 +2087,7 @@ export default {
         sf.publishingDateLabel = self.config.bookpublisherdatelabel
         sf.publishingDatePicker = self.config.bookpublisherdatepicker
         sf.publisherLabel = 'PUBLISHER_VERLAG'
+        sf.dateHintFormat = self.config.dateformathint
         if (doiImportData) {
           if (doiImportData.pageStart) {
             sf.pageStart = doiImportData.pageStart
@@ -2116,6 +2117,7 @@ export default {
         pf.publishingDateLabel = self.config.bookpublisherdatelabel
         pf.publishingDatePicker = self.config.bookpublisherdatepicker
         pf.label = 'PUBLISHER_VERLAG'
+        pf.dateHintFormat = self.config.dateformathint
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -2137,6 +2139,7 @@ export default {
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
+      embargoDate.dateHintFormat = self.config.dateformathint
       embargoDate.multiplicable = false
       smf.push(embargoDate)
 
@@ -2229,6 +2232,7 @@ export default {
         sf.hideIssued = self.submitformparam !== 'journal-article'
         sf.hideIssn = self.submitformparam !== 'journal-article'
         sf.issuedDatePicker = true
+        sf.dateHintFormat = self.config.dateformathint
         if (doiImportData) {
           if (doiImportData.journalTitle) {
             sf.title = doiImportData.journalTitle
