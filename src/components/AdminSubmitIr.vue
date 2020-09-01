@@ -1686,6 +1686,8 @@ export default {
           role.lastnameBackgroundColor = self.config.mandatorybgcolor
           role.roleBackgroundColor = self.config.mandatorybgcolor
           role.affiliationBackgroundColor = self.config.mandatorybgcolor
+          role.enableOrgTree = self.config.enableorgtree
+          role.enableAffTree = self.config.enableafftree
           role.role = importRole.role
           role.roleVocabulary = 'irrolepredicate'
           role.ordergroup = 'roles'
@@ -1719,6 +1721,8 @@ export default {
             role.lastnameBackgroundColor = self.config.mandatorybgcolor
             role.roleBackgroundColor = self.config.mandatorybgcolor
             role.affiliationBackgroundColor = self.config.mandatorybgcolor
+            role.enableOrgTree = self.config.enableorgtree
+            role.enableAffTree = self.config.enableafftree
             role.role = 'role:aut'
             if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
               role.hideRole = true
@@ -1755,6 +1759,8 @@ export default {
           role.lastnameBackgroundColor = self.config.mandatorybgcolor
           role.roleBackgroundColor = self.config.mandatorybgcolor
           role.affiliationBackgroundColor = self.config.mandatorybgcolor
+          role.enableOrgTree = self.config.enableorgtree
+          role.enableAffTree = self.config.enableafftree
           role.role = 'role:aut'
           role.type = 'schema:Person'
           role.enableTypeSelect = false
@@ -1868,6 +1874,8 @@ export default {
         sf.publishingDateLabel = self.config.bookpublisherdatelabel
         sf.publishingDatePicker = self.config.bookpublisherdatepicker
         sf.publisherLabel = 'PUBLISHER_VERLAG'
+        sf.dateFormatHint = self.config.dateformathint
+        sf.enableOrgTree = self.config.enableorgtree
         if (self.importData && self.importData.containedin) {
           if (self.importData.containedin.title) {
             sf.title = self.importData.containedin.title.value
@@ -1987,6 +1995,8 @@ export default {
         pf.publishingDateLabel = self.config.bookpublisherdatelabel
         pf.publishingDatePicker = self.config.bookpublisherdatepicker
         pf.label = 'PUBLISHER_VERLAG'
+        pf.dateFormatHint = self.config.dateformathint
+        pf.enableOrgTree = self.config.enableorgtree
         if (self.importData && self.importData.publisher) {
           if (self.importData.publisher.type) {
             pf.publisherType = self.importData.publisher.type
@@ -2028,6 +2038,7 @@ export default {
       embargoDate.type = 'dcterms:available'
       embargoDate.hideType = true
       embargoDate.dateLabel = 'Embargo date'
+      embargoDate.dateFormatHint = self.config.dateformathint
       if (self.importData && self.importData.embargodate) {
         embargoDate.value = self.importData.embargodate
         self.showEmbargoDate = true
@@ -2202,6 +2213,7 @@ export default {
         sf.hideIssued = self.submitformparam !== 'journal-article'
         sf.hideIssn = self.submitformparam !== 'journal-article'
         sf.issuedDatePicker = true
+        sf.dateFormatHint = self.config.dateformathint
         if (self.importData && self.importData.series) {
           if (self.importData.series.title) {
             sf.title = self.importData.series.title.value
@@ -2263,8 +2275,10 @@ export default {
         pf.multiplicable = false
         pf.showPlace = false
         pf.showDate = false
-        pf.label = self.$t('PUBLISHER_VERLAG')
+        pf.label = 'PUBLISHER_VERLAG'
         pf.publisherType = 'other'
+        pf.enableOrgTree = self.config.enableorgtree
+        pf.dateFormatHint = self.config.dateformathint
         if (self.importData && self.importData.publisher) {
           if (self.importData.publisher.type) {
             pf.publisherType = self.importData.publisher.type

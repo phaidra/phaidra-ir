@@ -610,6 +610,7 @@ export default {
   'PUBLISHER_HERAUSGEBERIN': 'Herausgeber*in',
   'PUBLISHER_VERLAG': 'Verlag',
   'JOURNAL_ERSCHIENENIN': 'Erschienen in',
+  'Appeared in': 'Erschienen in',
   'AUTHOR_PREPRINT': 'Eingereichte Version (Preprint)',
   'Restrictions': 'Einschränkungen',
   'AUTHOR_POSTPRINT': 'Akzeptierte Version (Postprint)',

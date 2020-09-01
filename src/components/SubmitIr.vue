@@ -99,7 +99,7 @@
               <v-checkbox v-model="touCheckbox" color="primary" :error-messages="touCheckboxErrors">
                 <template v-slot:label>
                   <i18n path="SUBMIT_TOU_4" tag="span" class="black--text">
-                    <a @click.stop href="https://phaidra.univie.ac.at/terms_of_use/show_terms_of_use" target="_blank">Phaidra</a>
+                    <a @click.stop :href="'https://' + config.phaidrabaseurl + '/terms_of_use/show_terms_of_use'" target="_blank">Phaidra</a>
                   </i18n>
                 </template>
               </v-checkbox>
@@ -1969,6 +1969,8 @@ export default {
           role.lastnameBackgroundColor = self.config.mandatorybgcolor
           role.roleBackgroundColor = self.config.mandatorybgcolor
           role.affiliationBackgroundColor = self.config.mandatorybgcolor
+          role.enableOrgTree = self.config.enableorgtree
+          role.enableAffTree = self.config.enableafftree
           role.role = 'role:aut'
           if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
             role.hideRole = true
@@ -2005,6 +2007,8 @@ export default {
         role.lastnameBackgroundColor = self.config.mandatorybgcolor
         role.roleBackgroundColor = self.config.mandatorybgcolor
         role.affiliationBackgroundColor = self.config.mandatorybgcolor
+        role.enableOrgTree = self.config.enableorgtree
+        role.enableAffTree = self.config.enableafftree
         role.role = 'role:aut'
         role.type = 'schema:Person'
         role.enableTypeSelect = false
@@ -2088,6 +2092,7 @@ export default {
         sf.publishingDatePicker = self.config.bookpublisherdatepicker
         sf.publisherLabel = 'PUBLISHER_VERLAG'
         sf.dateFormatHint = self.config.dateformathint
+        sf.enableOrgTree = self.config.enableorgtree
         if (doiImportData) {
           if (doiImportData.pageStart) {
             sf.pageStart = doiImportData.pageStart
@@ -2118,6 +2123,7 @@ export default {
         pf.publishingDatePicker = self.config.bookpublisherdatepicker
         pf.label = 'PUBLISHER_VERLAG'
         pf.dateFormatHint = self.config.dateformathint
+        pf.enableOrgTree = self.config.enableorgtree
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
@@ -2264,8 +2270,10 @@ export default {
         pf.multiplicable = false
         pf.showPlace = false
         pf.showDate = false
-        pf.label = self.$t('PUBLISHER_VERLAG')
+        pf.label = 'PUBLISHER_VERLAG'
         pf.publisherType = 'other'
+        pf.enableOrgTree = self.config.enableorgtree
+        pf.dateFormatHint = self.config.dateformathint
         if (doiImportData && doiImportData.publisher) {
           pf.publisherName = doiImportData.publisher
         }
