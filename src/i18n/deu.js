@@ -690,5 +690,9 @@ export default {
   'This includes: Individual chapters from monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Einzelne Kapitel in Monografien, Sammelbänden, Konferenzbänden ...',
   'This includes: Complete monographs, collections of essays, conference proceedings ...': 'Dazu gehören: Vollständige Monografien, Sammelbände, Konferenzbände ...',
   'The abstract is always publicly available regardless of any restrictions or embargo periods etc. imposed on your publication.': 'Das Abstract Ihrer Publikation ist immer öffentlich einsehbar unabhängig von etwaigen Einschränkungen, Embargofristen etc. auf die Publikation.',
-  'Title of book chapter': 'Titel des Buchkapitels'
+  'Title of book chapter': 'Titel des Buchkapitels',
+  'Submit in progress': 'Upload läuft',
+  'Please wait until the submission process has finished.': 'Bitte warten Sie, bis der Upload abgeschlossen ist.',
+  'Confirm to exit': 'Zum Beenden bestätigen',
+  'Please confirm to exit the submit form.': 'Bitte bestätigen Sie, dass Sie das Uploadformular verlassen möchten.'
 }
