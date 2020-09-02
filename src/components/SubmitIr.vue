@@ -757,6 +757,17 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="confirmBackDialog" width="500">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">{{ $t('Confirm to exit') }}</v-card-title>
+        <v-card-text>{{ $t('Please confirm to exit the submit form.') }}</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="confirmBackDialog = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 
 </template>
@@ -935,7 +946,8 @@ export default {
         { text: this.$t('Publishers'), align: 'left', value: 'publishers', sortable: false },
         { text: '', align: 'right', value: 'data-table-expand' }
       ],
-      submitBackDialog: false
+      submitBackDialog: false,
+      confirmBackDialog: false
     }
   },
   watch: {
@@ -2344,7 +2356,13 @@ export default {
           this.step = 3
         }
       }
-      this.$vuetify.goTo(1)
+      if (process.browser) {
+        if (navigator.userAgent.indexOf('Firefox') > -1) {
+          document.querySelector('#app').scrollIntoView()
+        } else {
+          this.$vuetify.goTo(1)
+        }
+      }
     },
     validateMandatory: function () {
       this.validationStatus = ''
@@ -2597,19 +2615,21 @@ export default {
   },
   beforeRouteLeave: async function (to, from, next) {
     if ((this.step === 8) && (to.name === 'submit')) {
-      this.$router.push('/submit')
-      next(false)
-    }
-    if ((this.step === 7) && (to.name === 'submit') && this.loading) {
-      this.submitBackDialog = true
-      next(false)
-    }
-    if ((this.step > 1) && (to.name === 'submit') && (!this.$store.state.skipsubmitrouteleavehook)) {
-      this.step = this.step - 1
-      this.$vuetify.goTo(1)
-      next(false)
+      this.confirmBackDialog = true
+      next(Error('Please confirm to exit the submitform'))
     } else {
-      next()
+      if ((this.step === 7) && (to.name === 'submit') && this.loading) {
+        this.submitBackDialog = true
+        next(Error('Submit in progress'))
+      } else {
+        if ((this.step > 1) && (to.name === 'submit') && (!this.$store.state.skipsubmitrouteleavehook)) {
+          this.step = this.step - 1
+          this.$vuetify.goTo(1)
+          next(false)
+        } else {
+          next()
+        }
+      }
     }
   }
 }
