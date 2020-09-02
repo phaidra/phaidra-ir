@@ -1649,6 +1649,9 @@ export default {
       }
 
       let tf = fields.getField('title')
+      if (self.submitformparam === 'book-part') {
+        tf.titleLabel = 'Title of book chapter'
+      }
       tf.titleBackgroundColor = self.config.mandatorybgcolor
       tf.hideSubtitle = self.submitformparam === 'journal-article'
       tf.multilingual = false

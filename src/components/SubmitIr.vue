@@ -746,7 +746,17 @@
       </v-stepper-items>
 
     </v-stepper>
-
+    <v-dialog v-model="submitBackDialog" width="500">
+      <v-card>
+        <v-card-title class="headline grey lighten-2">{{ $t('Submit in progress') }}</v-card-title>
+        <v-card-text>{{ $t('Please wait until the submit process has finished.') }}</v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click="submitBackDialog = false">OK</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 
 </template>
@@ -924,7 +934,8 @@ export default {
         { text: this.$t('Title'), align: 'left', value: 'title', sortable: false },
         { text: this.$t('Publishers'), align: 'left', value: 'publishers', sortable: false },
         { text: '', align: 'right', value: 'data-table-expand' }
-      ]
+      ],
+      submitBackDialog: false
     }
   },
   watch: {
@@ -1377,6 +1388,7 @@ export default {
         }
 
         if (response.data.status === 200) {
+          this.submitBackDialog = false
           this.submitResponse = response.data
           this.step = 8
         }
@@ -1947,6 +1959,9 @@ export default {
       smf.push(f)
 
       let tf = fields.getField('title')
+      if (self.submitformparam === 'book-part') {
+        tf.titleLabel = 'Title of book chapter'
+      }
       tf.titleBackgroundColor = self.config.mandatorybgcolor
       tf.hideSubtitle = self.submitformparam === 'journal-article'
       if (doiImportData && doiImportData.title) {
@@ -2581,6 +2596,14 @@ export default {
     next()
   },
   beforeRouteLeave: async function (to, from, next) {
+    if ((this.step === 8) && (to.name === 'submit')) {
+      this.$router.push('/submit')
+      next(false)
+    }
+    if ((this.step === 7) && (to.name === 'submit') && this.loading) {
+      this.submitBackDialog = true
+      next(false)
+    }
     if ((this.step > 1) && (to.name === 'submit') && (!this.$store.state.skipsubmitrouteleavehook)) {
       this.step = this.step - 1
       this.$vuetify.goTo(1)
