@@ -749,7 +749,7 @@
     <v-dialog v-model="submitBackDialog" width="500">
       <v-card>
         <v-card-title class="headline grey lighten-2">{{ $t('Submit in progress') }}</v-card-title>
-        <v-card-text>{{ $t('Please wait until the submit process has finished.') }}</v-card-text>
+        <v-card-text>{{ $t('Please wait until the submission process has finished.') }}</v-card-text>
         <v-divider></v-divider>
         <v-card-actions>
           <v-spacer></v-spacer>
