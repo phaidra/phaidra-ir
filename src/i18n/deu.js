@@ -694,5 +694,6 @@ export default {
   'Submit in progress': 'Upload läuft',
   'Please wait until the submission process has finished.': 'Bitte warten Sie, bis der Upload abgeschlossen ist.',
   'Confirm to exit': 'Zum Beenden bestätigen',
-  'Please confirm to exit the submit form.': 'Bitte bestätigen Sie, dass Sie das Uploadformular verlassen möchten.'
+  'Please confirm to exit the submit form.': 'Bitte bestätigen Sie, dass Sie das Uploadformular verlassen möchten.',
+  'Confirm': 'Bestätigen'
 }
