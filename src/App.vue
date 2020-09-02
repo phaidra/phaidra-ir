@@ -142,6 +142,7 @@
 
       <v-row>
         <v-col cols="12" md="8" offset-md="2">
+          <v-divider v-if="!config.quicklinks"></v-divider>
           <v-row>
             <v-col class="text-left" >
               <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
