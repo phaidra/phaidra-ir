@@ -2158,13 +2158,20 @@ export default {
         }
         sof.push(isbn)
       }
+
+      // watch out not to edit self.importData.identifiers
+      // there's a watcher on it which triggers this method
+      // ==> infinite loop
+      let identifiers = []
       if (identifiersArrayNoIsbn.length > 0) {
-        self.importData.identifiers = identifiersArrayNoIsbn
+        identifiers = identifiersArrayNoIsbn
+      } else {
+        identifiers = self.importData.identifiers
       }
 
-      if (self.importData && self.importData.identifiers.length > 0) {
+      if (self.importData && identifiers.length > 0) {
         let i = 0
-        for (let id of self.importData.identifiers) {
+        for (let id of identifiers) {
           i++
           let aif = fields.getField('alternate-identifier')
           aif.label = 'Identifier'
