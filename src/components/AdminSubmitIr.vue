@@ -2544,7 +2544,7 @@ export default {
       }
       if (!hasLocalAffiliation && (this.user.username !== this.config.iraccount)) {
         this.validationStatus = 'error'
-        this.validationErrors.push(this.$t('At least one person named must be affiliated with the') + ' ' + this.config.institution)
+        this.validationErrors.push(this.$t('ERROR_AFFILIATION', { institution: this.$t(this.config.institution) }))
       }
     },
     resetSubmission: async function (self) {

@@ -695,5 +695,7 @@ export default {
   'Please wait until the submission process has finished.': 'Bitte warten Sie, bis der Upload abgeschlossen ist.',
   'Confirm to exit': 'Zum Beenden bestätigen',
   'Please confirm to exit the submit form.': 'Bitte bestätigen Sie, dass Sie das Uploadformular verlassen möchten.',
-  'Confirm': 'Bestätigen'
+  'Confirm': 'Bestätigen',
+
+  'ERROR_AFFILIATION': 'Zumindest eine genannte Person muss der {institution} zugehörig sein'
 }
