@@ -145,7 +145,7 @@
           <v-divider v-if="!config.quicklinks"></v-divider>
           <v-row>
             <v-col class="text-left" >
-              <span class="grey--text text--darken-2"><address>{{ config.address }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
+              <span class="grey--text text--darken-2"><address>{{ $t(config.address) }} | <abbr title="Telefon">T</abbr> {{ config.phone }}</address></span>
             </v-col>
             <v-col class="text-right" >
               <router-link :to="'/info/impressum'">{{ $t('Impressum') }}</router-link> | <router-link :to="'/info/credits'">{{ $t('Credits') }}</router-link> | <router-link :to="'/info/metadata_policy'">{{ $t('Metadata policy') }}</router-link> | <router-link :to="'/info/terms'">{{ $t('Terms of use') }}</router-link>

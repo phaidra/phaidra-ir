@@ -697,5 +697,8 @@ export default {
   'Please confirm to exit the submit form.': 'Bitte bestätigen Sie, dass Sie das Uploadformular verlassen möchten.',
   'Confirm': 'Bestätigen',
 
-  'ERROR_AFFILIATION': 'Zumindest eine genannte Person muss der {institution} zugehörig sein'
+  'ERROR_AFFILIATION': 'Zumindest eine genannte Person muss der {institution} zugehörig sein',
+
+  'University of Vienna | Universitätsring 1 | 1010 Vienna': 'Universität Wien | Universitätsring 1 | 1010 Wien',
+  'University Library | University of Music and Performing Arts Graz | Brandhofgasse 17/19 | 8010 Graz': 'Universitätsbibliothek | Universität für Musik und darstellende Kunst Graz | Brandhofgasse 17/19 | 8010 Graz'
 }

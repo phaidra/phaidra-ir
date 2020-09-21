@@ -1502,8 +1502,7 @@ export default {
               nrRoles++
             }
           }
-          // uploader + 1 author => min 2 roles must stay
-          if (nrRoles > 2) {
+          if (nrRoles > 1) {
             arrays.remove(arr, f)
           }
           break

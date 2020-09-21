@@ -14,7 +14,7 @@
               <icon v-if="q.active" name="univie-stop2" class="primary--text"></icon>
               <icon v-if="!q.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
               <span :class="{ active: q.active }" class="facet-label primary--text">
-                <template v-if="q.label['skos:prefLabel']">{{ q.label['skos:prefLabel'][$i18n.locale] }}</template>
+                <template v-if="q.label['skos:prefLabel']">{{ getLocalizedQueryLabel(q.label['skos:prefLabel']) }}</template>
                 <template v-else>{{ $t(q.label) }}</template>
               </span>
               <span class="facet-count grey--text" v-if="q.count > 0">({{q.count}})</span>
@@ -25,7 +25,7 @@
                   <icon v-if="q1.active" name="univie-stop2" class="primary--text"></icon>
                   <icon v-if="!q1.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                   <span :class="{ active: q1.active }" class="facet-label primary--text">
-                    <template v-if="q1.label['skos:prefLabel']">{{ q1.label['skos:prefLabel'][$i18n.locale] }}</template>
+                    <template v-if="q1.label['skos:prefLabel']">{{ getLocalizedQueryLabel(q1.label['skos:prefLabel']) }}</template>
                     <template v-else>{{ $t(q1.label) }}</template>
                   </span>
                   <span class="facet-count grey--text" v-if="q1.count > 0">({{q1.count}})</span>
@@ -36,7 +36,7 @@
                       <icon v-if="q2.active" name="univie-stop2" class="primary--text"></icon>
                       <icon v-if="!q2.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                       <span :class="{ active: q2.active }" class="facet-label primary--text">
-                        <template v-if="q2.label['skos:prefLabel']">{{ q2.label['skos:prefLabel'][$i18n.locale] }}</template>
+                        <template v-if="q2.label['skos:prefLabel']">{{ getLocalizedQueryLabel(q2.label['skos:prefLabel']) }}</template>
                         <template v-else>{{ $t(q2.label) }}</template>
                       </span>
                       <span class="facet-count grey--text" v-if="q2.count>0">({{q2.count}})</span>
@@ -47,7 +47,7 @@
                           <icon v-if="q3.active" name="univie-stop2" class="primary--text"></icon>
                           <icon v-if="!q3.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                           <span :class="{ active: q3.active }" class="facet-label primary--text">
-                            <template v-if="q3.label['skos:prefLabel']">{{ q3.label['skos:prefLabel'][$i18n.locale] }}</template>
+                            <template v-if="q3.label['skos:prefLabel']">{{ getLocalizedQueryLabel(q3.label['skos:prefLabel']) }}</template>
                             <template v-else>{{ $t(q3.label) }}</template>
                           </span>
                           <span class="facet-count grey--text" v-if="q3.count>0">({{q3.count}})</span>
@@ -58,7 +58,7 @@
                               <icon v-if="q4.active" name="univie-stop2" class="primary--text"></icon>
                               <icon v-if="!q4.active" name="univie-checkbox-unchecked" class="primary--text"></icon>
                               <span :class="{ active: q4.active }" class="facet-label primary--text">
-                                <template v-if="q4.label['skos:prefLabel']">{{ q4.label['skos:prefLabel'][$i18n.locale] }}</template>
+                                <template v-if="q4.label['skos:prefLabel']">{{ getLocalizedQueryLabel(q4.label['skos:prefLabel']) }}</template>
                                 <template v-else>{{ $t(q4.label) }}</template>
                               </span>
                               <span class="facet-count grey--text" v-if="q4.count>0">({{q4.count}})</span>
@@ -86,7 +86,7 @@
           <v-col cols="12">
             <v-combobox
               class="mt-4"
-              :placeholder="$t('ADD_PREFIX') + ' '  + $t('Author') + ' ' + $t('ADD_SUFFIX') + '...'"
+              :placeholder="$t('ADD_PREFIX') + ' ' + $t('Author') + ' ' + $t('ADD_SUFFIX') + '...'"
               persistent-hint
               chips
               clearable
@@ -111,7 +111,7 @@
           <v-col cols="12">
             <v-combobox
               class="mt-4"
-              :placeholder="$t('ADD_PREFIX') + ' '  + $t('Journal title or ISSN') + ' ' + $t('ADD_SUFFIX') + '...'"
+              :placeholder="$t('ADD_PREFIX') + ' ' + $t('Journal title or ISSN') + ' ' + $t('ADD_SUFFIX') + '...'"
               persistent-hint
               chips
               clearable
@@ -207,6 +207,17 @@ export default {
     }
   },
   methods: {
+    getLocalizedQueryLabel: function (qPrefLabel) {
+      if (qPrefLabel[this.$i18n.locale] !== '') {
+        return qPrefLabel[this.$i18n.locale]
+      } else {
+        if (qPrefLabel['deu'] !== '') {
+          return qPrefLabel['deu']
+        } else {
+          return qPrefLabel['eng']
+        }
+      }
+    },
     showFacetAndSearch: function (f) {
       showFacet(f)
       this.search({ facetQueries: this.facetQueries })
