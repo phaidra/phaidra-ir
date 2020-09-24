@@ -119,7 +119,9 @@ export function buildAssociationFacet (orgUnitsTree) {
     queries: []
   }
 
+  let i = 0
   for (let l1Unit of orgUnitsTree) {
+    i++
     let l2Facet = {
       label: 'Subunits of ' + l1Unit['@id'],
       field: 'association_id',
@@ -209,7 +211,7 @@ export function buildAssociationFacet (orgUnitsTree) {
 
     associationFacet.queries.push({
       query: 'association_id:"' + l1Unit['@id'] + '"',
-      active: true,
+      active: i === 1,
       id: l1Unit['@id'],
       label: {
         'skos:prefLabel': l1Unit['skos:prefLabel']

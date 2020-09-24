@@ -700,5 +700,9 @@ export default {
   'ERROR_AFFILIATION': 'Zumindest eine genannte Person muss der {institution} zugehörig sein',
 
   'University of Vienna | Universitätsring 1 | 1010 Vienna': 'Universität Wien | Universitätsring 1 | 1010 Wien',
-  'University Library | University of Music and Performing Arts Graz | Brandhofgasse 17/19 | 8010 Graz': 'Universitätsbibliothek | Universität für Musik und darstellende Kunst Graz | Brandhofgasse 17/19 | 8010 Graz'
+  'University Library | University of Music and Performing Arts Graz | Brandhofgasse 17/19 | 8010 Graz': 'Universitätsbibliothek | Universität für Musik und darstellende Kunst Graz | Brandhofgasse 17/19 | 8010 Graz',
+  'Usage statistics': 'Nutzungsstatistiken',
+  'Download': 'Herunterladen',
+  'Authors': 'Autor*innen',
+  'Journals': 'Zeitschriften'
 }

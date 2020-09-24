@@ -280,7 +280,9 @@ export default {
       if (!this.vocabularies['orgunits'].loaded) {
         await this.$store.dispatch('loadOrgUnits', this.$i18n.locale)
       }
-      facetQueries.push(buildAssociationFacet(this.vocabularies['orgunits'].tree))
+      let af = buildAssociationFacet(this.vocabularies['orgunits'].tree)
+      console.log(af)
+      facetQueries.push(af)
       this.search()
     })
     // This call is delayed because at this point
