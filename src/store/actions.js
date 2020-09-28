@@ -111,6 +111,7 @@ export default {
       }
     } catch (error) {
       console.log(error)
+      commit('setAlerts', [ { type: 'danger', msg: 'Login failed' } ])
     }
   },
   async logout ({ commit, dispatch, state }) {

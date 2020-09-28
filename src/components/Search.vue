@@ -239,6 +239,16 @@ export default {
           deactivateFacetQueries(fq)
         }
       }
+      // open first association query (level: univeristy)
+      for (let fq of this.facetQueries) {
+        if (fq.id === 'association') {
+          for (let q of fq.queries) {
+            q.active = true
+            break
+          }
+          break
+        }
+      }
     },
     toggleSelection: function () {
       this.selectioncheck = !this.selectioncheck

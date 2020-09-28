@@ -2165,7 +2165,9 @@ export default {
       if (identifiersArrayNoIsbn.length > 0) {
         identifiers = identifiersArrayNoIsbn
       } else {
-        identifiers = self.importData.identifiers
+        if (self.importData && self.importData.identifiers) {
+          identifiers = self.importData.identifiers
+        }
       }
 
       if (self.importData && identifiers.length > 0) {
@@ -2371,7 +2373,13 @@ export default {
           this.step = 3
         }
       }
-      this.$vuetify.goTo(1)
+      if (process.browser) {
+        if (navigator.userAgent.indexOf('Firefox') > -1) {
+          document.querySelector('#app').scrollIntoView()
+        } else {
+          this.$vuetify.goTo(1)
+        }
+      }
     },
     continueForm: function (step) {
       if (this.targetPid) {
@@ -2386,7 +2394,13 @@ export default {
           this.step = step + 1
         }
       }
-      this.$vuetify.goTo(1)
+      if (process.browser) {
+        if (navigator.userAgent.indexOf('Firefox') > -1) {
+          document.querySelector('#app').scrollIntoView()
+        } else {
+          this.$vuetify.goTo(1)
+        }
+      }
     },
     validateMandatory: function () {
       this.validationStatus = ''
