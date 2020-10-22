@@ -732,7 +732,7 @@ export default {
             let crossrefData = response.data
 
             this.doiImportData = {
-              doi: this.doiToImport,
+              doi: this.doiToImport.replace(/\s\s+/g, ' ').trim(),
               title: '',
               dateIssued: '',
               authors: [],
