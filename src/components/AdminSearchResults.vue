@@ -22,7 +22,10 @@
           <div>{{ doc.currentlicense }}</div>
           <div class="grey--text pt-2">{{ doc.requestedlicense }}</div>
         </v-col>
-        <v-col cols="1">
+        <v-col cols="2">
+          <v-btn icon :color="'grey darken-1'" :href="config.api + '/object/' + doc.pid + '/diss/Content/download'">
+            <v-icon>mdi-download</v-icon>
+          </v-btn>
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">
             <v-icon dark>history</v-icon>
           </v-btn>
@@ -33,13 +36,13 @@
             <v-icon dark>mdi-lock-open-outline</v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           <v-spacer></v-spacer>
-          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="primary" v-if="isNew(doc)" @click="accept(doc.pid)">Accept</v-btn>
-          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="grey darken-1 white--text" v-if="isNew(doc)" @click="reject(doc.pid)">Reject</v-btn>
-          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="grey darken-1 white--text" v-if="isAccepted(doc)" :to="{ name: 'metadataeditor', params: { pid: doc.pid } }">Edit</v-btn>
-          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-2 font-weight-regular" color="primary" @click="approve(doc.pid)" v-if="isAccepted(doc) && !isApproved(doc)">Approve</v-btn>
-          <v-icon class="mx-2" v-if="isApproved(doc)">mdi-check</v-icon>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="primary" v-if="isNew(doc)" @click="accept(doc.pid)">Accept</v-btn>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="grey darken-1 white--text" v-if="isNew(doc)" @click="reject(doc.pid)">Reject</v-btn>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="grey darken-1 white--text" v-if="isAccepted(doc)" :to="{ name: 'metadataeditor', params: { pid: doc.pid } }">Edit</v-btn>
+          <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="primary" @click="approve(doc.pid)" v-if="isAccepted(doc) && !isApproved(doc)">Approve</v-btn>
+          <v-icon class="mx-1" v-if="isApproved(doc)">mdi-check</v-icon>
         </v-col>
       </v-row>
       <v-divider :key="'div'+doc.pid" class="my-4 mr-2"></v-divider>

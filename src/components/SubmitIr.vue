@@ -2160,7 +2160,7 @@ export default {
       }
 
       let arf = fields.getField('access-right')
-      arf.vocabulary = self.config.accessrightsvocab
+      arf.vocabulary = 'iraccessright'
       arf.backgroundColor = self.config.mandatorybgcolor
       arf.showValueDefinition = true
       smf.push(arf)

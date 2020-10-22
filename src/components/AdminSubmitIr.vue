@@ -1965,6 +1965,9 @@ export default {
             if (self.importData.containedin.publisher.date) {
               sf.publishingDate = self.importData.containedin.publisher.date
             }
+            if (self.importData.containedin.publisher.place) {
+              sf.publishingPlace = self.importData.containedin.publisher.place
+            }
           }
         } else {
           if (doiImportData) {
@@ -2027,7 +2030,7 @@ export default {
       }
 
       let arf = fields.getField('access-right')
-      arf.vocabulary = self.config.accessrightsvocab
+      arf.vocabulary = 'iraccessright'
       arf.backgroundColor = self.config.mandatorybgcolor
       if (self.importData && self.importData.accessrights) {
         arf.value = self.importData.accessrights

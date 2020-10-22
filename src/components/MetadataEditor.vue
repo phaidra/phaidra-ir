@@ -540,6 +540,27 @@ export default {
                                 }
                               }
                               break
+                            case 'bf:place':
+                              for (let v1 of values2) {
+                                Object.entries(v1).forEach(([key3, values3]) => {
+                                  switch (key3) {
+                                    case '@type':
+                                      if (values3 !== 'schema:Place') {
+                                        importData.errors.push('Unsupported rdau:P60101 > bf:provisionActivity > bf:place type: ' + values3)
+                                      }
+                                      break
+                                    case 'skos:prefLabel':
+                                      for (let prefLabel of values3) {
+                                        importData['containedin']['publisher']['place'] = prefLabel['@value']
+                                      }
+                                      break
+                                    default:
+                                      importData.errors.push('Unsupported rdau:P60101 > bf:provisionActivity > bf:agent property: ' + key3)
+                                      break
+                                  }
+                                })
+                              }
+                              break
                             default:
                               importData.errors.push('Unsupported rdau:P60101 > bf:provisionActivity property: ' + key2)
                               break
