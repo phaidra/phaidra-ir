@@ -23,7 +23,7 @@
           <div class="grey--text pt-2">{{ doc.requestedlicense }}</div>
         </v-col>
         <v-col cols="2">
-          <v-btn icon :color="'grey darken-1'" :href="config.api + '/object/' + doc.pid + '/diss/Content/download'">
+          <v-btn icon :color="'grey darken-1'" @click="downloadFile(config.api + '/object/' + doc.pid + '/diss/Content/download')">
             <v-icon>mdi-download</v-icon>
           </v-btn>
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">
@@ -119,6 +119,20 @@ export default {
     }
   },
   methods: {
+    downloadFile: function (url) {
+      this.$http.request({
+        url: url,
+        method: 'GET',
+        responseType: 'blob'
+      }).then((response) => {
+        const url = window.URL.createObjectURL(new Blob([response.data]))
+        const link = document.createElement('a')
+        link.href = url
+        link.setAttribute('download', 'file.pdf')
+        link.click()
+        window.URL.revokeObjectURL(url)
+      })
+    },
     isApproved: function (doc) {
       return (doc.owner === this.config.iraccount) && doc.ispartof && doc.ispartof.includes(this.config.ircollection)
     },
