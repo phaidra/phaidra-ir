@@ -123,12 +123,16 @@ export default {
       this.$http.request({
         url: url,
         method: 'GET',
-        responseType: 'blob'
+        responseType: 'blob',
+        headers: {
+          'X-XSRF-TOKEN': this.$store.state.user.token
+        }
       }).then((response) => {
         const url = window.URL.createObjectURL(new Blob([response.data]))
         const link = document.createElement('a')
         link.href = url
-        link.setAttribute('download', 'file.pdf')
+        let fileName = response.headers['content-disposition'].split('filename=')[1]
+        link.setAttribute('download', fileName)
         link.click()
         window.URL.revokeObjectURL(url)
       })
