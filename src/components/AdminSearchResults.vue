@@ -119,9 +119,9 @@ export default {
     }
   },
   methods: {
-    downloadFile: function (url) {
+    downloadFile: function (downloadUrl) {
       this.$http.request({
-        url: url,
+        url: downloadUrl,
         method: 'GET',
         responseType: 'blob',
         headers: {
@@ -132,7 +132,7 @@ export default {
         const link = document.createElement('a')
         link.href = url
         let fileName = response.headers['content-disposition'].split('filename=')[1]
-        link.setAttribute('download', fileName)
+        link.setAttribute('download', fileName.replaceAll('"', ''))
         link.click()
         window.URL.revokeObjectURL(url)
       })
