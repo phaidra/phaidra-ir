@@ -114,6 +114,7 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
 export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries }, ands) {
   let params = {
     q,
+    'q.op': 'AND',
     defType: 'edismax',
     wt: 'json',
     qf: 'pid^5 dc_title^4 dc_creator^3 dc_subject^2 dc_source^2 _text_',
@@ -261,6 +262,7 @@ export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQue
 export function adminBuildParams ({ q, page, pagesize, sortdef, lang, adminFacetQueries }, ands) {
   let params = {
     q,
+    'q.op': 'AND',
     defType: 'edismax',
     wt: 'json',
     qf: 'pid^5 dc_title^4 dc_creator^3 dc_subject^2 _text_',
