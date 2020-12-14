@@ -223,77 +223,22 @@ export function buildAssociationFacet (orgUnitsTree) {
 }
 
 function buildDateFacet () {
-  let months31 = [1, 3, 5, 7, 8, 10, 12]
-  let months30 = [4, 6, 9, 11]
-  let startYear = 2008
+  let startYear = config.search.datefacetstartyear
   let currYear = new Date().getFullYear()
   let yearsFacet = {
     label: 'Date',
-    field: 'tcreated',
-    id: 'created',
+    field: 'bib_published',
+    id: 'published',
     show: false,
     resetable: true,
     queries: []
   }
 
   for (let year = startYear; year <= currYear; year++) {
-    let monthsFacet = {
-      label: 'Months of ' + year,
-      field: 'tcreated',
-      resetable: true,
-      id: 'months-' + year,
-      queries: []
-    }
-
-    for (let month = 1; month <= 12; month++) {
-      let daysOfMonth
-      if (months30.indexOf(month) > -1) {
-        daysOfMonth = 30
-      } else {
-        if (months31.indexOf(month) > -1) {
-          daysOfMonth = 31
-        } else {
-          let isLeap = ((year % 4 === 0) && (year % 100 !== 0)) || (year % 400 === 0)
-          if (isLeap) {
-            daysOfMonth = 29
-          } else {
-            daysOfMonth = 28
-          }
-        }
-      }
-
-      let daysFacet = {
-        label: 'Days of ' + month + '.' + year,
-        field: 'tcreated',
-        resetable: true,
-        id: 'days-' + year + '-' + month,
-        queries: []
-      }
-
-      for (let day = 1; day <= daysOfMonth; day++) {
-        if (day < 10) {
-          day = '0' + day
-        }
-        daysFacet.queries.push({
-          query: 'tcreated:[' + year + '-' + month + '-' + day + 'T00:00:00Z TO ' + year + '-' + month + '-' + day + 'T23:59:59Z]',
-          id: year + '-' + month + '-' + day,
-          label: day + '.' + month + '.' + year
-        })
-      }
-
-      monthsFacet.queries.push({
-        query: 'tcreated:[' + year + '-' + month + '-01T00:00:00Z TO ' + year + '-' + month + '-' + daysOfMonth + 'T00:00:00Z]',
-        id: year + '-' + month,
-        label: month + '.' + year,
-        childFacet: daysFacet
-      })
-    }
-
     yearsFacet.queries.push({
-      query: 'tcreated:[' + year + '-01-01T00:00:00Z TO ' + year + '-12-31T00:00:00Z]',
+      query: 'bib_published:' + year,
       id: year,
-      label: year,
-      childFacet: monthsFacet
+      label: year
     })
   }
 
