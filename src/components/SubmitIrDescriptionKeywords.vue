@@ -161,7 +161,7 @@ export default {
   },
   methods: {
     parseKeywordsPaste () {
-      let arr = this.keywordspaste.split(/[,;]/)
+      let arr = this.keywordspaste.split(/[;]/)
       arr = arr.map(e => e.trim())
       this.model = arr
       this.$emit('input-keywords', arr)
