@@ -63,7 +63,7 @@
               <v-row no-gutters v-if="doiImportData" justify="center">
                 <v-col cols="12" md="7">
                   <v-card>
-                    <v-card-title class="title font-weight-light grey white--text">{{ $t('Folowing metadata were retrieved') }}</v-card-title>
+                    <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}</v-card-title>
                     <v-card-text>
                       <v-container>
                         <v-row v-if="doiImportData.title">
