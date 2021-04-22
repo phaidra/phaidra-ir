@@ -440,7 +440,7 @@
                         <v-row no-gutters>
                           <p-i-file
                             v-bind.sync="f"
-                            v-on:input-file="setFilename(f, $event)"
+                            v-on:input-file="setFilename(s.fields, f, $event)"
                             v-on:input-mimetype="setSelected(f, 'mimetype', $event)"
                             v-on:add="addField(s.fields, f)"
                             v-on:remove="removeField(s.fields, f)"
@@ -1589,10 +1589,26 @@ export default {
         }
       }
     },
-    setFilename: function (f, event) {
+    setFilename: function (fields, f, event) {
       if (event) {
         f.value = event.name
         f.file = event
+      }
+      if (event.type) {
+        f.mimetype = event.type
+        for (let formfield of fields) {
+          if (formfield.predicate === 'dcterms:type') {
+            if ((event.type === 'application/pdf') || (event.name.endsWith('pdf'))) {
+              formfield.value = 'https://pid.phaidra.org/vocabulary/69ZZ-2KGX'
+              formfield['skos:prefLabel'] = []
+              formfield['skos:prefLabel'].push({ '@value': 'text', '@language': 'eng' })
+            } else {
+              formfield.value = 'https://pid.phaidra.org/vocabulary/7AVS-Y482'
+              formfield['skos:prefLabel'] = []
+              formfield['skos:prefLabel'].push({ '@value': 'data', '@language': 'eng' })
+            }
+          }
+        }
       }
       this.$emit('form-input-' + f.component, f)
     },
@@ -1635,6 +1651,9 @@ export default {
 
       let rt = fields.getField('resource-type')
       rt.value = 'https://pid.phaidra.org/vocabulary/69ZZ-2KGX'
+      if (self.importData && self.importData.resourceType) {
+        rt.value = self.importData.resourceType
+      }
       smf.push(rt)
 
       if (!self.importData) {

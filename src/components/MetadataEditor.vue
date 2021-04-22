@@ -28,6 +28,7 @@ export default {
   data () {
     return {
       importData: {
+        resourceType: null,
         roles: [],
         funding: [],
         identifiers: [],
@@ -35,7 +36,18 @@ export default {
         abstract: {},
         unknownpredicates: [],
         errors: []
-      }
+      },
+      resourceTypes: [
+        'https://pid.phaidra.org/vocabulary/44TN-P1S0',
+        'https://pid.phaidra.org/vocabulary/69ZZ-2KGX',
+        'https://pid.phaidra.org/vocabulary/69ZZ-2KGX',
+        'https://pid.phaidra.org/vocabulary/GXS7-ENXJ',
+        'https://pid.phaidra.org/vocabulary/B0Y6-GYT8',
+        'https://pid.phaidra.org/vocabulary/7AVS-Y482',
+        'https://pid.phaidra.org/vocabulary/8YB5-1M0J',
+        'https://pid.phaidra.org/vocabulary/8MY0-BQDQ',
+        'https://pid.phaidra.org/vocabulary/T8GH-F4V8'
+      ]
     }
   },
   methods: {
@@ -45,6 +57,7 @@ export default {
     },
     loadJsonld: async function (self, pid) {
       self.importData = {
+        resourceType: null,
         roles: [],
         funding: [],
         identifiers: [],
@@ -69,6 +82,7 @@ export default {
     },
     getImportData: function (jsonld) {
       let importData = {
+        resourceType: null,
         roles: [],
         funding: [],
         identifiers: [],
@@ -117,8 +131,10 @@ export default {
                       break
                     case 'skos:exactMatch':
                       for (let em of obj['skos:exactMatch']) {
-                        if (em !== 'https://pid.phaidra.org/vocabulary/69ZZ-2KGX') {
+                        if (!this.resourceTypes.includes(em)) {
                           importData.errors.push('Unsupported resource type: ' + em)
+                        } else {
+                          importData.resourceType = em
                         }
                       }
                       break
