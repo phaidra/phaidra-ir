@@ -776,7 +776,9 @@ export default {
                                 }
                                 break
                               case 'skos:prefLabel':
-                                // will be loaded
+                                for (let prefLabel of values2) {
+                                  funding['fundername'] = prefLabel['@value']
+                                }
                                 break
                               default:
                                 importData.errors.push('Unsupported frapo:isOutputOf > frapo:hasFundingAgency property: ' + key2)

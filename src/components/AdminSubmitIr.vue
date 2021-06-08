@@ -1169,6 +1169,17 @@ export default {
             arrays.remove(arr, f)
           }
           break
+        case 'p-project':
+          let nrProj = 0
+          for (let e of arr) {
+            if (e.component === 'p-project') {
+              nrProj++
+            }
+          }
+          if (nrProj > 1) {
+            arrays.remove(arr, f)
+          }
+          break
         default:
           let nrFields = 0
           for (let e of arr) {
@@ -1304,8 +1315,11 @@ export default {
             f.funderName = value
           })
         }
-        this.$forceUpdate()
+      } else {
+        f.funderIdentifier = ''
+        f.funderName = ''
       }
+      this.$forceUpdate()
     },
     affiliationSelectInput: function (f, event) {
       f.affiliation = ''
@@ -2133,11 +2147,15 @@ export default {
           i++
           let pof = fields.getField('project')
           pof.label = 'Funder/Project'
+          pof.removable = true
           pof.multiplicable = true
           pof.multiplicableCleared = true
           pof.subloopFlag = i === 1
           if (funding.funderid) {
             pof.funderIdentifier = funding.funderid
+          }
+          if ((funding.funderid === 'other') && funding.fundername) {
+            pof.funderName = funding.fundername
           }
           if (funding.projectid) {
             pof.identifier = funding.projectid
