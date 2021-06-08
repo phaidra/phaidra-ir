@@ -969,6 +969,7 @@ export default {
       return jsonLd.form2json(this.form)
     },
     submit: async function () {
+      this.loading = true
       try {
         await this.$http.get(this.$store.state.config.api + '/keepalive', {
           headers: {
@@ -979,12 +980,12 @@ export default {
         console.log(error)
         if (error.response.status === 401) {
           console.log('submitform: logged out, show login dialog')
+          this.loading = false
           this.loginDialog = true
           return
         }
       }
 
-      this.loading = true
       this.submitResponse = null
       var httpFormData = new FormData()
       for (let i = 0; i < this.form.sections.length; i++) {
