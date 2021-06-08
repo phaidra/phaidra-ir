@@ -683,7 +683,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-btn raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
+              <v-btn raised color="primary" :loading="loading" :disabled="loading" @click.once="submit()">{{ $t('Submit') }}</v-btn>
             </v-row>
           </v-container>
         </v-stepper-content>
@@ -1343,6 +1343,10 @@ export default {
       return jsonLd.form2json(this.form)
     },
     submit: async function () {
+      if (this.loading === true) {
+        return
+      }
+      this.loading = true
       try {
         await this.$http.get(this.$store.state.config.api + '/keepalive', {
           headers: {
@@ -1358,7 +1362,6 @@ export default {
         }
       }
 
-      this.loading = true
       this.submitResponse = null
       var httpFormData = new FormData()
       for (let i = 0; i < this.form.sections.length; i++) {
