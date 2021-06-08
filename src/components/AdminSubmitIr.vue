@@ -538,7 +538,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-btn v-if="!targetPid" raised color="primary" :loading="loading" :disabled="loading" @click="submit()">{{ $t('Submit') }}</v-btn>
+              <v-btn v-if="!targetPid" raised color="primary" :loading="loading" :disabled="loading" @click.once="submit()">{{ $t('Submit') }}</v-btn>
             </v-row>
           </v-container>
         </v-stepper-content>
