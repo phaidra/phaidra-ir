@@ -538,7 +538,7 @@
                   </v-card-actions>
                 </v-card>
               </v-dialog>
-              <v-btn v-if="!targetPid" raised color="primary" :loading="loading" :disabled="loading" @click.once="submit()">{{ $t('Submit') }}</v-btn>
+              <v-btn v-if="!targetPid" raised color="primary" :loading="loading" :disabled="loading" @click.once="submit()" :key="clickoncekey">{{ $t('Submit') }}</v-btn>
             </v-row>
           </v-container>
         </v-stepper-content>
@@ -625,6 +625,7 @@ export default {
       form: {
         sections: []
       },
+      clickoncekey: 0,
       step: 3,
       maxStep: 0,
       loadedMetadata: [],
@@ -1036,6 +1037,7 @@ export default {
       } finally {
         this.$vuetify.goTo(0)
         this.loading = false
+        this.clickoncekey++
       }
     },
     save: async function () {
@@ -2605,7 +2607,6 @@ export default {
       if (!self) {
         self = this
       }
-      self.loading = false
       self.submitResponse = null
       self.$store.dispatch('loadLanguages', self.$i18n.locale)
       self.step = 3
