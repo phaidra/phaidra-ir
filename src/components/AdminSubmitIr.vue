@@ -969,9 +969,6 @@ export default {
       return jsonLd.form2json(this.form)
     },
     submit: async function () {
-      if (this.loading === true) {
-        return
-      }
       this.loading = true
       try {
         await this.$http.get(this.$store.state.config.api + '/keepalive', {
@@ -2608,6 +2605,7 @@ export default {
       if (!self) {
         self = this
       }
+      self.loading = false
       self.submitResponse = null
       self.$store.dispatch('loadLanguages', self.$i18n.locale)
       self.step = 3
