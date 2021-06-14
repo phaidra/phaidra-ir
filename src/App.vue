@@ -178,6 +178,10 @@ import * as Integrations from '@sentry/integrations'
 export default {
   name: 'app',
   mixins: [ context, config ],
+  metaInfo: {
+    title: config.title,
+    meta: []
+  },
   components: {
     Quicklinks,
     QuicklinksFooter,
