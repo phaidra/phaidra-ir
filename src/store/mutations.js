@@ -3,6 +3,7 @@ import Vue from 'vue'
 export default {
   updateBreadcrumbs (state, transition) {
     let pagetitle
+    let usepagetitle = true
     state.breadcrumbs = [
       {
         text: state.config.institution,
@@ -25,7 +26,7 @@ export default {
       )
     }
     if (transition.to.name === 'detail') {
-      pagetitle = 'Detail ' + transition.to.params.pid
+      usepagetitle = false
       if (transition.from.name === 'search') {
         state.breadcrumbs.push(
           {
@@ -207,7 +208,7 @@ export default {
       state.pagetitle = state.config.title
     }
 
-    if (process.browser) {
+    if (usepagetitle && process.browser) {
       document.title = state.pagetitle
     }
   },

@@ -115,6 +115,29 @@ export default {
   components: {
     ClientOnly
   },
+  metaInfo () {
+    let metaInfo = {}
+    if (this.objectInfo.metatags) {
+      metaInfo.title = this.objectInfo.metatags.citation_title + ' (' + this.config.title + ' - ' + this.objectInfo.pid + ')'
+      metaInfo.meta = []
+      Object.entries(this.objectInfo.metatags).forEach(([name, value]) => {
+        if (Array.isArray(value)) {
+          for (let v of value) {
+            metaInfo.meta.push({
+              name: name,
+              content: v
+            })
+          }
+        } else {
+          metaInfo.meta.push({
+            name: name,
+            content: value
+          })
+        }
+      })
+    }
+    return metaInfo
+  },
   computed: {
     routepid: function () {
       return this.$store.state.route.params.pid

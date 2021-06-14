@@ -156,6 +156,7 @@ export default {
   },
   methods: {
     search: async function (options) {
+      this.$store.commit('setLoading', true)
       // `options` are combined into the Search component. The later are sent
       // over from child components: e.g. SearchFilters.
       // This allows us the buildSearchDef/buildParams functions to pick out
@@ -196,41 +197,47 @@ export default {
       let rlparams = {
         'pids[]': pagePids
       }
-      let aldresponse = await this.$http.request({
-        method: 'POST',
-        url: this.config.api + '/ir/adminlistdata',
-        data: qs.stringify(rlparams, { arrayFormat: 'repeat' }),
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-          'X-XSRF-TOKEN': this.$store.state.user.token
-        }
-      })
-
-      if (aldresponse.data.requestedlicenses) {
-        for (let rl of aldresponse.data.requestedlicenses) {
-          for (let d of this.docs) {
-            if (rl.pid === d.pid) {
-              if (rl.requestedlicense.startsWith('http')) {
-                Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
-              } else {
-                Vue.set(d, 'requestedlicense', this.getLocalizedTermLabelByNotation('alllicenses', rl.requestedlicense))
+      try {
+        let aldresponse = await this.$http.request({
+          method: 'POST',
+          url: this.config.api + '/ir/adminlistdata',
+          data: qs.stringify(rlparams, { arrayFormat: 'repeat' }),
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          }
+        })
+        if (aldresponse.data.requestedlicenses) {
+          for (let rl of aldresponse.data.requestedlicenses) {
+            for (let d of this.docs) {
+              if (rl.pid === d.pid) {
+                if (rl.requestedlicense.startsWith('http')) {
+                  Vue.set(d, 'requestedlicense', this.getLocalizedTermLabel('alllicenses', rl.requestedlicense))
+                } else {
+                  Vue.set(d, 'requestedlicense', this.getLocalizedTermLabelByNotation('alllicenses', rl.requestedlicense))
+                }
               }
             }
           }
         }
-      }
-      if (aldresponse.data.submits) {
-        for (let submit of aldresponse.data.submits) {
-          for (let d of this.docs) {
-            if (submit.pid === d.pid) {
-              if (submit.user.name) {
-                Vue.set(d, 'uploader', submit.user.name)
-              } else {
-                Vue.set(d, 'uploader', submit.user.username)
+        if (aldresponse.data.submits) {
+          for (let submit of aldresponse.data.submits) {
+            for (let d of this.docs) {
+              if (submit.pid === d.pid) {
+                if (submit.user.name) {
+                  Vue.set(d, 'uploader', submit.user.name)
+                } else {
+                  Vue.set(d, 'uploader', submit.user.username)
+                }
               }
             }
           }
         }
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      } finally {
+        this.$store.commit('setLoading', false)
       }
     },
     handleSelect: function ({ term, payload }) {

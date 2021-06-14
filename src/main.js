@@ -5,6 +5,7 @@ import 'core-js'
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import VueI18n from 'vue-i18n'
+import VueMeta from 'vue-meta'
 import App from './App'
 import { createRouter } from './router'
 import { createStore } from './store'
@@ -25,6 +26,7 @@ export async function createApp ({
 
   Vue.use(Vuetify)
   Vue.use(VueI18n)
+  Vue.use(VueMeta)
   Vue.use(PhaidraVueComponents)
 
   Vue.prototype.$http = axios

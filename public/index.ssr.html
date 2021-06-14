@@ -9,7 +9,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/locale/de.js" integrity="sha256-wUoStqxFxc33Uz7o+njPIobHc4HJjMQqMXNRDy7X3ps=" crossorigin="anonymous"></script> -->
     <script src="/js/moment/moment.min.js"></script>
     <script src="/js/moment/de.js"></script>
-    <title>{{ title }}</title>
+    {{{ meta.inject().title.text() }}}
+    {{{ meta.inject().meta.text() }}}
     {{{ renderResourceHints() }}}
     {{{ renderStyles() }}}
   </head>

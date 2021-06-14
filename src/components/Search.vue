@@ -123,6 +123,7 @@ export default {
   },
   methods: {
     search: async function (options) {
+      this.$store.commit('setLoading', true)
       // `options` are combined into the Search component. The later are sent
       // over from child components: e.g. SearchFilters.
       // This allows us the buildSearchDef/buildParams functions to pick out
@@ -166,13 +167,12 @@ export default {
       } catch (error) {
         console.log(error)
         this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      } finally {
+        this.$store.commit('setLoading', false)
       }
     },
     handleSelect: function ({ term, payload }) {
-      // called from Autocomplete
-      // When an item has been clicked on explicitly - issue a quoted search on it's title,
-      // otherwise too many unrealted results are returned
-      this.q = payload ? `"${payload}"` : term
+      // called from Autocompletethis.$store.commit('setLoading', true)
       this.search()
     },
     getAllResults: async function () {

@@ -12,7 +12,9 @@
         </template>
       </template>
       <v-divider></v-divider>
-      <v-progress-linear :active="$store.state.loading" :height="2" indeterminate color="primary"></v-progress-linear>
+      <div class="prg">
+        <v-progress-linear :active="$store.state.loading" :height="2" indeterminate color="primary"></v-progress-linear>
+      </div>
     </v-col>
   </v-row>
 </template>
@@ -33,6 +35,10 @@ export default {
 </script>
 
 <style scoped>
+.prg {
+  min-height: 3px;
+}
+
 .youarehere {
   font-weight: bold;
   font-size: 10pt;
