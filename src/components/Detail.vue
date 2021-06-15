@@ -282,6 +282,11 @@ export default {
     async fetchAsyncData (self, pid) {
       await self.$store.dispatch('fetchObjectInfo', pid)
       await self.$store.dispatch('loadOrgUnits', self.$i18n.locale)
+    },
+    setTitle (self) {
+      if (process.browser) {
+        document.title = self.objectInfo.metatags.citation_title + ' (' + self.config.title + ' - ' + self.objectInfo.pid + ')'
+      }
     }
   },
   serverPrefetch () {
@@ -294,6 +299,7 @@ export default {
       vm.$store.commit('setObjectInfo', null)
       await vm.fetchAsyncData(vm, to.params.pid)
       vm.fetchUsageStats(vm, to.params.pid)
+      vm.setTitle(vm)
       vm.$store.commit('setLoading', false)
     })
   },
@@ -302,6 +308,7 @@ export default {
     this.$store.commit('setObjectInfo', null)
     await this.fetchAsyncData(this, to.params.pid)
     this.fetchUsageStats(this, to.params.pid)
+    this.setTitle(this)
     this.$store.commit('setLoading', false)
     next()
   }
