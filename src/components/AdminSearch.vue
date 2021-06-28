@@ -3,17 +3,21 @@
       <v-col cols="12">
         <v-row justify="space-between">
           <v-col cols="4">
-            <autocomplete
-              placeholder="Search..."
+            <v-text-field
+              class="form-control"
+              :placeholder="$t('Search') + '...'"
               name="autocomplete"
-              :initValue="q"
-              :suggester="'titlesuggester'"
-              :customParams="{ token: 'dev' }"
-              :classes="{ input: 'form-control', wrapper: 'input-wrapper' }"
-              :onSelect="handleSelect"
+              v-model="q"
+              @keyup.enter="search()"
+              autocomplete="off"
+              clearable
+              single-line
               solo
+              append-icon="mdi-magnify"
+              @click:append="search()"
+              @click:clear="clearSearch()"
               :messages="[ total + ' ' + $t('objects') ]"
-            ></autocomplete>
+            />
           </v-col>
           <v-col cols="4">
             <v-btn-toggle v-model="toggleFilter">
@@ -87,7 +91,6 @@
 <script>
 import qs from 'qs'
 import Vue from 'vue'
-import Autocomplete from './Autocomplete'
 import AdminSearchResults from './AdminSearchResults'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import '@/compiled-icons/fontello-sort-name-up'
@@ -107,7 +110,6 @@ export default {
   name: 'admin-search',
   mixins: [ config, context, vocabulary ],
   components: {
-    Autocomplete,
     AdminSearchResults
   },
   props: {
@@ -240,11 +242,8 @@ export default {
         this.$store.commit('setLoading', false)
       }
     },
-    handleSelect: function ({ term, payload }) {
-      // called from Autocomplete
-      // When an item has been clicked on explicitly - issue a quoted search on it's title,
-      // otherwise too many unrealted results are returned
-      this.q = payload ? `"${payload}"` : term
+    clearSearch: function () {
+      this.q = ''
       this.search()
     },
     showFacet: function (f) {

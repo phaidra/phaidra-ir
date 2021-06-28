@@ -29,13 +29,13 @@
             <a  v-if="config.quicklinks" id="quicklinks-button" class="ph-button hidden-sm-and-down quicklinks" v-on:click="quicklinksenabled = !quicklinksenabled">Quicklinks</a>
           </v-row>
 
-          <v-row no-gutters>
+          <v-row no-gutters justify="start">
 
-            <v-col class="text-left mt-4" md="3" cols="9">
+            <v-col style="min-width:250px" class="text-left mt-4" cols="3">
               <logo></logo>
             </v-col>
 
-            <v-col md="9" cols="3" :align-self="'center'">
+            <v-col cols="3" align-self="center">
               <client-only placeholder-tag="span">
                 <v-app-bar-nav-icon class="hidden-md-and-up">
                   <v-menu offset-y>
@@ -54,10 +54,10 @@
                   </v-menu>
                 </v-app-bar-nav-icon>
               </client-only>
-              <span class="text-left hidden-sm-and-down" v-if="config.title">
+              <div class="text-left hidden-sm-and-down" v-if="config.title">
                 <icon left dark name="univie-right" color="#a4a4a4" width="14px" height="14px" class="mb-1"></icon>
                 <router-link class="subheading primary--text mx-3" :to="'/'">{{ config.title }}</router-link>
-              </span>
+              </div>
             </v-col>
           </v-row>
 
@@ -316,9 +316,6 @@ export default {
         }
       }
     }
-  },
-  created: function () {
-    this.$vuetify.theme.themes.light.primary = this.$store.state.config.primary
   }
 }
 </script>

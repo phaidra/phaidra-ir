@@ -3,21 +3,24 @@
       <v-col md="9" cols="12" class="border-right pr-2">
         <v-row align="start">
           <v-col md="6" cols="9">
-            <autocomplete
-              class="ml-2"
-              placeholder="Search..."
+            <v-text-field
+              class="form-control"
+              :placeholder="$t('Search') + '...'"
               name="autocomplete"
-              :initValue="q"
-              :suggester="'titlesuggester'"
-              :customParams="{ token: 'dev' }"
-              :classes="{ input: 'form-control', wrapper: 'input-wrapper'}"
-              :onSelect="handleSelect"
+              v-model="q"
+              @keyup.enter="search()"
+              autocomplete="off"
+              clearable
+              single-line
               solo
+              append-icon="mdi-magnify"
+              @click:append="search()"
+              @click:clear="clearSearch()"
               :messages="[ total + ' ' + $t('objects') ]"
-            ></autocomplete>
+            />
           </v-col>
           <v-spacer></v-spacer>
-          <v-col md="6" cols="12">
+          <v-col md="6" cols="12" class="pt-2">
             <search-toolbar
               :setSort="setSort"
               :sortIsActive="sortIsActive"
@@ -74,7 +77,6 @@
 
 <script>
 import qs from 'qs'
-import Autocomplete from './Autocomplete'
 import SearchResults from './SearchResults'
 import SearchFilters from './SearchFilters'
 import SearchToolbar from './SearchToolbar'
@@ -95,7 +97,6 @@ export default {
   name: 'search',
   mixins: [ config, vocabulary ],
   components: {
-    Autocomplete,
     SearchResults,
     SearchFilters,
     SearchToolbar
@@ -136,10 +137,6 @@ export default {
         delete options.collection
       }
 
-      if (this.$store.state.route.params.q) {
-
-      }
-
       Object.assign(this, options)
 
       let { searchdefarr, ands } = buildSearchDef(this)
@@ -171,8 +168,8 @@ export default {
         this.$store.commit('setLoading', false)
       }
     },
-    handleSelect: function ({ term, payload }) {
-      // called from Autocompletethis.$store.commit('setLoading', true)
+    clearSearch: function () {
+      this.q = ''
       this.search()
     },
     getAllResults: async function () {
