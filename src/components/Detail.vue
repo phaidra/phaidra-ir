@@ -129,6 +129,9 @@ export default {
             }
             value = 'https://' + this.config.baseurl + '/detail/' + this.objectInfo.pid + '.' + ext
           }
+          if (name === 'citation_abstract_html_url') {
+            value = 'https://' + this.config.baseurl + '/detail/' + this.objectInfo.pid
+          }
           if (Array.isArray(value)) {
             for (let v of value) {
               metaInfo.meta.push({
