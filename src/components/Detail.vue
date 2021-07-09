@@ -122,6 +122,13 @@ export default {
         metaInfo.title = this.objectInfo.metatags.citation_title + ' (' + this.config.title + ' - ' + this.objectInfo.pid + ')'
         metaInfo.meta = []
         Object.entries(this.objectInfo.metatags).forEach(([name, value]) => {
+          if (name === 'citation_pdf_url') {
+            let ext = 'download'
+            if (this.objectInfo.cmodel === 'PDFDocument') {
+              ext = 'pdf'
+            }
+            value = 'https://' + this.config.baseurl + '/detail/' + this.objectInfo.pid + '.' + ext
+          }
           if (Array.isArray(value)) {
             for (let v of value) {
               metaInfo.meta.push({
