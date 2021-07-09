@@ -401,6 +401,7 @@ export default {
   'bf:provisionActivity': 'Provision activity: Publication',
   'cito:cites': 'Cites',
   'cito:isCitedBy': 'Is cited by',
+  'rdax:P00009': 'Association',
 
   'dcterms:spatial': 'Depicted/Represented place',
   'vra:placeOfCreation': 'Place of creation',

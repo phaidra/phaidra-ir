@@ -364,6 +364,17 @@
                       ></p-i-literal>
                     </template>
 
+                    <template v-else-if="f.component === 'p-association'">
+                      <p-i-association
+                        v-bind.sync="f"
+                        v-on:input="selectInput(s.fields, f, $event)"
+                        v-on:add="addField(s.fields, f)"
+                        v-on:remove="removeField(s.fields, f)"
+                        :inputStyle="inputStyle"
+                        class="my-2"
+                      ></p-i-association>
+                    </template>
+
                     <template v-else-if="f.component === 'isbn'">
                       <p-i-alternate-identifier
                         v-bind.sync="f"
@@ -2380,6 +2391,25 @@ export default {
           mim.readonly = true
           mim.value = self.importData.mimetype
           sof.push(mim)
+        }
+      }
+
+      if (self.config.submit.association) {
+        let added = false
+        if (self.importData) {
+          if (self.importData.associations) {
+            if (self.importData.associations.length > 0) {
+              for (let asoc of self.importData.associations) {
+                added = true
+                let asf = fields.getField('association')
+                asf.value = asoc
+                sof.push(asf)
+              }
+            }
+          }
+        }
+        if (!added) {
+          sof.push(fields.getField('association'))
         }
       }
 

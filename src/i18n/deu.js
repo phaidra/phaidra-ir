@@ -505,6 +505,7 @@ export default {
   'rdau:P60101_rdau:P60193': 'Reihe',
   'rdau:P60101_bf:provisionActivity': 'Verlag',
   'rdau:P60227': 'Filmbearbeitung von',
+  'rdax:P00009': 'Organisationszuordnung',
 
   'dcterms:spatial': 'Abgebildeter Ort',
   'vra:placeOfCreation': 'Erstellungsort',

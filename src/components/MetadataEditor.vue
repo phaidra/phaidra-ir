@@ -663,6 +663,31 @@ export default {
                 }
                 break
 
+              // association
+              case 'rdax:P00009':
+                if (!importData['associations']) {
+                  importData['associations'] = []
+                }
+                Object.entries(obj).forEach(([key1, values1]) => {
+                  switch (key1) {
+                    case '@type':
+                      // will be loaded
+                      break
+                    case 'skos:exactMatch':
+                      for (let em of obj['skos:exactMatch']) {
+                        importData['associations'].push(em)
+                      }
+                      break
+                    case 'skos:prefLabel':
+                      // will be loaded
+                      break
+                    default:
+                      importData.errors.push('Unsupported rdax:P00009 property: ' + key1)
+                      break
+                  }
+                })
+                break
+
               // bf:provisionActivity
               case 'bf:provisionActivity':
                 importData['publisher'] = {}
