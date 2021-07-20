@@ -753,6 +753,15 @@ export default {
                         }
                       }
                       break
+                    case 'bf:place':
+                      for (let v1 of values1) {
+                        if (importData['publisher']['place']) {
+                          importData.errors.push('Multiple bf:provisionActivity > bf:place: ' + JSON.stringify(v1))
+                        } else {
+                          importData['publisher']['place'] = v1
+                        }
+                      }
+                      break
                     default:
                       importData.errors.push('Unsupported bf:provisionActivity property: ' + key1)
                       break

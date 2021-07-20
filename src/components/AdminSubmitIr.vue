@@ -2065,6 +2065,9 @@ export default {
           if (self.importData.publisher.date) {
             pf.publishingDate = self.importData.publisher.date
           }
+          if (self.importData.publisher.place) {
+            pf.publishingPlace = self.importData.publisher.place
+          }
         } else {
           if (doiImportData && doiImportData.publisher) {
             pf.publisherName = doiImportData.publisher
@@ -2359,6 +2362,9 @@ export default {
           }
           if (self.importData.publisher.date) {
             pf.publishingDate = self.importData.publisher.date
+          }
+          if (self.importData.publisher.place) {
+            pf.publishingPlace = self.importData.publisher.place
           }
         } else {
           if (doiImportData && doiImportData.publisher) {
