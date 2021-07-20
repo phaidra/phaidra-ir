@@ -758,7 +758,25 @@ export default {
                         if (importData['publisher']['place']) {
                           importData.errors.push('Multiple bf:provisionActivity > bf:place: ' + JSON.stringify(v1))
                         } else {
-                          importData['publisher']['place'] = v1
+                          for (let place of values1) {
+                            Object.entries(place).forEach(([key2, values2]) => {
+                              switch (key2) {
+                                case '@type':
+                                  if (values2 !== 'schema:Place') {
+                                    importData.errors.push('Unsupported bf:provisionActivity > bf:place type: ' + values2)
+                                  }
+                                  break
+                                case 'skos:prefLabel':
+                                  for (let prefLabel of values2) {
+                                    importData['publisher']['place'] = prefLabel['@value']
+                                  }
+                                  break
+                                default:
+                                  importData.errors.push('Unsupported bf:provisionActivity > bf:place property: ' + key2)
+                                  break
+                              }
+                            })
+                          }
                         }
                       }
                       break
