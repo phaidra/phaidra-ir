@@ -10,7 +10,7 @@
           <span v-else>{{ doc.owner }}</span>
         </v-col>
         <v-col cols="1">
-          {{ doc.pid }}
+          <a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doc.pid">{{ doc.pid }}</a>
         </v-col>
         <v-col cols="3">
           <router-link class="font-weight-light primary--text" :to="{ name: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] | truncate(100) }}</router-link>
