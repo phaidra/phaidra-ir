@@ -1,9 +1,6 @@
 <template>
   <v-app>
     <v-container fluid>
-      <v-row class="ml-8" v-for="(unit, i) in $store.state.vocabulary.vocabularies['orgunits'].tree[0].subunits" :key="'org'+i">
-        {{ unit['skos:prefLabel']['deu'] }}
-      </v-row>
       <quicklinks v-if="config.quicklinks" :showquicklinks="quicklinksenabled"></quicklinks>
       <v-row no-gutters>
         <v-col cols="12" md="8" offset-md="2">
