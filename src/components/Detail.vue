@@ -307,12 +307,14 @@ export default {
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async function (vm) {
-      vm.$store.commit('setLoading', true)
-      vm.$store.commit('setObjectInfo', null)
-      await vm.fetchAsyncData(vm, to.params.pid)
-      vm.fetchUsageStats(vm, to.params.pid)
-      vm.setTitle(vm)
-      vm.$store.commit('setLoading', false)
+      if (process.browser && (!vm.objectInfo || (vm.objectInfo.pid !== to.params.pid))) {
+        vm.$store.commit('setLoading', true)
+        vm.$store.commit('setObjectInfo', null)
+        await vm.fetchAsyncData(vm, to.params.pid)
+        vm.fetchUsageStats(vm, to.params.pid)
+        vm.setTitle(vm)
+        vm.$store.commit('setLoading', false)
+      }
     })
   },
   beforeRouteUpdate: async function (to, from, next) {

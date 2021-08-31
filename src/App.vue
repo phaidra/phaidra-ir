@@ -236,14 +236,6 @@ export default {
     dismiss: function (alert) {
       this.$store.commit('clearAlert', alert)
     },
-    switchInstance: function (e) {
-      this.$store.dispatch('switchInstance', e).then(() => {
-        this.$store.commit('clearStore')
-        this.$router.push('/search')
-        this.$store.dispatch('search')
-        this.$vuetify.theme.primary = this.$store.state.config.primary
-      })
-    },
     loadTracking: async function () {
       const scriptPromise = new Promise((resolve, reject) => {
         const script = document.createElement('script')
