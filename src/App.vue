@@ -82,16 +82,16 @@
                   <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" :to="{ path: '/search', query: { reset: true } }">{{ $t("Search") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <a :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin" @click="goToSubmit()">{{ $t("Upload") }}</a>
+                  <a :class="hover ? 'ph-button primary' : 'ph-button grey'" v-show="signedin" @click="goToSubmit()">{{ $t("Upload") }}</a>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="signedin && (user.username === config.iraccount)" :to="{ path: '/admin' }">{{ $t("Admin") }}</router-link>
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-show="signedin && (user.username === config.iraccount)" :to="{ path: '/admin' }">{{ $t("Admin") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-if="!signedin" :to="{ path: '/login' }">{{ $t("Upload") }}</router-link>
+                  <router-link :class="hover ? 'ph-button primary' : 'ph-button grey'" v-show="!signedin" :to="{ path: '/login' }">{{ $t("Upload") }}</router-link>
                 </v-hover>
                 <v-hover v-slot:default="{ hover }">
-                  <a class="flat dark ph-button grey" v-if="signedin" @click="logout()" >{{ $t("Logout") }}</a>
+                  <a class="flat dark ph-button grey" v-show="signedin" @click="logout()" >{{ $t("Logout") }}</a>
                 </v-hover>
               </v-toolbar-items>
             </v-toolbar>
