@@ -52,7 +52,7 @@
                 <v-text-field :error-messages="doiImportErrors" filled v-model="doiImportInput" label="DOI" :placeholder="$t('please enter')"/>
               </v-col>
               <v-col cols="3" class="ml-4 mt-2">
-                <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="importDOI()">{{ $t('Import') }}</v-btn>
+                <v-btn :loading="loading" :disabled="loading || !doiToImport || (doiToImport.lenght < 1)" class="mx-2" color="primary" @click="importDOI()">{{ $t('Import') }}</v-btn>
                 <v-btn :loading="loading" :disabled="loading" class="mx-2" dark color="grey" @click="resetDOIImport()">{{ $t('Reset') }}</v-btn>
               </v-col>
             </v-row>
@@ -968,7 +968,11 @@ export default {
           }
         } catch (error) {
           console.error(error)
-          this.doiImportErrors.push(error)
+          if (error.response.status === 404) {
+            this.doiImportErrors.push('DOI Not Found')
+          } else {
+            this.doiImportErrors.push(error.message)
+          }
         } finally {
           this.loading = false
         }
