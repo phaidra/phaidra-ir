@@ -17,6 +17,7 @@ import moment from 'moment'
 import axios from 'axios'
 import PhaidraVueComponents from 'phaidra-vue-components/src/components'
 import vuetify from './plugins/vuetify'
+import config from './config/phaidra-ir'
 
 export async function createApp ({
   beforeApp = () => {},
@@ -109,19 +110,60 @@ export async function createApp ({
   // create router and store instances
   const router = createRouter()
 
-  let token
+  let contextToken
+
   if (context) {
     let value = '; ' + context.req.headers.cookie
     let parts = value.split('; X-XSRF-TOKEN=')
     if (parts.length === 2) {
       let val = parts.pop().split(';').shift()
-      token = val === ' ' ? null : val
+      contextToken = val === ' ' ? null : val
     }
   }
-  const store = createStore(token)
+
+  const store = createStore(contextToken)
 
   router.afterEach((to, from) => {
     store.commit('updateBreadcrumbs', { to, from })
+  })
+
+  router.beforeEach(async (to, from, next) => {
+    if ((to.name === 'admin') || (to.name === 'adminsubmit') || (to.name === 'adminsubmitform')) {
+      let token
+      if (process.browser) {
+        let value = '; ' + document.cookie
+        let parts = value.split('; X-XSRF-TOKEN=')
+        if (parts.length === 2) {
+          let val = parts.pop().split(';').shift()
+          token = val === ' ' ? null : val
+        }
+      } else {
+        // on initial load beforeEach is called on server
+        token = contextToken
+      }
+      if (!token) {
+        console.log('admin access rejected: no token')
+        next('/')
+        return
+      } else {
+        try {
+          let response = await axios.get(config.api + '/directory/user/data', { headers: { 'X-XSRF-TOKEN': token } })
+          if (response.data.user_data) {
+            if (response.data.user_data.username === config.iraccount) {
+              next()
+              return
+            }
+          }
+          console.log('admin access rejected: wrong user: ' + response.data.user_data.username)
+          next('/')
+        } catch (error) {
+          console.log('admin access rejected: user data request error:')
+          console.log(error)
+          next('/')
+        }
+      }
+    }
+    next()
   })
 
   // sync so that route state is available as part of the store

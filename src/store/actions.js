@@ -70,22 +70,22 @@ export default {
   },
   async getLoginData ({ commit, dispatch, state }) {
     try {
-      let response = await axios.get(state.config.api + '/directory/user/data', {
-        headers: {
-          'X-XSRF-TOKEN': state.user.token
-        }
-      })
+      let headers = {}
+      if (state.user.token) {
+        headers['X-XSRF-TOKEN'] = state.user.token
+      }
+      let response = await axios.get(state.config.api + '/directory/user/data', { headers })
       if (response.data.alerts && response.data.alerts.length > 0) {
         commit('setAlerts', response.data.alerts)
       }
       console.log('[' + state.user.username + '] got user data firstname[' + response.data.user_data.firstname + '] lastname[' + response.data.user_data.lastname + '] email[' + response.data.user_data.email + ']')
       commit('setLoginData', response.data.user_data)
     } catch (error) {
+      console.log(error)
       if (error.response.status === 401) {
         // this token is invalid
         dispatch('logout')
       }
-      console.log(error)
     }
   },
   async login ({ commit, dispatch, state }, credentials) {
@@ -105,7 +105,7 @@ export default {
         console.log('[' + state.user.username + '] login successful token[' + response.data['XSRF-TOKEN'] + '], fetching user data')
         commit('setToken', response.data['XSRF-TOKEN'])
         if (process.browser) {
-          document.cookie = 'X-XSRF-TOKEN=' + response.data['XSRF-TOKEN']
+          document.cookie = 'X-XSRF-TOKEN=' + response.data['XSRF-TOKEN'] + '; domain=' + window.location.hostname + '; path=/; secure; samesite=strict'
         }
         dispatch('getLoginData')
       }
@@ -116,7 +116,7 @@ export default {
   },
   async logout ({ commit, dispatch, state }) {
     if (process.browser) {
-      document.cookie = 'X-XSRF-TOKEN='
+      document.cookie = 'X-XSRF-TOKEN=; domain=' + window.location.hostname + '; path=/; secure; samesite=strict; expires=Thu, 01 Jan 1970 00:00:01 GMT'
     }
     try {
       // let response =
