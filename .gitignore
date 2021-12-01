@@ -6,6 +6,7 @@ node_modules
 /dist
 /public/custom
 /src/components/info
+/src/components/i18n/*
 
 # local env files
 .env.local
