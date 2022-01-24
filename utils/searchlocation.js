@@ -33,9 +33,9 @@ export function setSearchParams (self, { q, page, pagesize, sortdef, owner, coll
       fq = [fq]
     }
     for (let n = 0; n < fq.length; n++) {
-      let fqa = fq[n].split('_')
-      let facetId = fqa[0]
-      let queryId = fqa[1]
+      const fqa = fq[n].split('_')
+      const facetId = fqa[0]
+      const queryId = fqa[1]
       for (let j = 0; j < self.facetQueries.length; j++) {
         if (self.facetQueries[j].id === facetId) {
           self.facetQueries[j].show = 1
@@ -44,14 +44,14 @@ export function setSearchParams (self, { q, page, pagesize, sortdef, owner, coll
               self.facetQueries[j].queries[k].active = 1
             }
             if (self.facetQueries[j].queries[k].childFacet) {
-              let lvl1 = self.facetQueries[j].queries[k].childFacet
+              const lvl1 = self.facetQueries[j].queries[k].childFacet
               for (let l = 0; l < lvl1.queries.length; l++) {
                 if (lvl1.queries[l].id === queryId) {
                   lvl1.queries[l].active = 1
                   self.facetQueries[j].queries[k].active = 1
                 }
                 if (lvl1.queries[l].childFacet) {
-                  let lvl2 = lvl1.queries[l].childFacet
+                  const lvl2 = lvl1.queries[l].childFacet
                   for (let m = 0; m < lvl2.queries.length; m++) {
                     if (lvl2.queries[m].id === queryId) {
                       lvl2.queries[m].active = 1
@@ -72,11 +72,11 @@ export function setSearchParams (self, { q, page, pagesize, sortdef, owner, coll
     if (typeof fr === 'string') {
       fr = [fr]
     }
-    let roles = {}
+    const roles = {}
     for (let o = 0; o < fr.length; o++) {
-      let idx = fr[o].lastIndexOf('_')
-      let role = fr[o].substring(0, idx)
-      let value = fr[o].substring(idx + 1)
+      const idx = fr[o].lastIndexOf('_')
+      const role = fr[o].substring(0, idx)
+      const value = fr[o].substring(idx + 1)
 
       if (roles[role]) {
         roles[role].values.push(value)

@@ -110,7 +110,7 @@ export const adminFacetQueries = [
 ]
 
 export function buildAssociationFacet (orgUnitsTree) {
-  let associationFacet = {
+  const associationFacet = {
     label: 'Association',
     field: 'association_id',
     id: 'association',
@@ -120,9 +120,9 @@ export function buildAssociationFacet (orgUnitsTree) {
   }
 
   let i = 0
-  for (let l1Unit of orgUnitsTree) {
+  for (const l1Unit of orgUnitsTree) {
     i++
-    let l2Facet = {
+    const l2Facet = {
       label: 'Subunits of ' + l1Unit['@id'],
       field: 'association_id',
       resetable: true,
@@ -131,8 +131,8 @@ export function buildAssociationFacet (orgUnitsTree) {
     }
 
     if (l1Unit.subunits) {
-      for (let l2Unit of l1Unit.subunits) {
-        let l3Facet = {
+      for (const l2Unit of l1Unit.subunits) {
+        const l3Facet = {
           label: 'Subunits of ' + l2Unit['@id'],
           field: 'association_id',
           resetable: true,
@@ -141,8 +141,8 @@ export function buildAssociationFacet (orgUnitsTree) {
         }
 
         if (l2Unit.subunits) {
-          for (let l3Unit of l2Unit.subunits) {
-            let l4Facet = {
+          for (const l3Unit of l2Unit.subunits) {
+            const l4Facet = {
               label: 'Subunits of ' + l3Unit['@id'],
               field: 'association_id',
               resetable: true,
@@ -151,8 +151,8 @@ export function buildAssociationFacet (orgUnitsTree) {
             }
 
             if (l3Unit.subunits) {
-              for (let l4Unit of l3Unit.subunits) {
-                let l5Facet = {
+              for (const l4Unit of l3Unit.subunits) {
+                const l5Facet = {
                   label: 'Subunits of ' + l4Unit['@id'],
                   field: 'association_id',
                   resetable: true,
@@ -161,7 +161,7 @@ export function buildAssociationFacet (orgUnitsTree) {
                 }
 
                 if (l4Unit.subunits) {
-                  for (let l5Unit of l4Unit.subunits) {
+                  for (const l5Unit of l4Unit.subunits) {
                     l5Facet.queries.push({
                       query: 'association_id:"' + l5Unit['@id'] + '"',
                       active: false,
@@ -223,9 +223,9 @@ export function buildAssociationFacet (orgUnitsTree) {
 }
 
 function buildDateFacet () {
-  let startYear = config.search.datefacetstartyear
-  let currYear = new Date().getFullYear()
-  let yearsFacet = {
+  const startYear = config.search.datefacetstartyear
+  const currYear = new Date().getFullYear()
+  const yearsFacet = {
     label: 'Date',
     field: 'bib_published',
     id: 'published',
@@ -255,25 +255,25 @@ export function updateFacetQueries (facetQueriesSolr, facetQueries) {
             Vue.set(facetQueries[i].queries[j], 'count', facetQueriesSolr[key])
           }
           if (facetQueries[i].queries[j].childFacet) {
-            let lvl1 = facetQueries[i].queries[j].childFacet
+            const lvl1 = facetQueries[i].queries[j].childFacet
             for (let k = 0; k < lvl1.queries.length; k++) {
               if (lvl1.queries[k].query === key) {
                 Vue.set(lvl1.queries[k], 'count', facetQueriesSolr[key])
               }
               if (lvl1.queries[k].childFacet) {
-                let lvl2 = lvl1.queries[k].childFacet
+                const lvl2 = lvl1.queries[k].childFacet
                 for (let l = 0; l < lvl2.queries.length; l++) {
                   if (lvl2.queries[l].query === key) {
                     Vue.set(lvl2.queries[l], 'count', facetQueriesSolr[key])
                   }
                   if (lvl2.queries[l].childFacet) {
-                    let lvl3 = lvl2.queries[l].childFacet
+                    const lvl3 = lvl2.queries[l].childFacet
                     for (let m = 0; m < lvl3.queries.length; m++) {
                       if (lvl3.queries[m].query === key) {
                         Vue.set(lvl3.queries[m], 'count', facetQueriesSolr[key])
                       }
                       if (lvl3.queries[m].childFacet) {
-                        let lvl4 = lvl3.queries[m].childFacet
+                        const lvl4 = lvl3.queries[m].childFacet
                         for (let n = 0; n < lvl4.queries.length; n++) {
                           if (lvl4.queries[n].query === key) {
                             Vue.set(lvl4.queries[n], 'count', facetQueriesSolr[key])
@@ -305,19 +305,19 @@ export function toggleFacet (q, f) {
 }
 
 export function deactivateFacetQueries (f) {
-  for (var i = 0; i < f.queries.length; i++) {
+  for (let i = 0; i < f.queries.length; i++) {
     f.queries[i].active = false
     if (f.queries[i].childFacet) {
-      var lvl1 = f.queries[i].childFacet
-      for (var j = 0; j < lvl1.queries.length; j++) {
+      const lvl1 = f.queries[i].childFacet
+      for (let j = 0; j < lvl1.queries.length; j++) {
         lvl1.queries[j].active = false
         if (lvl1.queries[j].childFacet) {
-          var lvl2 = lvl1.queries[j].childFacet
-          for (var k = 0; k < lvl2.queries.length; k++) {
+          const lvl2 = lvl1.queries[j].childFacet
+          for (let k = 0; k < lvl2.queries.length; k++) {
             lvl2.queries[k].active = false
             if (lvl2.queries[k].childFacet) {
-              var lvl3 = lvl2.queries[k].childFacet
-              for (var l = 0; l < lvl3.queries.length; l++) {
+              const lvl3 = lvl2.queries[k].childFacet
+              for (let l = 0; l < lvl3.queries.length; l++) {
                 lvl3.queries[l].active = false
               }
             }

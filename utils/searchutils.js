@@ -1,5 +1,5 @@
 export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, persAuthors, journals, funder, inCollection: collection }) {
-  let searchdefarr = []
+  const searchdefarr = []
 
   for (let i = 0; i < sortdef.length; i++) {
     if (sortdef[i].active) {
@@ -15,27 +15,27 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
     searchdefarr.push('pagesize=' + pagesize)
   }
 
-  let ands = []
+  const ands = []
   for (let i = 0; i < facetQueries.length; i++) {
-    let ors = []
+    const ors = []
     for (let j = 0; j < facetQueries[i].queries.length; j++) {
       if (facetQueries[i].queries[j].active) {
         // tag '{!tag=' + state.facetQueries[i].id + '}' +
         if (facetQueries[i].queries[j].childFacet) {
           // there are two levels, only take the lowest active levels
-          let lvl1 = facetQueries[i].queries[j].childFacet
+          const lvl1 = facetQueries[i].queries[j].childFacet
           let foundActiveLvl1Query = false
           for (let k = 0; k < lvl1.queries.length; k++) {
             if (lvl1.queries[k].active) {
               foundActiveLvl1Query = true
 
-              let lvl2 = lvl1.queries[k].childFacet
+              const lvl2 = lvl1.queries[k].childFacet
               let foundActiveLvl2Query = false
               for (let l = 0; l < lvl2.queries.length; l++) {
                 if (lvl2.queries[l].active) {
                   foundActiveLvl2Query = true
 
-                  let lvl3 = lvl2.queries[l].childFacet
+                  const lvl3 = lvl2.queries[l].childFacet
                   let foundActiveLvl3Query = false
 
                   for (let m = 0; m < lvl3.queries.length; m++) {
@@ -80,7 +80,7 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
   }
 
   for (let j = 0; j < persAuthors.values.length; j++) {
-    let v = persAuthors.values[j]
+    const v = persAuthors.values[j]
     if (v !== '') {
       ands.push('(' + persAuthors.field + ':"' + v + '")')
       searchdefarr.push('fr=' + persAuthors.field + '_' + encodeURIComponent(v))
@@ -88,7 +88,7 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
   }
 
   for (let j = 0; j < journals.values.length; j++) {
-    let v = journals.values[j]
+    const v = journals.values[j]
     if (v !== '') {
       ands.push('(' + journals.field + ':"' + v + '")')
       searchdefarr.push('fr=' + journals.field + '_' + encodeURIComponent(v))
@@ -112,7 +112,7 @@ export function buildSearchDef ({ sortdef, q, page, pagesize, facetQueries, pers
 }
 
 export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries }, ands) {
-  let params = {
+  const params = {
     q,
     'q.op': 'AND',
     defType: 'edismax',
@@ -146,13 +146,13 @@ export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries },
       for (let j = 0; j < facetQueries[i].queries.length; j++) {
         // exclude '{!ex=' + state.facetQueries[i].id + '}' +
         if (facetQueries[i].queries[j].active && facetQueries[i].queries[j].childFacet) {
-          let childFacetLvl1 = facetQueries[i].queries[j].childFacet
+          const childFacetLvl1 = facetQueries[i].queries[j].childFacet
           for (let k = 0; k < childFacetLvl1.queries.length; k++) {
             if (childFacetLvl1.queries[k].active && childFacetLvl1.queries[k].childFacet) {
-              let childFacetLvl2 = childFacetLvl1.queries[k].childFacet
+              const childFacetLvl2 = childFacetLvl1.queries[k].childFacet
               for (let l = 0; l < childFacetLvl2.queries.length; l++) {
                 if (childFacetLvl2.queries[l].active && childFacetLvl2.queries[l].childFacet) {
-                  let childFacetLvl3 = childFacetLvl2.queries[l].childFacet
+                  const childFacetLvl3 = childFacetLvl2.queries[l].childFacet
                   for (let m = 0; m < childFacetLvl3.queries.length; m++) {
                     params['facet.query'].push(childFacetLvl3.queries[m].query)
                   }
@@ -169,14 +169,14 @@ export function buildParams ({ q, page, pagesize, sortdef, lang, facetQueries },
   }
 
   if (ands.length > 0) {
-    params['fq'] = ands.join(' AND ')
+    params.fq = ands.join(' AND ')
   }
 
   return params
 }
 
 export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQueries }) {
-  let searchdefarr = []
+  const searchdefarr = []
 
   for (let i = 0; i < sortdef.length; i++) {
     if (sortdef[i].active) {
@@ -192,27 +192,27 @@ export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQue
     searchdefarr.push('pagesize=' + pagesize)
   }
 
-  let ands = []
+  const ands = []
   for (let i = 0; i < adminFacetQueries.length; i++) {
-    let ors = []
+    const ors = []
     for (let j = 0; j < adminFacetQueries[i].queries.length; j++) {
       if (adminFacetQueries[i].queries[j].active) {
         // tag '{!tag=' + state.facetQueries[i].id + '}' +
         if (adminFacetQueries[i].queries[j].childFacet) {
           // there are two levels, only take the lowest active levels
-          let lvl1 = adminFacetQueries[i].queries[j].childFacet
+          const lvl1 = adminFacetQueries[i].queries[j].childFacet
           let foundActiveLvl1Query = false
           for (let k = 0; k < lvl1.queries.length; k++) {
             if (lvl1.queries[k].active) {
               foundActiveLvl1Query = true
 
-              let lvl2 = lvl1.queries[k].childFacet
+              const lvl2 = lvl1.queries[k].childFacet
               let foundActiveLvl2Query = false
               for (let l = 0; l < lvl2.queries.length; l++) {
                 if (lvl2.queries[l].active) {
                   foundActiveLvl2Query = true
 
-                  let lvl3 = lvl2.queries[l].childFacet
+                  const lvl3 = lvl2.queries[l].childFacet
                   let foundActiveLvl3Query = false
 
                   for (let m = 0; m < lvl3.queries.length; m++) {
@@ -260,7 +260,7 @@ export function adminBuildSearchDef ({ sortdef, q, page, pagesize, adminFacetQue
 }
 
 export function adminBuildParams ({ q, page, pagesize, sortdef, lang, adminFacetQueries }, ands) {
-  let params = {
+  const params = {
     q,
     'q.op': 'AND',
     defType: 'edismax',
@@ -295,7 +295,7 @@ export function adminBuildParams ({ q, page, pagesize, sortdef, lang, adminFacet
   }
 
   if (ands.length > 0) {
-    params['fq'] = ands.join(' AND ')
+    params.fq = ands.join(' AND ')
   }
 
   return params
@@ -306,18 +306,18 @@ export const sortdef = [
     id: 'title asc',
     active: false,
     def: {
-      'en': 'sort_eng_dc_title asc,sort_dc_title asc',
-      'de': 'sort_deu_dc_title asc,sort_dc_title asc',
-      'it': 'sort_ita_dc_title asc,sort_dc_title asc'
+      en: 'sort_eng_dc_title asc,sort_dc_title asc',
+      de: 'sort_deu_dc_title asc,sort_dc_title asc',
+      it: 'sort_ita_dc_title asc,sort_dc_title asc'
     }
   },
   {
     id: 'title desc',
     active: false,
     def: {
-      'en': 'sort_eng_dc_title desc,sort_dc_title desc',
-      'de': 'sort_deu_dc_title desc,sort_dc_title desc',
-      'it': 'sort_ita_dc_title desc,sort_dc_title desc'
+      en: 'sort_eng_dc_title desc,sort_dc_title desc',
+      de: 'sort_deu_dc_title desc,sort_dc_title desc',
+      it: 'sort_ita_dc_title desc,sort_dc_title desc'
     }
   },
   {
