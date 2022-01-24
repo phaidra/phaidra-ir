@@ -26,7 +26,7 @@ export default {
     { src: '~/plugins/svg-icon' },
     { src: '~/plugins/vuetify.js', mode: 'client' },
     { src: '~/plugins/phaidra-vue-components', mode: 'client' },
-    { src: '~/plugins/after-each.js' },
+    { src: '~/plugins/after-each.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -35,12 +35,12 @@ export default {
   // Modules for dev and build (recommended): https://go.nuxtjs.dev/config-modules
   buildModules: [
     // https://go.nuxtjs.dev/vuetify
-    '@nuxtjs/vuetify',
+    '@nuxtjs/vuetify'
   ],
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    'nuxt-i18n',
+    'nuxt-i18n'
   ],
   i18n: {
     langDir: 'locales/',
@@ -71,7 +71,7 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: false,
+      dark: false
     }
   },
 

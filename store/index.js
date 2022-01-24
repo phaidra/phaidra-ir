@@ -4,7 +4,7 @@ import config from '../config/phaidra-ir'
 
 export const state = () => ({
   loading: false,
-  config: config,
+  config,
   instanceconfig: {
     baseurl: config.phaidrabaseurl,
     api: config.api,
@@ -241,25 +241,25 @@ export const mutations = {
       document.title = state.pagetitle
     }
   },
-  setLoading(state, loading) {
+  setLoading (state, loading) {
     state.loading = loading
   },
-  setGroups(state, groups) {
+  setGroups (state, groups) {
     state.groups = groups
   },
-  setObjectInfo(state, objectInfo) {
+  setObjectInfo (state, objectInfo) {
     state.objectInfo = objectInfo
   },
-  setObjectMembers(state, objectMembers) {
+  setObjectMembers (state, objectMembers) {
     state.objectMembers = objectMembers
   },
-  switchInstance(state, instance) {
+  switchInstance (state, instance) {
     state.instance = state.config.instances[instance]
   },
-  hideSnackbar(state) {
+  hideSnackbar (state) {
     state.snackbar = false
   },
-  setAlerts(state, alerts) {
+  setAlerts (state, alerts) {
     for (const a of alerts) {
       if (a.type === 'success') {
         state.snackbar = true
@@ -267,10 +267,10 @@ export const mutations = {
     }
     state.alerts = alerts
   },
-  clearAlert(state, alert) {
+  clearAlert (state, alert) {
     state.alerts = state.alerts.filter(e => e !== alert)
   },
-  setUserData(state, user) {
+  setUserData (state, user) {
     const data = {
       ...state.user,
       ...user
@@ -280,7 +280,7 @@ export const mutations = {
       localStorage.setItem('user', JSON.stringify(user))
     }
   },
-  setUserToken(state, token) {
+  setUserToken (state, token) {
     const data = {
       ...state.user,
       token
@@ -290,14 +290,14 @@ export const mutations = {
       localStorage.setItem('token', token)
     }
   },
-  setUsername(state, username) {
+  setUsername (state, username) {
     Vue.set(state.user, 'username', username)
   },
-  setToken(state, token) {
+  setToken (state, token) {
     localStorage.setItem('token', token)
     Vue.set(state.user, 'token', token)
   },
-  setLoginData(state, logindata) {
+  setLoginData (state, logindata) {
     const user = {
       username: logindata.username,
       firstname: logindata.firstname,
@@ -313,12 +313,12 @@ export const mutations = {
     state.user = data
     localStorage.setItem('user', JSON.stringify(user))
   },
-  clearUser(state) {
+  clearUser (state) {
     state.user = {}
     localStorage.removeItem('token')
     localStorage.removeItem('user')
   },
-  clearStore(state) {
+  clearStore (state) {
     state.alerts = []
     state.objectInfo = null
     state.objectMembers = []
@@ -332,7 +332,7 @@ export const mutations = {
 
 export const actions = {
 
-  async fetchObjectInfo({ commit, state }, pid) {
+  async fetchObjectInfo ({ commit, state }, pid) {
     try {
       let response
       if (state.user.token) {
@@ -350,7 +350,7 @@ export const actions = {
     } catch (error) {
     }
   },
-  async fetchObjectMembers({ dispatch, commit, state }, parent) {
+  async fetchObjectMembers ({ dispatch, commit, state }, parent) {
     commit('setObjectMembers', [])
     try {
       if (parent.members.length > 0) {
@@ -377,7 +377,7 @@ export const actions = {
     } catch (error) {
     }
   },
-  async getLoginData({ commit, dispatch, state }) {
+  async getLoginData ({ commit, dispatch, state }) {
     try {
       const response = await axios.get(state.instanceconfig.api + '/directory/user/data', {
         headers: {
@@ -399,7 +399,7 @@ export const actions = {
       }
     }
   },
-  async login({ commit, dispatch, state }, credentials) {
+  async login ({ commit, dispatch, state }, credentials) {
     commit('clearStore')
     commit('setUsername', credentials.username)
     try {
@@ -421,7 +421,7 @@ export const actions = {
     } catch (error) {
     }
   },
-  async logout({ commit, dispatch, state }) {
+  async logout ({ commit, dispatch, state }) {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     commit('clearStore')
@@ -442,7 +442,7 @@ export const actions = {
       commit('clearStore')
     }
   },
-  async getUserGroups({ commit, state }) {
+  async getUserGroups ({ commit, state }) {
     commit('clearAlerts')
     try {
       const response = await axios.get(state.instanceconfig.api + '/groups', {
@@ -457,7 +457,7 @@ export const actions = {
     } catch (error) {
     }
   },
-  switchInstance({ commit }, instance) {
+  switchInstance ({ commit }, instance) {
     commit('switchInstance', instance)
   }
 }
