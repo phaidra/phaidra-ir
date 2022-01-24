@@ -44,7 +44,7 @@ export const mutations = {
         to: '/'
       }
     ]
-    if (transition.to.name === 'search') {
+    if (transition.to.path.includes('search')) {
       pagetitle = 'Search'
       state.breadcrumbs.push(
         {
@@ -185,7 +185,7 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'policy') {
+    if (transition.to.path.includes('policy')) {
       pagetitle = 'Policy'
       state.breadcrumbs.push(
         {
@@ -194,7 +194,7 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'contact') {
+    if (transition.to.path.includes('contact')) {
       pagetitle = 'Contact'
       state.breadcrumbs.push(
         {

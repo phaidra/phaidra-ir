@@ -40,7 +40,8 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
-    'nuxt-i18n'
+    'nuxt-i18n',
+    '@nuxt/http'
   ],
   i18n: {
     langDir: 'locales/',
