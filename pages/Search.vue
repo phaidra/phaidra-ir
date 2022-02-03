@@ -326,11 +326,12 @@ export default {
     setSearchParams(this, this.$route.query);
     this.$nextTick(async function () {
       if (!this.vocabularies["orgunits"].loaded) {
-        await this.$store.dispatch("loadOrgUnits", this.$i18n.locale);
+        await this.$store.dispatch("vocabulary/loadOrgUnits", this.$i18n.locale);
       }
       let af = buildAssociationFacet(this.vocabularies["orgunits"].tree);
-      console.log(af);
-      facetQueries.push(af);
+      if(!facetQueries.find(elem => elem.id == af.id && elem.label == af.label)) {
+        facetQueries.push(af);
+      }
       this.search();
     });
     // This call is delayed because at this point
