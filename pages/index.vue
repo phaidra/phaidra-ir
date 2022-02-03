@@ -20,13 +20,13 @@
           :placeholder="$t('Search...')"
           autocomplete="off"
           append-icon="mdi-magnify"
-          v-on:keyup.enter="$router.push({ name: 'search', query: { q } })"
+          v-on:keyup.enter="$router.push({ path: '/search', query: { q } })"
           clearable
           solo
           hide-details
         >
         </v-text-field>
-        <v-btn raised color="primary" class="ml-4 mt-1" large @click="$router.push({ name: 'search', query: { q } })">Search/Browse</v-btn>
+        <v-btn raised color="primary" class="ml-4 mt-1" large @click="$router.push({ path: '/search', query: { q } })">Search/Browse</v-btn>
         </v-row>
       </v-col>
     </v-row>
