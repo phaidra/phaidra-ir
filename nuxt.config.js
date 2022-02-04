@@ -41,7 +41,8 @@ export default {
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
     'nuxt-i18n',
-    '@nuxt/http'
+    '@nuxt/http',
+    ['cookie-universal-nuxt', { alias: 'cookies' }]
   ],
   i18n: {
     langDir: 'locales/',

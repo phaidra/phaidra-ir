@@ -306,7 +306,7 @@
 
 <script>
 import Vue from "vue";
-import moment from 'moment'
+import moment from "moment";
 import { context } from "@/mixins/context";
 import { config } from "@/mixins/config";
 import "@/compiled-icons/univie-sprache";

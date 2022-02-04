@@ -288,7 +288,7 @@ export default {
     },
     async fetchAsyncData (self, pid) {
       await self.$store.dispatch('fetchObjectInfo', pid)
-      await self.$store.dispatch('loadOrgUnits', self.$i18n.locale)
+      await self.$store.dispatch('vocabulary/loadOrgUnits', self.$i18n.locale)
     },
     setTitle (self) {
       if (process.browser) {
