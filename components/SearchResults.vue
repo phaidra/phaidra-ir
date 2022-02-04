@@ -15,7 +15,7 @@
               <v-row no-gutters class="mb-4">
                 <v-col cols="10">
                   <h3 class="subtitle-1 font-weight-light primary--text" @click.stop v-if="doc.dc_title">
-                    <router-link :to="{ path: 'detail', params: { pid: doc.pid } }">{{ doc.dc_title[0] }}</router-link>
+                    <nuxt-link :to="{ path: `/detail/${doc.pid}`}">{{ doc.dc_title[0] }}</nuxt-link>
                   </h3>
                 </v-col>
                 <v-spacer></v-spacer>

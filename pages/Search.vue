@@ -119,7 +119,6 @@ import { config } from "@/mixins/config";
 import { vocabulary } from "phaidra-vue-components/src/mixins/vocabulary";
 
 export default {
-  name: "search",
   mixins: [config, vocabulary],
   computed: {
     currentPage: {

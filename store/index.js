@@ -54,9 +54,9 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'detail') {
+    if (transition.to.path.includes('detail')) {
       usepagetitle = false
-      if (transition.from.name === 'search') {
+      if (transition.from.path.includes('search')) {
         state.breadcrumbs.push(
           {
             text: 'Search',
@@ -67,8 +67,7 @@ export const mutations = {
       state.breadcrumbs.push(
         {
           text: pagetitle,
-          to: { name: transition.to.name, params: { pid: transition.to.params.pid } },
-          disabled: true
+          to: transition.to.path
         }
       )
     }
