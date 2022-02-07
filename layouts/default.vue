@@ -316,6 +316,10 @@ import * as Integrations from "@sentry/integrations";
 
 export default {
   mixins: [context, config],
+  metaInfo: {
+    title: config.title,
+    meta: [],
+  },
   data() {
     return {
       quicklinksenabled: 0,

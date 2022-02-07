@@ -26,7 +26,8 @@ export default {
     { src: '~/plugins/svg-icon' },
     { src: '~/plugins/vuetify.js', mode: 'client' },
     { src: '~/plugins/phaidra-vue-components', mode: 'client' },
-    { src: '~/plugins/after-each.js' }
+    { src: '~/plugins/after-each.js' },
+    { src: '~/plugins/vue-meta.js' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
