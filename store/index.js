@@ -471,3 +471,7 @@ export const actions = {
     commit('switchInstance', instance)
   }
 }
+
+export const getters = {
+  token: state => state.user.token
+}
