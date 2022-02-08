@@ -307,6 +307,7 @@
 <script>
 import Vue from "vue";
 import moment from "moment";
+import '@/assets/css/material-icons.css'
 import { context } from "@/mixins/context";
 import { config } from "@/mixins/config";
 import "@/compiled-icons/univie-sprache";

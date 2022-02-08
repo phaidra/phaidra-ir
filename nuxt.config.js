@@ -1,3 +1,5 @@
+import config from './config/phaidra-ir'
+const path = require('path')
 
 export default {
   // Global page headers: https://go.nuxtjs.dev/config-head
@@ -74,8 +76,20 @@ export default {
   vuetify: {
     customVariables: ['~/assets/variables.scss'],
     theme: {
-      dark: false
+      themes: {
+        light: {
+          primary: config.primary
+        },
+        dark: {
+          primary: config.primary
+        }
+      }
     }
+  },
+
+  alias: {
+    vue: path.resolve(path.join(__dirname, 'node_modules', 'vue')),
+    vuetify: path.resolve(path.join(__dirname, 'node_modules', 'vuetify'))
   },
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
