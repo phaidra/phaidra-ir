@@ -173,16 +173,6 @@ export default {
       }
 
       try {
-        console.log("http?>>>>>", this.$http.post);
-        // let response = await this.$http.request({
-        //   method: "POST",
-        //   url: this.config.solr + "/select",
-        //   data: qs.stringify(params, { arrayFormat: "repeat" }),
-        //   headers: {
-        //     "content-type": "application/x-www-form-urlencoded",
-        //   },
-        // });
-
         let response = await this.$http.$post(
           this.config.solr + "/select",
           qs.stringify(params, { arrayFormat: "repeat" }),

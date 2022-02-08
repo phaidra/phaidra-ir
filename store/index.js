@@ -115,7 +115,7 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'submit-ir') {
+    if (transition.to.path.includes('submit') && transition.to.params.submitform) {
       pagetitle = 'Upload ' + transition.to.params.submitform
       state.breadcrumbs.push(
         {
@@ -398,7 +398,7 @@ export const actions = {
       }
       commit('setLoginData', response.data.user_data)
     } catch (error) {
-      if (error.response.status === 401) {
+      if (error.response && error.response.status === 401) {
         commit('setAlerts', [{ type: 'danger', msg: 'You have been logged out' }])
         commit('setToken', null)
         commit('setLoginData', { username: null, firstname: null, lastname: null, email: null, org_units_l1: null, org_units_l2: null })

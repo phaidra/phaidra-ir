@@ -21,7 +21,6 @@
 
 <script>
 export default {
-  name: 'p-breadcrumbs',
   props: {
     items: Array
   },
