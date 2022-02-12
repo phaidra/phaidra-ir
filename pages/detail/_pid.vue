@@ -47,7 +47,7 @@
             <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
               <v-col>
                 <v-row>
-                  <h3 class="title font-weight-light pl-3 primary--text"><nuxt-link :to="{ name: 'stats', params: { pid: objectInfo.pid } }">{{ $t('Usage statistics') }}</nuxt-link></h3>
+                  <h3 class="title font-weight-light pl-3 primary--text"><nuxt-link :to="{ path: `/stats/${ objectInfo.pid}`}">{{ $t('Usage statistics') }}</nuxt-link></h3>
                 </v-row>
                 <v-divider></v-divider>
                 <v-row no-gutters class="pt-2">
@@ -104,6 +104,7 @@
 
 <script>
 import moment from 'moment'
+import axios from "axios";
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { context } from '../../mixins/context'
 import { config } from '../../mixins/config'
@@ -259,13 +260,14 @@ export default {
       self.stats.download = null
       self.stats.detail = null
       try {
-        let response = await self.$http.get(self.config.api + '/ir/stats/' + pid,
+        let response = await axios.get(self.config.api + '/ir/stats/' + pid,
           {
             headers: {
               'X-XSRF-TOKEN': self.user.token
             }
           }
         )
+        console.log('response', response)
         if (response.data.stats) {
           self.stats.download = response.data.stats.downloads
           self.stats.detail = response.data.stats.detail_page
@@ -302,7 +304,9 @@ export default {
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async function (vm) {
+      console.log('beforeroute', process.browser, vm.objectInfo)
       if (process.browser && (!vm.objectInfo || (vm.objectInfo.pid !== to.params.pid))) {
+        console.log('beforeroute')
         vm.$store.commit('setLoading', true)
         vm.$store.commit('setObjectInfo', null)
         await vm.fetchAsyncData(vm, to.params.pid)

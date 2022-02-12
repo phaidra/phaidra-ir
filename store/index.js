@@ -71,19 +71,19 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'stats') {
-      if (transition.from.name === 'detail') {
+    if (transition.to.path.includes('stats')) {
+      if (transition.from.path.includes('detail')) {
         state.breadcrumbs.push(
           {
             text: 'Detail ' + transition.from.params.pid,
-            to: { name: transition.from.name, params: { pid: transition.from.params.pid } }
+            to: { path: transition.from.path, params: { pid: transition.from.params.pid } }
           }
         )
       }
       state.breadcrumbs.push(
         {
           text: 'Statistics of object ' + transition.to.params.pid,
-          to: { name: transition.to.name, params: { pid: transition.to.params.pid } },
+          to: { path: transition.to.path, params: { pid: transition.to.params.pid } },
           disabled: true
         }
       )
