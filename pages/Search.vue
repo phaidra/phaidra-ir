@@ -117,6 +117,7 @@ import { buildParams, buildSearchDef, sortdef } from "../utils/searchutils";
 import { setSearchParams } from "../utils/searchlocation";
 import { config } from "@/mixins/config";
 import { vocabulary } from "phaidra-vue-components/src/mixins/vocabulary";
+import axios from 'axios';
 
 export default {
   mixins: [config, vocabulary],
@@ -173,7 +174,7 @@ export default {
       }
 
       try {
-        let response = await this.$http.$post(
+        let response = await axios.post(
           this.config.solr + "/select",
           qs.stringify(params, { arrayFormat: "repeat" }),
           {
@@ -184,11 +185,11 @@ export default {
         );
         console.log('res', response)
 
-        this.docs = response.response.docs;
-        this.total = response.response.numFound;
-        this.facet_counts = response.facet_counts;
+        this.docs = response.data.response.docs;
+        this.total = response.data.response.numFound;
+        this.facet_counts = response.data.facet_counts;
         updateFacetQueries(
-          response.facet_counts.facet_queries,
+          response.data.facet_counts.facet_queries,
           facetQueries
         );
       } catch (error) {

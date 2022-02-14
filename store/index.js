@@ -88,9 +88,9 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'metadataeditor') {
+    if (transition.to.path.includes('metadata') && transition.to.path.includes('edit')) {
       pagetitle = 'Metadata editor ' + transition.to.params.pid
-      if (transition.from.name === 'admin') {
+      if (transition.from.path.includes('admin')) {
         state.breadcrumbs.push(
           {
             text: 'Admin',
@@ -101,7 +101,7 @@ export const mutations = {
       state.breadcrumbs.push(
         {
           text: pagetitle,
-          to: { name: transition.to.name, params: { pid: transition.to.params.pid } },
+          to: { name: transition.to.path },
           disabled: true
         }
       )
@@ -115,7 +115,7 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.path.includes('submit') && transition.to.params.submitform) {
+    if (transition.to.path.includes('submit') && transition.to.params.submitform && !transition.to.path.includes('admin')) {
       pagetitle = 'Upload ' + transition.to.params.submitform
       state.breadcrumbs.push(
         {
@@ -130,12 +130,12 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'adminsubmit') {
+    if (transition.to.path.includes('admin') && transition.to.path.includes('submit') && !transition.to.params.submitform) {
       pagetitle = 'Upload'
       state.breadcrumbs.push(
         {
           text: 'Admin',
-          to: { name: 'admin' }
+          to: { path: '/admin' }
         }
       )
       state.breadcrumbs.push(
@@ -145,12 +145,12 @@ export const mutations = {
         }
       )
     }
-    if (transition.to.name === 'adminsubmitform') {
+    if (transition.to.path.includes('admin') && transition.to.params.submitform) {
       pagetitle = 'Upload ' + transition.to.params.submitform
       state.breadcrumbs.push(
         {
           text: 'Admin',
-          to: { name: 'admin' }
+          to: { path: '/admin' }
         }
       )
       state.breadcrumbs.push(

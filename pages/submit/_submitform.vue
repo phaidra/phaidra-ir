@@ -2068,7 +2068,7 @@ export default {
     submit: async function () {
       this.loading = true;
       try {
-        await this.$http.get(this.$store.state.config.api + "/keepalive", {
+        await axios.get(this.$store.state.config.api + "/keepalive", {
           headers: {
             "X-XSRF-TOKEN": this.$store.state.user.token,
           },
