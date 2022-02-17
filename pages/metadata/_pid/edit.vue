@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     objectSaved: function (event) {
-      this.$router.push({ name: 'detail', params: { pid: this.pid } })
+      this.$router.push({ path: `/detail/${this.pid}`})
       this.$vuetify.goTo(0)
     },
     loadJsonld: async function (self, pid) {

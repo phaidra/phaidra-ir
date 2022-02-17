@@ -18,14 +18,14 @@ export default ({ app }) => {
         return
       } else {
         try {
-          let response = await axios.get(config.api + '/directory/user/data', { headers: { 'X-XSRF-TOKEN': token } })
-          if (response.data.user_data) {
-            if (response.data.user_data.username === config.iraccount) {
+          // let response = await axios.get(config.api + '/directory/user/data', { headers: { 'X-XSRF-TOKEN': token } })
+          if (app.store && app.store.state.user.username) {
+            if (app.store.state.user.username === config.iraccount) {
               next()
               return
             }
           }
-          console.log('admin access rejected: wrong user: ' + response.data.user_data.username)
+          console.log('admin access rejected: wrong user: ' + app.store.state.user.username)
           next('/')
         } catch (error) {
           console.log('admin access rejected: user data request error:')
