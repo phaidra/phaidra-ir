@@ -264,13 +264,7 @@ export default {
       self.stats.download = null
       self.stats.detail = null
       try {
-        let response = await self.$http.get(self.config.api + '/ir/stats/' + pid,
-          {
-            headers: {
-              'X-XSRF-TOKEN': self.user.token
-            }
-          }
-        )
+        let response = await self.$http.get(self.config.api + '/ir/stats/' + pid)
         if (response.data.stats) {
           self.stats.download = response.data.stats.downloads
           self.stats.detail = response.data.stats.detail_page
@@ -301,9 +295,13 @@ export default {
       }
     }
   },
-  serverPrefetch () {
+  serverPrefetch: async function () {
     console.log('[' + this.$store.state.route.params.pid + '] prefetch')
+    await this.fetchUsageStats(this, this.$store.state.route.params.pid)
     return this.fetchAsyncData(this, this.$store.state.route.params.pid)
+  },
+  mounted: async function () {
+    this.fetchUsageStats(this, this.$store.state.route.params.pid)
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async function (vm) {
