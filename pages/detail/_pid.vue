@@ -17,12 +17,12 @@
           </v-row>
         </v-col>
 
-        <v-col cols="12" md="3" class="col-border">
+        <v-col cols="12" md="3" class="col-border pl-0">
 
           <v-row class="mb-6">
             <v-col >
               <v-row>
-                <h3 class="title font-weight-light pl-3 primary--text">{{ $t('Download') }}</h3>
+                <h3 class="title font-weight-light primary--text">{{ $t('Download') }}</h3>
               </v-row>
               <v-divider></v-divider>
               <v-row no-gutters class="pt-2">
@@ -47,7 +47,7 @@
             <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
               <v-col>
                 <v-row>
-                  <h3 class="title font-weight-light pl-3 primary--text"><nuxt-link :to="{ path: `/stats/${ objectInfo.pid}`}">{{ $t('Usage statistics') }}</nuxt-link></h3>
+                  <h3 class="title font-weight-light primary--text"><nuxt-link :to="{ path: `/stats/${ objectInfo.pid}`}">{{ $t('Usage statistics') }}</nuxt-link></h3>
                 </v-row>
                 <v-divider></v-divider>
                 <v-row no-gutters class="pt-2">
