@@ -30,7 +30,8 @@ export default {
     { src: '~/plugins/phaidra-vue-components', mode: 'client' },
     { src: '~/plugins/after-each.js' },
     { src: '~/plugins/before-each.js' },
-    { src: '~/plugins/vue-meta.js' }
+    { src: '~/plugins/vue-meta.js' },
+    { src: '~/plugins/vue-http.js', mode: 'client' }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
