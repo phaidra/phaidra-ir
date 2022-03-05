@@ -43,25 +43,23 @@
             </v-col>
           </v-row>
 
-          <client-only>
-            <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
-              <v-col>
-                <v-row>
-                  <h3 class="title font-weight-light primary--text"><nuxt-link :to="{ path: `/stats/${ objectInfo.pid}`}">{{ $t('Usage statistics') }}</nuxt-link></h3>
-                </v-row>
-                <v-divider></v-divider>
-                <v-row no-gutters class="pt-2">
-                  <v-col>
-                    <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
-                  </v-col>
-                  <v-col v-if="objectInfo.cmodel !== 'Resource'">
-                    <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
-                  </v-col>
-                  <v-spacer></v-spacer>
-                </v-row>
-              </v-col>
-            </v-row>
-          </client-only>
+          <v-row class="mb-6" v-if="objectInfo.readrights && accessRights === 'open'">
+            <v-col>
+              <v-row>
+                <h3 class="title font-weight-light primary--text"><nuxt-link :to="{ path: `/stats/${ objectInfo.pid}`}">{{ $t('Usage statistics') }}</nuxt-link></h3>
+              </v-row>
+              <v-divider></v-divider>
+              <v-row no-gutters class="pt-2">
+                <v-col>
+                  <v-icon>mdi-eye-outline</v-icon><span class="ml-2">{{ stats.detail }}</span>
+                </v-col>
+                <v-col v-if="objectInfo.cmodel !== 'Resource'">
+                  <v-icon>mdi-download</v-icon><span class="ml-2">{{ stats.download }}</span>
+                </v-col>
+                <v-spacer></v-spacer>
+              </v-row>
+            </v-col>
+          </v-row>
 
           <v-row v-if="objectInfo.alternativeversions.length > 0" class="mb-6">
             <v-col>
@@ -260,14 +258,7 @@ export default {
       self.stats.download = null
       self.stats.detail = null
       try {
-        let response = await axios.get(self.config.api + '/ir/stats/' + pid,
-          {
-            headers: {
-              'X-XSRF-TOKEN': self.user.token
-            }
-          }
-        )
-        console.log('response', response)
+        let response = await axios.get(self.config.api + '/ir/stats/' + pid)
         if (response.data.stats) {
           self.stats.download = response.data.stats.downloads
           self.stats.detail = response.data.stats.detail_page
@@ -298,9 +289,13 @@ export default {
       }
     }
   },
-  serverPrefetch () {
+  serverPrefetch: async function () {
     console.log('[' + this.$route.params.pid + '] prefetch')
+    await this.fetchUsageStats(this, this.$route.params.pid)
     return this.fetchAsyncData(this, this.$route.params.pid)
+  },
+  mounted: async function () {
+    this.fetchUsageStats(this, this.$route.params.pid)
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async function (vm) {

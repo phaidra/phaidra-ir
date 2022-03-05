@@ -35,6 +35,9 @@
           <v-btn v-else icon :color="'grey darken-1'" @click="openRights(doc.pid)">
             <v-icon dark>mdi-lock-open-outline</v-icon>
           </v-btn>
+          <v-btn icon :color="'grey darken-1'" @click="openUpload(doc.pid)">
+            <v-icon>mdi-upload</v-icon>
+          </v-btn>
         </v-col>
         <v-col cols="2">
           <v-spacer></v-spacer>
@@ -90,6 +93,26 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog v-model="uploadDialog" max-width="1200px">
+      <v-card>
+        <v-card-title>
+          <h3 class="title font-weight-light primary--text">{{ $t('Upload new file to') }} {{uploadPid}}</h3>
+        </v-card-title>
+        <v-divider></v-divider>
+        <v-card-text>
+          <v-container @drop.prevent="addDropFile"
+    @dragover.prevent>
+            <v-file-input v-model="fileUpload" :error-messages="fileUploadErrors"></v-file-input>
+          </v-container>
+        </v-card-text>
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn text @click.stop="uploadDialog=false">Close</v-btn>
+          <v-btn color="primary" @click="uploadFile()">Upload</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -115,8 +138,12 @@ export default {
       historyDialog: false,
       events: [],
       rightsDialog: false,
+      uploadDialog: false,
       rights: {},
-      rightsPid: {}
+      rightsPid: {},
+      uploadPid: {},
+      fileUploadErrors: [],
+      fileUpload: null
     }
   },
   methods: {
@@ -136,6 +163,43 @@ export default {
       link.click()
       window.URL.revokeObjectURL(url)
 
+    },
+    addDropFile (e) {
+      if (e.dataTransfer.files.length > 1) {
+        this.fileUploadErrors.push(this.$t('Select only 1 file'))
+        return
+      }
+      this.fileUpload = e.dataTransfer.files[0]
+    },
+    uploadFile: async function () {
+      if (!this.fileUpload) {
+        this.fileUploadErrors.push(this.$t('Missing file'))
+        return
+      }
+      Vue.set(this.loading, this.uploadPid, true)
+      try {
+        var httpFormData = new FormData()
+        httpFormData.append('file', this.fileUpload)
+        let response = await axios.post(this.config.api + '/object/' + this.uploadPid + '/data', httpFormData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'X-XSRF-TOKEN': this.$store.state.user.token
+          }
+        })
+        if (response.status === 200) {
+          this.$store.commit('setAlerts', [{ type: 'success', msg: 'File ' + this.fileUpload.name + ' sucessfully uploaded to ' + this.uploadPid }])
+        } else {
+          if (response.data.alerts && response.data.alerts.length > 0) {
+            this.$store.commit('setAlerts', response.data.alerts)
+          }
+        }
+      } catch (error) {
+        console.log(error)
+        this.$store.commit('setAlerts', [{ type: 'danger', msg: error }])
+      } finally {
+        this.uploadDialog = false
+        Vue.set(this.loading, this.uploadPid, false)
+      }
     },
     isApproved: function (doc) {
       return (doc.owner === this.config.iraccount) && doc.ispartof && doc.ispartof.includes(this.config.ircollection)
@@ -167,6 +231,10 @@ export default {
       } finally {
         Vue.set(this.loading, this.rightsPid, false)
       }
+    },
+    openUpload: function (pid) {
+      this.uploadPid = pid
+      this.uploadDialog = true
     },
     openRights: async function (pid) {
       this.rightsPid = pid

@@ -66,8 +66,8 @@ export const mutations = {
       }
       state.breadcrumbs.push(
         {
-          text: pagetitle,
-          to: transition.to.path
+          text: 'Detail ' + transition.to.params.pid,
+          to: { path: transition.from.path, params: { pid: transition.to.params.pid } }
         }
       )
     }
