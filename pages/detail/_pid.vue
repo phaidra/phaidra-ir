@@ -290,12 +290,21 @@ export default {
     }
   },
   serverPrefetch: async function () {
+<<<<<<< HEAD:pages/detail/_pid.vue
     console.log('[' + this.$route.params.pid + '] prefetch')
     await this.fetchUsageStats(this, this.$route.params.pid)
     return this.fetchAsyncData(this, this.$route.params.pid)
   },
   mounted: async function () {
     this.fetchUsageStats(this, this.$route.params.pid)
+=======
+    console.log('[' + this.$store.state.route.params.pid + '] prefetch')
+    await this.fetchUsageStats(this, this.$store.state.route.params.pid)
+    return this.fetchAsyncData(this, this.$store.state.route.params.pid)
+>>>>>>> master:src/components/Detail.vue
+  },
+  mounted: async function () {
+    this.fetchUsageStats(this, this.$store.state.route.params.pid)
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async function (vm) {

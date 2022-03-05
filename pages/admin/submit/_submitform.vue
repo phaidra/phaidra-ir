@@ -990,6 +990,44 @@ export default {
         }
       }
 
+      let dupcheckdoi = null
+      for (let i = 0; i < this.form.sections.length; i++) {
+        let s = this.form.sections[i]
+        if (s.fields) {
+          for (let j = 0; j < s.fields.length; j++) {
+            if (s.fields[j].component === 'p-alternate-identifier' && s.fields[j].type === 'ids:doi') {
+              if (s.fields[j].value !== '') {
+                dupcheckdoi = s.fields[j].value
+              }
+            }
+          }
+        }
+      }
+      if (dupcheckdoi) {
+        let params = {
+          wt: 'json',
+          q: 'dc_identifier:"' + dupcheckdoi + '"'
+        }
+        console.log('checking dup import of ' + dupcheckdoi)
+        try {
+          let solrResponse = await this.$http.request({
+            method: 'GET',
+            url: this.config.solr + '/select',
+            params: params
+          })
+          console.log('found ' + solrResponse.data.response.numFound + ' objects')
+          if (solrResponse.data.response.numFound > 0) {
+            let dupmsg = 'An object with DOI ' + dupcheckdoi + ' was already uploaded: ' + solrResponse.data.response.docs[0].pid + ' - ' + solrResponse.data.response.docs[0].dc_title[0]
+            console.log(dupmsg)
+            this.$store.commit('setAlerts', [{ type: 'info', msg: dupmsg }])
+            this.loading = false
+            return
+          }
+        } catch (error) {
+          console.log(error)
+        }
+      }
+
       this.submitResponse = null
       var httpFormData = new FormData()
       for (let i = 0; i < this.form.sections.length; i++) {

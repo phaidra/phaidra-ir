@@ -1,8 +1,21 @@
-# Created by .ignore support plugin (hsz.mobi)
-### Node template
-# Logs
 /logs
 *.log
+
+# sitemaps
+public/sitemap*
+
+.DS_Store
+node_modules
+/dist
+/public/custom
+/src/components/info
+/src/i18n/*
+
+# local env files
+.env.local
+.env.*.local
+
+# Log files
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
