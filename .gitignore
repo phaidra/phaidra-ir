@@ -102,5 +102,3 @@ sw.*
 # Vim swap files
 *.swp
 
-# Ignore configuration file
-config/phaidra-ir.js
