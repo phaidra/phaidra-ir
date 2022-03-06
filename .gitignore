@@ -102,3 +102,6 @@ sw.*
 # Vim swap files
 *.swp
 
+components/info
+locales
+pages/info
