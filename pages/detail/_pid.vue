@@ -297,9 +297,6 @@ export default {
   mounted: async function () {
     this.fetchUsageStats(this, this.$route.params.pid)
   },
-  mounted: async function () {
-    this.fetchUsageStats(this, this.$store.state.route.params.pid)
-  },
   beforeRouteEnter: async function (to, from, next) {
     next(async function (vm) {
       console.log('beforeroute', process.browser, vm.objectInfo)
