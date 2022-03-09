@@ -236,7 +236,7 @@ function buildDateFacet () {
 
   for (let year = startYear; year <= currYear; year++) {
     yearsFacet.queries.push({
-      query: 'bib_published:' + year + ' OR (-bib_published:* AND tcreated:[' + year + '-01-01T00:00:00Z TO ' + year + '-12-31T23:59:59Z])',
+      query: 'bib_published:' + year + ' OR (-bib_published:* AND tcreated:[' + year + '-01-01T00:00:00Z TO ' + year + '-12-31T23:59:59Z]) AND owner:* AND isinadminset:"' + config.adminset + '"',
       id: year,
       label: year
     })
