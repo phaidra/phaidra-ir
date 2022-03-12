@@ -35,7 +35,7 @@
           <v-btn v-else icon :color="'grey darken-1'" @click="openRights(doc.pid)">
             <v-icon dark>mdi-lock-open-outline</v-icon>
           </v-btn>
-          <v-btn icon :color="'grey darken-1'" @click="openUpload(doc.pid)">
+          <v-btn icon :color="'grey darken-1'" @click="openUpload(doc.pid, doc.cmodel)">
             <v-icon>mdi-upload</v-icon>
           </v-btn>
         </v-col>
@@ -96,7 +96,7 @@
     <v-dialog v-model="uploadDialog" max-width="1200px">
       <v-card>
         <v-card-title>
-          <h3 class="title font-weight-light primary--text">{{ $t('Upload new file to') }} {{uploadPid}}</h3>
+          <h3 class="title font-weight-light primary--text">{{ $t('Upload new file to') }} {{uploadPid}} ({{uploadCmodel}})</h3>
         </v-card-title>
         <v-divider></v-divider>
         <v-card-text>
@@ -142,6 +142,7 @@ export default {
       rights: {},
       rightsPid: {},
       uploadPid: {},
+      uploadCmodel: {},
       fileUploadErrors: [],
       fileUpload: null
     }
@@ -154,7 +155,6 @@ export default {
         },
         responseType: 'blob'
       })
-      console.log('response', response)
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
@@ -232,8 +232,9 @@ export default {
         Vue.set(this.loading, this.rightsPid, false)
       }
     },
-    openUpload: function (pid) {
+    openUpload: function (pid, cmodel) {
       this.uploadPid = pid
+      this.uploadCmodel = cmodel
       this.uploadDialog = true
     },
     openRights: async function (pid) {
