@@ -48,8 +48,12 @@ export default {
   modules: [
     'nuxt-i18n',
     '@nuxt/http',
-    ['cookie-universal-nuxt', { alias: 'cookies' }]
+    ['cookie-universal-nuxt', { alias: 'cookies' }],
+    '@nuxtjs/sentry'
   ],
+  sentry: {
+    dsn: config?.global?.monitor?.sentry?.dsn
+  },
   i18n: {
     langDir: 'locales/',
     locales: [

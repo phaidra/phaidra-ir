@@ -13,8 +13,7 @@
   "dependencies": {
     "@mdi/font": "^6.5.95",
     "@nuxt/http": "^0.6.4",
-    "@sentry/browser": "^6.16.1",
-    "@sentry/integrations": "^6.16.1",
+    "@nuxtjs/sentry": "^5.1.7",
     "axios": "^0.24.0",
     "cookie-universal-nuxt": "^2.1.5",
     "core-js": "^3.8.3",

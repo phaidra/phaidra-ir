@@ -312,8 +312,6 @@ import { context } from "@/mixins/context";
 import { config } from "@/mixins/config";
 import "@/compiled-icons/univie-sprache";
 import "@/compiled-icons/univie-right";
-import * as Sentry from "@sentry/browser";
-import * as Integrations from "@sentry/integrations";
 
 export default {
   mixins: [context, config],
@@ -432,22 +430,6 @@ export default {
       this.$matomo.setDocumentTitle(this.$store.state.pagetitle);
       this.$matomo.trackPageView();
     });
-
-    if (this.config.monitor) {
-      if (this.config.monitor.sentry) {
-        if (this.config.monitor.sentry.dsn) {
-          Sentry.init({
-            dsn: this.config.monitor.sentry.dsn,
-            integrations: [
-              new Integrations.Vue({ Vue, attachProps: true, logErrors: true }),
-              new Integrations.CaptureConsole({
-                levels: ["error"],
-              }),
-            ],
-          });
-        }
-      }
-    }
   },
   created: function () {
     Vue.filter("date", function (value) {
