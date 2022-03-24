@@ -35,7 +35,7 @@
           <v-btn v-else icon :color="'grey darken-1'" @click="openRights(doc.pid)">
             <v-icon dark>mdi-lock-open-outline</v-icon>
           </v-btn>
-          <v-btn icon :color="'grey darken-1'" @click="openUpload(doc.pid, doc.cmodel)">
+          <v-btn v-if="isAccepted(doc)" icon :color="'grey darken-1'" @click="openUpload(doc.pid, doc.cmodel)">
             <v-icon>mdi-upload</v-icon>
           </v-btn>
         </v-col>

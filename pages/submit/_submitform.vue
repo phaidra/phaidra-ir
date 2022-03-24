@@ -1279,7 +1279,7 @@
               <p>
                 {{
                   $t(
-                    "The submission process was successful. Your data will be checked as quickly as possible."
+                    'The submission process was successful. Your data will be checked as quickly as possible. During the verification process your object has a temporary status and is not yet made available under any license other than "All rights reserved". It is also not yet being indexed in academic search engines such as BASE.'
                   )
                 }}
               </p>
@@ -1288,7 +1288,7 @@
               <p>
                 {{
                   $t(
-                    'During the verification process your object has a temporary status, where it can only be accessed according to copyright laws ("all rights reserved"). Furthermore, it cannot yet be found through academic search engines such as BASE.'
+                    'Please note: Objects that do not fit the u:scholar policy remain accessible in Phaidra via the link below.'
                   )
                 }}
               </p>

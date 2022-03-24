@@ -19,6 +19,16 @@ export default {
     ]
   },
 
+  router: {
+    scrollBehavior(to, from, savedPosition) {
+      if (savedPosition) {
+        return savedPosition;
+      }
+
+      return { x: 0, y: 0 };
+    }
+  },
+
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
     '@/assets/css/main.css'
@@ -60,13 +70,13 @@ export default {
       {
         name: 'English',
         code: 'eng',
-        iso: 'eng',
+        iso: 'en', // keep 2-letters, used for browser language detection
         file: 'eng'
       },
       {
         name: 'Deutsch',
         code: 'deu',
-        iso: 'deu',
+        iso: 'de',
         file: 'deu'
       }
     ],
@@ -76,6 +86,11 @@ export default {
     vueI18n: {
       silentTranslationWarn: true,
       silentFallbackWarn: true
+    },
+    detectBrowserLanguage: {
+      useCookie: true,
+      redirectOn: 'root',
+      alwaysRedirect: true
     }
   },
 

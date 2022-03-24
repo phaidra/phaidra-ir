@@ -709,6 +709,11 @@ address {
   border-color: rgba(0, 0, 0, 0.12);
 }
 
+.jsonld-border-left {
+  border-left: 1px solid;
+  border-color: rgba(0, 0, 0, 0.12);
+}
+
 .border-top {
   border-top: 1px solid;
   border-color: rgba(0, 0, 0, 0.12);
