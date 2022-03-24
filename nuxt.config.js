@@ -62,7 +62,7 @@ export default {
     '@nuxtjs/sentry'
   ],
   sentry: {
-    dsn: config?.global?.monitor?.sentry?.dsn
+    dsn: config?.monitor?.sentry?.dsn
   },
   i18n: {
     langDir: 'locales/',
