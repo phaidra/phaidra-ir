@@ -32,10 +32,10 @@
                 </v-btn>
               </template>
               <v-list>
-                <v-list-item @click="$i18n.locale = 'eng'">
+                <v-list-item @click="changeLocale('eng')">
                   <v-list-item-title>English</v-list-item-title>
                 </v-list-item>
-                <v-list-item @click="$i18n.locale = 'deu'">
+                <v-list-item @click="changeLocale('deu')">
                   <v-list-item-title>Deutsch</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -346,6 +346,11 @@ export default {
     },
   },
   methods: {
+    changeLocale: function (lang) {
+      this.$i18n.locale = lang;
+      this.$i18n.setLocaleCookie(lang)
+      this.$router.push(this.switchLocalePath(lang));
+    },
     goToSubmit: function () {
       this.$store.commit("setSkipsubmitrouteleavehook", true);
       this.$router.push("/submit");

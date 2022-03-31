@@ -82,7 +82,7 @@ export default {
     ],
     strategy: 'no_prefix',
     fallbackLocale: 'eng',
-    defaultLocale: 'eng',
+    defaultLocale: 'deu',
     vueI18n: {
       silentTranslationWarn: true,
       silentFallbackWarn: true
