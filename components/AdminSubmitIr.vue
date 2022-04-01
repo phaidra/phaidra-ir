@@ -2419,6 +2419,7 @@ export default {
         if (self.importData.systemtag) {
           let st = fields.getField('system-tag')
           st.value = self.importData.systemtag
+          st.hidden = true
           sof.push(st)
         }
       }
