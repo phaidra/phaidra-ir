@@ -2416,6 +2416,11 @@ export default {
           mim.value = self.importData.mimetype
           sof.push(mim)
         }
+        if (self.importData.systemtag) {
+          let st = fields.getField('system-tag')
+          st.value = self.importData.systemtag
+          sof.push(st)
+        }
       }
 
       if (self.config.submit.association) {

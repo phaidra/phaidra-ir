@@ -865,6 +865,14 @@ export default {
                 }
                 break
 
+              case 'phaidra:systemTag':
+                if (importData['phaidra:systemTag']) {
+                  importData.errors.push('Multiple phaidra:systemTag: ' + JSON.stringify(obj))
+                } else {
+                  importData['systemtag'] = obj
+                }
+                break
+
               // dates (not embargo date, save that one separately)
               case 'dcterms:date':
               case 'dcterms:created':
