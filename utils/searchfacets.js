@@ -102,7 +102,7 @@ export const adminFacetQueries = [
       },
       {
         id: 'cleared',
-        query: '(owner:' + config.iraccount + ' AND "systemtag:"' + config.adminset + ':approved")',
+        query: '(owner:' + config.iraccount + ' AND systemtag:"' + config.adminset + ':approved")',
         label: 'Cleared'
       }
     ]
