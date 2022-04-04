@@ -180,8 +180,7 @@ export default {
       }
     },
     isApproved: function () {
-      return (this.objectInfo.owner.username === this.config.iraccount) &&
-      ((this.objectInfo.ispartof && this.objectInfo.ispartof.includes(this.config.ircollection)) || this.objectInfo.systemtag?.includes(this.config.adminset + ':approved'))
+      return (this.objectInfo.owner.username === this.config.iraccount) && this.objectInfo.systemtag?.includes(this.config.adminset + ':approved')
     },
     isIrObject: function () {
       if (this.objectInfo['isinadminset']) {

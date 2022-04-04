@@ -92,17 +92,17 @@ export const adminFacetQueries = [
     queries: [
       {
         id: 'acceptance',
-        query: '!owner:' + config.iraccount + ' AND !ispartof:"' + config.ircollection + '" AND !systemtag:"' + config.adminset + ':approved"',
+        query: '!owner:' + config.iraccount + ' AND !systemtag:"' + config.adminset + ':approved"',
         label: 'Acceptance'
       },
       {
         id: 'approval',
-        query: 'owner:' + config.iraccount + ' AND !ispartof:"' + config.ircollection + '" AND !systemtag:"' + config.adminset + ':approved"',
+        query: 'owner:' + config.iraccount + ' AND !systemtag:"' + config.adminset + ':approved"',
         label: 'Approval'
       },
       {
         id: 'cleared',
-        query: '(ispartof:"' + config.ircollection + '" OR systemtag:"' + config.adminset + ':approved")',
+        query: '(owner:' + config.iraccount + ' AND "systemtag:"' + config.adminset + ':approved")',
         label: 'Cleared'
       }
     ]

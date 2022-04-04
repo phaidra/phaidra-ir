@@ -202,8 +202,7 @@ export default {
       }
     },
     isApproved: function (doc) {
-      return (doc.owner === this.config.iraccount) &&
-      ((doc.ispartof && doc.ispartof.includes(this.config.ircollection)) || doc.systemtag?.includes(this.config.adminset + ':approved'))
+      return (doc.owner === this.config.iraccount) && doc.systemtag?.includes(this.config.adminset + ':approved')
     },
     isAccepted: function (doc) {
       return doc.owner === this.config.iraccount
