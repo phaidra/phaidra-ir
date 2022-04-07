@@ -226,12 +226,15 @@
                   <v-snackbar
                     class="font-weight-regular"
                     top
-                    color="success"
-                    v-if="alert.type === 'success'"
+                    :color="alert.type"
+                    v-if="(alert.type === 'info') || (alert.type === 'success')"
                     v-model="showSnackbar"
                   >
-                    {{ $t(alert.msg) }}
-                    <v-btn dark text @click.native="dismiss(alert)">OK</v-btn>
+                    <v-row align="center">
+                      <span>{{ $t(alert.msg) }}</span>
+                      <v-spacer></v-spacer>
+                      <v-btn dark text @click.native="dismiss(alert)">OK</v-btn>
+                    </v-row>
                   </v-snackbar>
                   <v-alert
                     v-else

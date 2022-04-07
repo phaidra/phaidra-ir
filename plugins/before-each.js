@@ -1,6 +1,27 @@
 import axios from "axios"
 import config from '../config/phaidra-ir'
-export default ({ app }) => {
+
+export default ({ app, store }) => {
+  app.router.beforeEach(async (to, from, next) => {
+    if (store.state.user.token) {
+      try {
+        await axios.request({
+          method: 'GET',
+          url: config.api + '/keepalive',
+          headers: {
+            'X-XSRF-TOKEN': store.state.user.token
+          }
+        })
+      } catch (error) {
+        console.log('failed keepalive, logging out ' + error)
+        await store.dispatch('logout')
+      } finally {
+        next()
+      }
+    } else {
+      next()
+    }
+  })
   app.router.beforeEach(async (to, from, next) => {
     if ((to.path.includes('admin'))) {
       let token

@@ -260,7 +260,7 @@ export const mutations = {
   },
   setAlerts (state, alerts) {
     for (const a of alerts) {
-      if (a.type === 'success') {
+      if (a.type === 'success' || a.type === 'info') {
         state.snackbar = true
       }
     }
@@ -448,6 +448,7 @@ export const actions = {
       if (response.data.alerts && response.data.alerts.length > 0) {
         // commit('setAlerts', response.data.alerts)
       }
+      commit('setAlerts', [{ type: 'info', msg: 'You have been logged out' }])
     } catch (error) {
       commit('clearStore')
     }
