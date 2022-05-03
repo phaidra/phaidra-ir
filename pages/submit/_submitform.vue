@@ -17,6 +17,7 @@
       non-linear
       class="mt-2"
       alt-labels
+      @change="keepalive()"
     >
       <v-stepper-header>
         <v-stepper-step
@@ -156,6 +157,7 @@
                 @click="
                   step = 2;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
                 >{{ $t("Start") }}</v-btn
               >
@@ -224,6 +226,7 @@
                 @click="
                   step = 1;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
                 >{{ $t("Back") }}</v-btn
               >
@@ -232,6 +235,7 @@
                 @click="
                   checkTou();
                   $vuetify.goTo(1);
+                  keepalive();
                 "
                 >{{ $t("Continue") }}</v-btn
               >
@@ -541,6 +545,7 @@
                 @click="
                   step = 2;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
                 >{{ $t("Back") }}</v-btn
               >
@@ -549,6 +554,7 @@
                 @click="
                   step = submitformparam === 'journal-article' ? 4 : 5;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
               >
                 <template v-if="doiImportData">{{ $t("Continue") }}</template>
@@ -659,6 +665,7 @@
                 @click="
                   step = 3;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
                 >{{ $t("Back") }}</v-btn
               >
@@ -667,6 +674,7 @@
                 @click="
                   step = 5;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
               >
                 <template v-if="this.journalSearchSelected.length > 0">{{
@@ -1153,6 +1161,7 @@
                 @click="
                   step = 6;
                   $vuetify.goTo(1);
+                  keepalive();
                 "
                 >{{ $t("Back") }}</v-btn
               >
@@ -1731,6 +1740,7 @@ export default {
     },
     importDOI: async function () {
       this.loading = true;
+      this.keepalive();
       this.doiImportErrors = [];
       this.doiDuplicate = null;
       this.doiImportData = null;
@@ -2077,6 +2087,7 @@ export default {
         console.log(error);
         if (error.response.status === 401) {
           console.log("submitform: logged out, show login dialog");
+          this.loading = false
           this.loginDialog = true;
           return;
         }
@@ -3120,6 +3131,7 @@ export default {
       });
     },
     continueForm: function (step) {
+      this.keepalive()
       if (step === 5) {
         this.validateMandatory();
       }
@@ -3135,6 +3147,7 @@ export default {
       }
     },
     backForm: function (step) {
+      this.keepalive()
       if (step === 6) {
         this.step = 5;
       } else {
@@ -3412,6 +3425,7 @@ export default {
       self.journalSearchItems = [];
       self.journalSearchSelected = [];
       self.resetForm(self, null);
+      self.keepalive();
     },
     resetDOIImport: function () {
       this.doiImportInput = null;
@@ -3422,7 +3436,26 @@ export default {
       this.journalSearchItems = [];
       this.journalSearchSelected = [];
       this.resetForm(this, null);
+      this.keepalive();
     },
+    keepalive: async function () {
+      try {
+        await axios.request({
+          method: 'GET',
+          url: this.$store.state.config.api + '/keepalive',
+          headers: {
+            'X-XSRF-TOKEN': this.user.token
+          }
+        })
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 401) {
+            console.log('failed keepalive, logging out ' + error)
+            await this.$store.dispatch('logout')
+          }
+        }
+      }
+    }
   },
   beforeRouteEnter: async function (to, from, next) {
     next(async (vm) => {
@@ -3444,6 +3477,7 @@ export default {
     next();
   },
   beforeRouteLeave: async function (to, from, next) {
+    this.keepalive()
     if (this.step === 8 && to.name === "submit") {
       this.confirmBackDialog = true;
       next(Error("Please confirm to exit the submitform"));

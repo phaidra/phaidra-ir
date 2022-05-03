@@ -23,7 +23,7 @@
       </div>
     </v-container>
 
-    <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2">
+    <v-stepper v-else-if="form.sections.length > 0" v-model="step" non-linear class="mt-2" @change="keepalive()">
       <v-stepper-header :class="targetPid ? 'mdeditor-header' : ''">
         <v-stepper-step v-if="!targetPid" edit-icon='mdi-check' :editable="true" :complete="step > 3" step="3">{{ $t('Import') }}</v-stepper-step>
         <v-divider v-if="!targetPid"></v-divider>
@@ -144,7 +144,7 @@
             </v-slide-y-transition>
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters class="justify-end">
-              <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
+              <v-btn color="primary" @click="step = 5; $vuetify.goTo(1); keepalive();">
                 <template v-if="doiImportData">{{ $t('Continue') }}</template>
                 <template v-else>{{ $t('Skip') }}</template>
               </v-btn>
@@ -490,7 +490,7 @@
             </v-row>
             <v-divider class="mt-5 mb-7"></v-divider>
             <v-row no-gutters>
-              <v-btn dark color="grey" :disabled="loading" @click="step = 6; $vuetify.goTo(1)">{{ $t('Back') }}</v-btn>
+              <v-btn dark color="grey" :disabled="loading" @click="step = 6; $vuetify.goTo(1); keepalive();">{{ $t('Back') }}</v-btn>
               <v-spacer></v-spacer>
               <v-dialog v-model="resetDialog" max-width="500px">
                 <template v-slot:activator="{ on }">
@@ -711,6 +711,7 @@ export default {
     },
     importDOI: async function () {
       this.loading = true
+      this.keepalive();
       this.doiImportErrors = []
       this.doiDuplicate = null
       this.doiImportData = null
@@ -2423,6 +2424,12 @@ export default {
           mim.value = self.importData.mimetype
           sof.push(mim)
         }
+        if (self.importData.systemtag) {
+          let st = fields.getField('system-tag')
+          st.value = self.importData.systemtag
+          st.hidden = true
+          sof.push(st)
+        }
       }
 
       if (self.config.submit.association) {
@@ -2468,6 +2475,7 @@ export default {
       })
     },
     backForm: function (step) {
+      this.keepalive()
       if (step === 6) {
         this.step = 5
       } else {
@@ -2486,6 +2494,7 @@ export default {
       }
     },
     continueForm: function (step) {
+      this.keepalive()
       if (this.targetPid) {
         this.step = step + 1
       } else {
@@ -2679,12 +2688,32 @@ export default {
       self.validationErrors = []
       self.validationEnabled = true
       self.resetForm(self, null)
+      self.keepalive()
     },
     resetDOIImport: function () {
       this.doiImportInput = null
       this.doiImportData = null
       this.doiImportErrors = []
       this.resetForm(this, null)
+      this.keepalive()
+    },
+    keepalive: async function () {
+      try {
+        await axios.request({
+          method: 'GET',
+          url: this.$store.state.config.api + '/keepalive',
+          headers: {
+            'X-XSRF-TOKEN': this.user.token
+          }
+        })
+      } catch (error) {
+        if (error.response) {
+          if (error.response.status === 401) {
+            console.log('failed keepalive, logging out ' + error)
+            await this.$store.dispatch('logout')
+          }
+        }
+      }
     }
   },
   beforeRouteEnter: async function (to, from, next) {
@@ -2699,6 +2728,7 @@ export default {
     next()
   },
   beforeRouteLeave: async function (to, from, next) {
+    this.keepalive()
     if ((this.step > 3) && (to.path.includes('admin') && to.path.includes('submit')) && (!this.$store.state.skipsubmitrouteleavehook)) {
       this.step = this.step - 1
       this.$vuetify.goTo(1)

@@ -13,8 +13,12 @@ export default ({ app, store }) => {
           }
         })
       } catch (error) {
-        console.log('failed keepalive, logging out ' + error)
-        await store.dispatch('logout')
+        if (error.response) {
+          if (error.response.status === 401) {
+            console.log('failed keepalive, logging out ' + error)
+            await store.dispatch('logout')
+          }
+        }
       } finally {
         next()
       }
