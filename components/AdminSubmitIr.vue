@@ -585,7 +585,8 @@ export default {
   },
   props: {
     targetPid: String,
-    importData: Object
+    importData: Object,
+    submitformType: String
   },
   computed: {
     lang2to3map: function () {
@@ -617,7 +618,7 @@ export default {
             return 'journal-article'
         }
       } else {
-        return this.$route.params.submitform
+        return this.submitformType
       }
     },
     irObjectTypeVocabulary: function () {
