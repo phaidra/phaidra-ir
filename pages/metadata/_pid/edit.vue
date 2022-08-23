@@ -14,6 +14,7 @@ import { config } from '../../../mixins/config'
 import axios from 'axios';
 
 export default {
+  middleware: "auth",
   name: 'metadata-editor',
   mixins: [ context, config ],
   computed: {
