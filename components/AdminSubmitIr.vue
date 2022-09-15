@@ -751,20 +751,20 @@ export default {
             if (crossrefData['title']) {
               if (Array.isArray(crossrefData['title'])) {
                 if (crossrefData['title'].length > 0) {
-                  this.doiImportData.title = crossrefData['title'][0].replace(/\s\s+/g, ' ').trim()
+                  this.doiImportData.title = this.$_.unescape(crossrefData['title'][0].replace(/\s\s+/g, ' ').trim())
                 }
               } else {
-                this.doiImportData.title = crossrefData['title'].replace(/\s\s+/g, ' ').trim()
+                this.doiImportData.title = this.$_.unescape(crossrefData['title'].replace(/\s\s+/g, ' ').trim())
               }
             }
 
             if (crossrefData['subtitle']) {
               if (Array.isArray(crossrefData['subtitle'])) {
                 if (crossrefData['subtitle'].length > 0) {
-                  this.doiImportData.subtitle = crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim()
+                  this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim())
                 }
               } else {
-                this.doiImportData.subtitle = crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim()
+                this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim())
               }
             }
 
@@ -883,20 +883,20 @@ export default {
             if (crossrefData['publisher']) {
               if (Array.isArray(crossrefData['publisher'])) {
                 if (crossrefData['publisher'].length > 0) {
-                  this.doiImportData.publisher = crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim()
+                  this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim())
                 }
               } else {
-                this.doiImportData.publisher = crossrefData['publisher'].replace(/\s\s+/g, ' ').trim()
+                this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'].replace(/\s\s+/g, ' ').trim())
               }
             }
 
             if (crossrefData['container-title']) {
               if (Array.isArray(crossrefData['container-title'])) {
                 if (crossrefData['container-title'].length > 0) {
-                  this.doiImportData.journalTitle = crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim()
+                  this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim())
                 }
               } else {
-                this.doiImportData.journalTitle = crossrefData['container-title'].replace(/\s\s+/g, ' ').trim()
+                this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'].replace(/\s\s+/g, ' ').trim())
               }
             }
 
