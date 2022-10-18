@@ -38,7 +38,7 @@ export default {
   plugins: [
     { src: '~/plugins/svg-icon' },
     { src: '~/plugins/vuetify.js', mode: 'client' },
-    { src: '~/plugins/phaidra-vue-components', mode: 'client' },
+    { src: '~/plugins/phaidra-vue-components' },
     { src: '~/plugins/after-each.js' },
     { src: '~/plugins/before-each.js' },
     { src: '~/plugins/vue-meta.js' },
@@ -122,6 +122,6 @@ export default {
         fs: 'empty'
       }
     },
-    transpile: ['phaidra-vue-components']
+    transpile: ['phaidra-vue-components', 'vuetify/lib']
   }
 }
