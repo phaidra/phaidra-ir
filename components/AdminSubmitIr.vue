@@ -317,9 +317,11 @@
                         v-on:input-identifier="f.identifierText = $event"
                         v-on:change-affiliation-type="f.affiliationType = $event"
                         v-on:input-affiliation-select="affiliationSelectInput(f, $event)"
+                        v-on:input-affiliation-ror="affiliationRorInput(f, $event)"
                         v-on:input-affiliation-other="f.affiliationText = $event"
                         v-on:change-organization-type="f.organizationType = $event"
                         v-on:input-organization-select="organizationSelectInput(f, $event)"
+                        v-on:input-organization-ror="organizationRorInput(f, $event)"
                         v-on:input-organization-other="f.organizationText = $event"
                         v-on:input-role="roleInput(f, $event)"
                         v-on:add-clear="addEntityClear(s.fields, f)"
@@ -1365,6 +1367,16 @@ export default {
         })
       }
     },
+    affiliationRorInput: function (f, event) {
+      f.affiliation = ''
+      f.affiliationSelectedName = []
+      if (event) {
+        for (const id of event['skos:exactMatch']) {
+          f.affiliation = id
+        }
+        f.affiliationSelectedName = event['schema:name']
+      }
+    },
     publisherSelectInput: function (f, event) {
       f.publisherOrgUnit = ''
       f.publisherSelectedName = []
@@ -1390,6 +1402,16 @@ export default {
         Object.entries(preflabels).forEach(([key, value]) => {
           f.organizationSelectedName.push({ '@value': value, '@language': key })
         })
+      }
+    },
+    organizationRorInput: function (f, event) {
+      f.organization = ''
+      f.organizationSelectedName = []
+      if (event) {
+        for (const id of event['skos:exactMatch']) {
+          f.organization = id
+        }
+        f.organizationSelectedName = event['schema:name']
       }
     },
     selectJournal: function (fields, f, event) {
