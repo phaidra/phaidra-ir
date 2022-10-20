@@ -3246,6 +3246,18 @@ export default {
                     }
                     hasLocalAffiliation = true;
                   }
+                  if (f.affiliationType === "ror") {
+                    if (
+                      !f.affiliation ||
+                      f.affiliation === "" ||
+                      f.affiliation.length < 1
+                    ) {
+                      f.affiliationErrorMessages.push(
+                        this.$t("Missing affiliation")
+                      );
+                      this.validationStatus = "error";
+                    }
+                  }
                   if (f.affiliationType === "other") {
                     if (f.affiliationText.length < 1) {
                       f.affiliationTextErrorMessages.push(
@@ -3264,6 +3276,14 @@ export default {
                       this.validationStatus = "error";
                     } else {
                       hasLocalAffiliation = true;
+                    }
+                  }
+                  if (f.organizationType === "ror") {
+                    if (f.organization.length < 1) {
+                      f.organizationErrorMessages.push(
+                        this.$t("Missing organization")
+                      );
+                      this.validationStatus = "error";
                     }
                   }
                   if (f.organizationType === "other") {

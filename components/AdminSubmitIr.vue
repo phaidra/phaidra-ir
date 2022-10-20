@@ -1796,7 +1796,12 @@ export default {
             if (importRole.affiliation.type === 'other') {
               role.affiliationText = importRole.affiliation.value
             } else {
-              role.affiliation = importRole.affiliation.value
+              if (importRole.affiliation.type === 'ror') {
+                role.affiliation = importRole.affiliation.value
+                role.affiliationRorName = importRole.affiliation.rorName
+              } else {
+                role.affiliation = importRole.affiliation.value
+              }
             }
           }
           smf.push(role)
@@ -2576,6 +2581,18 @@ export default {
                     }
                     hasLocalAffiliation = true
                   }
+                  if (f.affiliationType === "ror") {
+                    if (
+                      !f.affiliation ||
+                      f.affiliation === "" ||
+                      f.affiliation.length < 1
+                    ) {
+                      f.affiliationErrorMessages.push(
+                        this.$t("Missing affiliation")
+                      );
+                      this.validationStatus = "error";
+                    }
+                  }
                   if (f.affiliationType === 'other') {
                     if (f.affiliationText.length < 1) {
                       f.affiliationTextErrorMessages.push(this.$t('Missing affiliation'))
@@ -2590,6 +2607,12 @@ export default {
                       this.validationStatus = 'error'
                     } else {
                       hasLocalAffiliation = true
+                    }
+                  }
+                  if (f.organizationType === 'ror') {
+                    if (f.organization.length < 1) {
+                      f.organizationErrorMessages.push(this.$t('Missing organization'))
+                      this.validationStatus = 'error'
                     }
                   }
                   if (f.organizationType === 'other') {
