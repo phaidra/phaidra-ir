@@ -198,6 +198,14 @@
                 <v-hover v-slot:default="{ hover }">
                   <nuxt-link
                     :class="hover ? 'ph-button primary' : 'ph-button grey'"
+                    v-show="signedin"
+                    :to="{ path: '/ucris' }"
+                    >u:cris</nuxt-link
+                  >
+                </v-hover>
+                <v-hover v-slot:default="{ hover }">
+                  <nuxt-link
+                    :class="hover ? 'ph-button primary' : 'ph-button grey'"
                     v-show="!signedin"
                     :to="{ path: '/login' }"
                     >{{ $t("Upload") }}</nuxt-link

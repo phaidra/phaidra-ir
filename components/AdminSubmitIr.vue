@@ -1,5 +1,31 @@
 <template>
   <div>
+    <v-dialog
+      v-model="showJsonViewer"
+      scrollable
+      max-width="700px"
+    >
+      <v-card>
+      <v-card-title class="text-h5 primary">
+        Metadata JSON
+      </v-card-title>
+      <v-card-text>
+        <v-card>
+          <div class="error-display-container">
+            <div class="msg-container">
+              <json-viewer :value="selectedUcrisInfo"></json-viewer>
+            </div>
+          </div>
+        </v-card>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="showJsonViewer = false">
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    </v-dialog>
     <template v-if="importData">
       <v-alert v-if="(importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" :type="'error'">
         {{ $t('This object contains metadata not supperted by institutional repository. Please check metadata in Phaidra metadataeditor!') }}
@@ -48,21 +74,140 @@
             </v-row>
             <v-row no-gutters justify="center">
               <v-col cols="4">
-                <v-text-field :error-messages="doiImportErrors" filled v-model="doiImportInput" label="DOI" :placeholder="$t('please enter')"/>
+                <v-text-field v-if="!showDoiSearch" :error-messages="doiImportErrors" filled v-model="doiImportInput" label="DOI" :placeholder="$t('please enter')"/>
+                <v-text-field v-if="showDoiSearch" :error-messages="doiSearchErrors" filled v-model="doiSearchInput" label="DOI Search" :placeholder="$t('please enter')"/>
               </v-col>
-              <v-col cols="3" class="ml-4 mt-2">
+              <v-col cols="3" class="ml-4 mt-2" v-if="!showDoiSearch">
                 <v-btn :loading="loading" :disabled="loading || !doiToImport || (doiToImport.lenght < 1)" class="mx-2" color="primary" @click="importDOI()">{{ $t('Import') }}</v-btn>
                 <v-btn :loading="loading" :disabled="loading" class="mx-2" dark color="grey" @click="resetDOIImport()">{{ $t('Reset') }}</v-btn>
               </v-col>
+              <v-col cols="3" class="ml-4 mt-2" v-else>
+                <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="searchForDoiRecord()">{{ $t('Search') }}</v-btn>
+              </v-col>
+            </v-row>
+            <v-row v-if="showDoiSearchTable">
+              <!-- <doi-search-results
+                :docs="doiSearchResultDocs"
+                :total="doiSearchTotal">
+              </doi-search-results> -->
+              <v-row v-for="(doc, i) in this.doiSearchResultDocs" :key="'doc'+i">
+                <v-col cols="4">
+                  {{ doc.title[0] | truncate(100) }}
+                </v-col>
+                <v-col cols="4">
+                  {{ doc.DOI}}
+                </v-col>
+                <v-col cols="2">
+                  <v-spacer></v-spacer>
+                  <v-btn class="mx-1 font-weight-regular" @click="importDoiFromSearchRow(doc)" color="primary">Show Metadata</v-btn>
+                </v-col>
+              </v-row>
             </v-row>
             <v-alert outlined type="error" color="primary" transition="slide-y-transition" v-if="doiDuplicate">
               <span class="mr-2 black--text">{{ $t('Possible duplicate found') }}:</span><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doiDuplicate.pid">{{ doiDuplicate.title }}</a>
             </v-alert>
             <v-slide-y-transition>
-              <v-row no-gutters v-if="doiImportData" justify="center">
-                <v-col cols="12" md="7">
+              <v-row no-gutters justify="center">
+                <v-col v-if="doiImportDataForUcris" cols="5" class="ucris-metadbox-container">
                   <v-card>
-                    <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}</v-card-title>
+                    <v-card-title class="title font-weight-light grey white--text">{{ $t('u:cris Metadata') }}
+                      <v-checkbox
+                        name="ucris"
+                        v-model="isImportUcris"
+                        @change="importMetaBoxCheckChange('ucris', isImportUcris)"
+                      ></v-checkbox>
+                      <v-btn
+                        icon
+                        @click="showJsonViewer = true"
+                      >
+                        <v-icon>info</v-icon>
+                      </v-btn>
+                    </v-card-title>
+                    <v-card-text>
+                      <v-container>
+                        <v-row v-if="doiImportDataForUcris.title">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.title }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.subtitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.subtitle }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.dateIssued">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.dateIssued }}</v-col>
+                        </v-row>
+                        <v-row v-for="(author, i) of doiImportDataForUcris.authors" :key="'aut'+i">
+                          <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
+                          <v-col v-else md="2" cols="12"></v-col>
+                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
+                            <template v-if="author['affiliation']">
+                              <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
+                            </template>
+                          </v-col>
+                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.keywords">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
+                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportDataForUcris.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.language">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.language }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.publicationType">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publicationType }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.publisher">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publisher }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalTitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalTitle }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalISSN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalISSN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalVolume">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalVolume }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalIssue">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalIssue }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.pageStart">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageStart }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.pageEnd">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageEnd }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.ISBN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.ISBN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.license">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.license }}</v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+                <v-col  v-if="doiImportData" :cols="uCrisId && doiImportDataForUcris ? '5' :'12'"  :md="uCrisId && doiImportDataForUcris ? '5' :'7'">
+                  <v-card>
+                    <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}
+                      <v-checkbox
+                        name="crossref"
+                        v-model="isImportCrossRef"
+                        @change="importMetaBoxCheckChange('crossref', isImportCrossRef)"
+                      ></v-checkbox>
+                    </v-card-title>
                     <v-card-text>
                       <v-container>
                         <v-row v-if="doiImportData.title">
@@ -142,9 +287,93 @@
               </v-row>
             </v-slide-y-transition>
             <v-divider class="mt-5 mb-7"></v-divider>
+            <!-- <v-slide-y-transition>
+              <v-row no-gutters v-if="doiImportDataForUcris" justify="center">
+                <v-col cols="12" md="7">
+                  <v-card>
+                    <v-card-title class="title font-weight-light grey white--text">{{ $t('u:cris Metadata') }}</v-card-title>
+                    <v-card-text>
+                      <v-container>
+                        <v-row v-if="doiImportDataForUcris.title">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.title }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.subtitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.subtitle }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.dateIssued">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.dateIssued }}</v-col>
+                        </v-row>
+                        <v-row v-for="(author, i) of doiImportDataForUcris.authors" :key="'aut'+i">
+                          <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
+                          <v-col v-else md="2" cols="12"></v-col>
+                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
+                            <template v-if="author['affiliation']">
+                              <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
+                            </template>
+                          </v-col>
+                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.keywords">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
+                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportDataForUcris.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.language">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.language }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.publicationType">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publicationType }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.publisher">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publisher }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalTitle">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalTitle }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalISSN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalISSN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalVolume">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalVolume }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.journalIssue">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalIssue }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.pageStart">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageStart }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.pageEnd">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageEnd }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.ISBN">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.ISBN }}</v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.license">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
+                          <v-col md="10" cols="12">{{ doiImportDataForUcris.license }}</v-col>
+                        </v-row>
+                      </v-container>
+                    </v-card-text>
+                  </v-card>
+                </v-col>
+              </v-row>
+            </v-slide-y-transition>
+            <v-divider class="mt-5 mb-7"></v-divider> -->
             <v-row no-gutters class="justify-end">
               <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
-                <template v-if="doiImportData">{{ $t('Continue') }}</template>
+                <template v-if="doiImportData || doiImportDataForUcris">{{ $t('Continue') }}</template>
                 <template v-else>{{ $t('Skip') }}</template>
               </v-btn>
             </v-row>
@@ -569,12 +798,15 @@ import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeyword
 import arrays from 'phaidra-vue-components/src/utils/arrays'
 import jsonLd from 'phaidra-vue-components/src/utils/json-ld'
 import fields from 'phaidra-vue-components/src/utils/fields'
+import langUtil from 'phaidra-vue-components/src/utils/lang'
 import lang3to2map from 'phaidra-vue-components/src/utils/lang3to2map'
 import { context } from '@/mixins/context'
 import { config } from '@/mixins/config'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 import axios from 'axios'
+import {ucrisMetaList} from './ucridMockListData'
+import {univeJson} from '../utils/univie'
 
 export default {
   mixins: [ context, config, validationrules, vocabulary ],
@@ -632,6 +864,12 @@ export default {
   },
   data () {
     return {
+      showJsonViewer: false,
+      isUcris: false,
+      showDoiSearchTable: false,
+      uCrisId: null,
+      doiSearchResultDocs: [],
+      showDoiSearch: false,
       inputStyle: 'filled',
       form: {
         sections: []
@@ -645,8 +883,11 @@ export default {
       touCheckbox: false,
       touCheckboxErrors: [],
       doiImportInput: null,
+      doiSearchInput: null,
       doiImportData: null,
+      doiImportDataForUcris: null,
       doiImportErrors: [],
+      doiSearchErrors: [],
       license: null,
       showEmbargoDate: false,
       embargoDateMenu: false,
@@ -669,7 +910,9 @@ export default {
       keywordsValue: [],
       descriptionValue: '',
       kwDescLanguage: '',
-      validationEnabled: true
+      validationEnabled: true,
+      isImportCrossRef: true,
+      isImportUcris: false,
     }
   },
   watch: {
@@ -689,7 +932,67 @@ export default {
       deep: true
     }
   },
+  mounted() {
+    if(this?.$route?.query?.type === 'ucris'){
+      this.uCrisId = this?.$route?.query?.id
+      this.getUcrisInfo()
+    }
+  },
   methods: {
+    importMetaBoxCheckChange(name, value){
+      if(name === 'ucris' && value){
+        this.isImportCrossRef = false
+        this.resetForm(this, this.doiImportDataForUcris)
+      }
+      if(name === 'ucris' && !value){
+        this.isImportCrossRef = true
+      }
+      if(name === 'crossref' && value){
+        this.isImportUcris = false
+        this.resetForm(this, this.doiImportData)
+      }
+      if(name === 'crossref' && !value){
+        this.isImportUcris = true
+      }
+    },
+    searchForDoiRecord: async function () {
+      try {
+        this.loading = true
+        let response = await axios.get(`https://api.crossref.org/works?rows=5&offset=0&query=${this.doiSearchInput}`)
+        this.loading = false
+        if(response?.data?.message?.items){
+          this.doiSearchResultDocs = response.data.message.items;
+          this.doiSearchTotal = response.data.message['total-results'];
+          this.showDoiSearchTable = true
+        }
+      } catch (error) {
+        this.loading = false
+      }
+    },
+    getUcrisInfo(){
+      let selectedUcrisInfoFromStore = this?.$store?.state?.selectedUcrisData
+      if(!selectedUcrisInfoFromStore){
+        this.$router.push('/ucris')
+      }
+      this.selectedUcrisInfo = selectedUcrisInfoFromStore;
+      if(this.selectedUcrisInfo?.electronicVersions?.length && this.selectedUcrisInfo?.electronicVersions[0]?.doi){
+        this.doiImportInput = this.selectedUcrisInfo?.electronicVersions[0]?.doi
+        this.doiImportDataForUcris = this.buildUcrisMetadata(this.selectedUcrisInfo)
+        this.importDOI();
+      } else {
+        this.showDoiSearch = true
+        this.doiSearchInput = this.selectedUcrisInfo?.title?.value
+        this.doiImportDataForUcris = this.buildUcrisMetadata(this.selectedUcrisInfo)
+        this.resetForm(this, this.doiImportDataForUcris)
+        this.searchForDoiRecord()
+      }
+    },
+    importDoiFromSearchRow(doc){
+      this.doiImportInput = doc.DOI
+      this.showDoiSearch = false
+      this.doiImportDataForUcris = this.buildUcrisMetadata(this.selectedUcrisInfo)
+      this.importDOI()
+    },
     updateJsonld () {
       this.jsonld = this.getJsonld()
     },
@@ -708,6 +1011,225 @@ export default {
       } finally {
         this.loading = false
       }
+    },
+    buildUcrisMetadata(ucrisData){
+      let localImportData = {
+        doi: this.doiToImport ? this.doiToImport.replace(/\s\s+/g, ' ').trim() : null,
+        title: '',
+        dateIssued: '',
+        authors: [],
+        publicationType: '',
+        publisher: '',
+        journalTitle: '',
+        journalISSN: '',
+        journalVolume: '',
+        journalIssue: '',
+        pageStart: '',
+        pageEnd: ''
+      }
+      if(ucrisData?.title?.value){
+        localImportData.title = this.$_.unescape(ucrisData?.title?.value.replace(/\s\s+/g, ' ').trim())
+      }
+      if(ucrisData?.publicationStatuses && ucrisData?.publicationStatuses.length && ucrisData?.publicationStatuses[0]?.publicationDate?.year){
+        localImportData.dateIssued = ucrisData.publicationStatuses[0].publicationDate.year.toString()
+      }
+      if(ucrisData?.personAssociations && ucrisData?.personAssociations.length){
+        let authorRecords = ucrisData.personAssociations;
+        authorRecords.forEach(authorRec => {
+          if (authorRec['name'] &&
+          authorRec?.personRole?.term?.text &&
+          authorRec?.personRole?.term?.text.length && authorRec?.personRole?.term?.text[0].value === 'Author') {
+            const Firstname = authorRec['name']['firstName'] ? authorRec['name']['firstName'].replace(/\s\s+/g, ' ').trim() : '';
+            const Lastname = authorRec['name']['lastName'] ? authorRec['name']['lastName'].replace(/\s\s+/g, ' ').trim() : '';
+            const auth = {
+              type: 'schema:Person',
+              firstname: Firstname,
+              lastname: Lastname,
+            }
+            if(authorRec?.externalOrganisations){
+              authorRec.externalOrganisations.forEach(extOrgElem => {
+                if(extOrgElem?.name?.text?.length){
+                  auth.affiliation = []
+                  auth.affiliation.push(extOrgElem?.name?.text[0].value)
+                }
+
+              })
+            }
+            if(authorRec?.organisationalUnits){
+              authorRec.organisationalUnits.forEach(intOrgElem => {
+                if(intOrgElem?.name?.text?.length){
+                  if(intOrgElem.externalId){
+                    const affId = intOrgElem.externalId.split(',')[0]
+                    let affiliationIndex = univeJson.findIndex(x => x.oracle_id === `A${affId}`)
+                    if(affiliationIndex >= 0){
+                      auth.affiliationUnvieId = univeJson[affiliationIndex].id
+                      auth.affiliationType = 'select'
+                    }
+                  }
+                  auth.affiliation = []
+                  auth.affiliation.push(intOrgElem?.name?.text[0].value)
+                }
+
+              })
+            }
+            localImportData.authors.push(auth)
+          }
+        });
+      }
+
+      if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.journal && ucrisData?.journalAssociation?.journal?.name?.text?.length){
+        localImportData.journalTitle = ucrisData.journalAssociation.journal && ucrisData.journalAssociation.journal.name.text[0].value
+      }
+      if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.issn?.value){
+        localImportData.journalISSN = ucrisData?.journalAssociation?.issn?.value
+      }
+      if(ucrisData?.volume){
+        localImportData.journalVolume = ucrisData?.volume
+      }
+      if(ucrisData?.pages){
+        const pageSplit = ucrisData.pages.split('-')
+        localImportData.pageStart = pageSplit[0] ? pageSplit[0] : ''
+        localImportData.pageEnd = pageSplit[1] ? pageSplit[1] : ''
+      }
+      if(ucrisData?.journalNumber){
+        localImportData.journalIssue = ucrisData?.journalNumber
+      }
+      if(ucrisData?.type?.term?.text?.length){
+        let ucrisType = ucrisData.type.term.text[0].value || ''
+        ucrisType = ucrisType.toLowerCase()
+        switch (ucrisType) {
+            case 'article':
+            case 'journal-article':
+            case 'article-journal':
+                localImportData.publicationType = 'article'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+                break
+            case 'review':
+                localImportData.publicationType = 'review'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JJKV-B1CG'
+                break
+            case 'report':
+                localImportData.publicationType = 'report'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
+                break
+            case 'book':
+            case 'monograph':
+            case 'reference-book':
+            case 'edited-book':
+                localImportData.publicationType = 'book'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
+                break
+            case 'book-chapter':
+            case 'book-part':
+            case 'book-section':
+                localImportData.publicationType = 'book_part'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
+                break
+            case 'dissertation':
+                localImportData.publicationType = 'doctoral_thesis'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
+                break
+            case 'proceedings-article':
+            case 'proceedings':
+                localImportData.publicationType = 'conference_object'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
+                break
+            case 'dataset':
+                localImportData.publicationType = 'research_data'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
+                break
+            case 'other':
+            case 'standard':
+            case 'standard-series':
+            case 'book-entry':
+            case 'book-series':
+            case 'book-set':
+            case 'book-track':
+            case 'component':
+            case 'journal-issue':
+            case 'journal-volume':
+            case 'journal':
+            case 'report-series':
+                localImportData.publicationType = 'other'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+                break
+            default:
+                localImportData.publicationType = 'other'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+        }
+      }
+      if(ucrisData?.language?.term?.text?.length){
+        const metaLangVal = ucrisData.language.term.text[0].value;
+        if(metaLangVal){
+          const langUtilList = langUtil.get_lang()
+          const langIndex = langUtilList.findIndex(x => x['skos:prefLabel'] && x['skos:prefLabel']['eng'] && x['skos:prefLabel']['eng'] === metaLangVal)
+          if(langIndex >= 0){
+            const langVal = langUtilList[langIndex]['@id']
+            if(langVal){
+              localImportData.language = langVal
+            }
+          }
+        }
+      }
+      if(ucrisData?.keywordGroups?.length){
+        localImportData.keywords = []
+        ucrisData.keywordGroups.forEach(keyGroup => {
+          if(keyGroup?.keywordContainers?.length && keyGroup?.keywordContainers[0]?.structuredKeyword?.term?.text?.length){
+            if(keyGroup.keywordContainers[0].structuredKeyword.uri){
+              let uriIdSplit = keyGroup.keywordContainers[0].structuredKeyword.uri.split('/')
+              let uriId = uriIdSplit[uriIdSplit.length - 1]
+              let key = keyGroup.keywordContainers[0].structuredKeyword.term.text[0].value.replace(`${uriId} `, '')
+              localImportData.keywords.push(key)
+            }else {
+              localImportData.keywords.push(keyGroup.keywordContainers[0].structuredKeyword.term.text[0].value)
+            }
+          }
+        });
+      }
+      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.accessType?.term?.text?.length){
+        const accessTypeVal = ucrisData?.electronicVersions[0]?.accessType?.term?.text[1]?.value
+        switch (accessTypeVal.toLowerCase()) {
+          case 'offen':
+              localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QW5R-NG4J'
+            break;
+            case 'gesperrt':
+              localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
+            break;
+            case 'begrenzt':
+              localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/KC3K-CCGM'
+            break;
+            case 'geschlossen':
+              localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QNGE-V02H'
+            break;
+          default:
+            break;
+        }
+      }
+      // Version Type
+      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.versionType?.term?.text?.length){
+        const versionTypeVal = ucrisData?.electronicVersions[0]?.versionType?.term?.text[1]?.value
+        switch (versionTypeVal.toLowerCase()) {
+          case 'kein wert':
+              localImportData.version = 'https://pid.phaidra.org/vocabulary/TV31-080M'
+            break;
+            case 'eingereichtes manuskript':
+              localImportData.version = 'https://pid.phaidra.org/vocabulary/JTD4-R26P'
+            break;
+            case 'akzeptiertes autorenmanuskript':
+              localImportData.version = 'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
+            break;
+            case 'nachweis':
+              localImportData.version = 'https://pid.phaidra.org/vocabulary/83ZP-CPP2'
+            case 'endgültige, publizierte fassung':
+              localImportData.version = 'https://pid.phaidra.org/vocabulary/PMR8-3C8D'
+            case 'andere versionen':
+              localImportData.version = 'https://pid.phaidra.org/vocabulary/MT1G-APSB'
+            break;
+          default:
+            break;
+        }
+      }
+      return localImportData
     },
     importDOI: async function () {
       this.loading = true
@@ -958,7 +1480,7 @@ export default {
           }
         } catch (error) {
           console.error(error)
-          if (error.response.status === 404) {
+          if (error?.response?.status === 404) {
             this.doiImportErrors.push('DOI Not Found')
           } else {
             this.doiImportErrors.push(error.message)
@@ -1689,7 +2211,6 @@ export default {
     resetForm: function (self, doiImportData) {
       self.$store.commit('vocabulary/enableAllVocabularyTerms', 'versiontypes')
       self.$store.commit('vocabulary/enableAllVocabularyTerms', self.irObjectTypeVocabulary)
-
       self.form = {
         sections: []
       }
@@ -1805,10 +2326,15 @@ export default {
             role.identifierLabel = 'ORCID'
             role.identifierText = author['orcid'] ? author['orcid'] : ''
             if (author['affiliation']) {
-              role.affiliationType = 'other'
+              role.affiliationType = author.affiliationType || 'other'
               // iterate, although currently multiple affiliations are not supported
               for (let af of author['affiliation']) {
-                role.affiliationText = af
+                if(author.affiliationType === 'select'){
+                  role.affiliation = author.affiliationUnvieId
+                } else {
+                  role.affiliationText = af
+
+                }
                 break
               }
             } else {
@@ -1849,6 +2375,9 @@ export default {
       let vtf = fields.getField('version-type')
       if (self.importData && self.importData.version) {
         vtf.value = self.importData.version
+      }
+      if (doiImportData && doiImportData.version) {
+        vtf.value = doiImportData.version
       }
       smf.push(vtf)
 
@@ -2103,6 +2632,9 @@ export default {
       arf.backgroundColor = self.config.mandatorybgcolor
       if (self.importData && self.importData.accessrights) {
         arf.value = self.importData.accessrights
+      }
+      if (doiImportData && doiImportData.accessrights) {
+        arf.value = doiImportData.accessrights
       }
       smf.push(arf)
 
@@ -2735,5 +3267,8 @@ export default {
 .v-stepper__step--editable {
   border-bottom: 3px solid;
   border-color: #9e9e9e;
+}
+.ucris-metadbox-container {
+  margin-right: 15px;
 }
 </style>
