@@ -805,7 +805,6 @@ import { config } from '@/mixins/config'
 import { vocabulary } from 'phaidra-vue-components/src/mixins/vocabulary'
 import { validationrules } from 'phaidra-vue-components/src/mixins/validationrules'
 import axios from 'axios'
-import {ucrisMetaList} from './ucridMockListData'
 import {univeJson} from '../utils/univie'
 
 export default {
