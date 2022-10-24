@@ -727,7 +727,7 @@ export default {
               title: solrResponse.data.response.docs[0].dc_title[0]
             }
           } else {
-            let response = await axios.get('https://' + this.config.apis.doi.baseurl + '/' + this.doiToImport + '?mailto=' + this.config.email, {
+            let response = await axios.get('https://' + this.config.apis.doi.baseurl + '/works/' + this.doiToImport + '?mailto=' + this.config.email, {
               headers: {
                 'Accept': this.config.apis.doi.accept
               }

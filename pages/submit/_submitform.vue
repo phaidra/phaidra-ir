@@ -1760,7 +1760,7 @@ export default {
             let response = await axios.get(
               "https://" +
                 this.config.apis.doi.baseurl +
-                "/" +
+                "/works/" +
                 this.doiToImport,
               {
                 headers: {
