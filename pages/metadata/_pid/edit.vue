@@ -957,10 +957,15 @@ export default {
                                 f.affiliationType = 'select'
                                 f.affiliation = id
                               } else {
-                                f.affiliationType = 'other'
-                                if (af['schema:name']) {
-                                  for (let name of af['schema:name']) {
-                                    f.affiliationText = name['@value']
+                                if (id.startsWith('https://ror.org/')) {
+                                  f.affiliationType = 'ror'
+                                  f.affiliation = id
+                                } else {
+                                  f.affiliationType = 'other'
+                                  if (af['schema:name']) {
+                                    for (let name of af['schema:name']) {
+                                      f.affiliationText = name['@value']
+                                    }
                                   }
                                 }
                               }
@@ -983,11 +988,16 @@ export default {
                             f.organizationType = 'select'
                             f.organization = id
                           } else {
-                            f.organizationType = 'other'
-                            f.identifierText = id
-                            if (obj['schema:name']) {
-                              for (let name of obj['schema:name']) {
-                                f.organizationText = name['@value']
+                            if (id.startsWith('https://ror.org/')) {
+                              f.organizationType = 'ror'
+                              f.organization = id
+                            } else {
+                              f.organizationType = 'other'
+                              f.identifierText = id
+                              if (obj['schema:name']) {
+                                for (let name of obj['schema:name']) {
+                                  f.organizationText = name['@value']
+                                }
                               }
                             }
                           }
@@ -1064,6 +1074,9 @@ export default {
                                   if (id.startsWith('https://pid.phaidra.org/')) {
                                     entity.affiliation['type'] = 'select'
                                   }
+                                  if (id.startsWith('https://ror.org/')) {
+                                    entity.affiliation['type'] = 'ror'
+                                  }
                                 }
                               }
                               Object.entries(af).forEach(([key2, values2]) => {
@@ -1081,9 +1094,13 @@ export default {
                                         if (id.startsWith('https://pid.phaidra.org/')) {
                                           entity.affiliation['value'] = id
                                         } else {
-                                          if (af['schema:name']) {
-                                            for (let name of af['schema:name']) {
-                                              entity.affiliation['value'] = name['@value']
+                                          if (id.startsWith('https://ror.org/')) {
+                                            entity.affiliation['value'] = id
+                                          } else {
+                                            if (af['schema:name']) {
+                                              for (let name of af['schema:name']) {
+                                                entity.affiliation['value'] = name['@value']
+                                              }
                                             }
                                           }
                                         }
@@ -1096,7 +1113,11 @@ export default {
                                         if ((entity.affiliation['type'] === 'other') && (entity.affiliation['value'])) {
                                           importData.errors.push('Multiple role > schema:affiliation > schema:name: ' + JSON.stringify(name))
                                         } else {
-                                          entity.affiliation['value'] = name['@value']
+                                          if (entity.affiliation['type'] === 'ror') {
+                                            entity.affiliation['rorName'] = name['@value']
+                                          } else {
+                                            entity.affiliation['value'] = name['@value']
+                                          }
                                         }
                                       }
                                     }

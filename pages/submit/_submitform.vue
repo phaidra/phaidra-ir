@@ -908,6 +908,7 @@
                         v-on:input-affiliation-select="
                           affiliationSelectInput(f, $event)
                         "
+                        v-on:input-affiliation-ror="affiliationRorInput(f, $event)"
                         v-on:input-affiliation-other="
                           f.affiliationText = $event
                         "
@@ -917,6 +918,7 @@
                         v-on:input-organization-select="
                           organizationSelectInput(f, $event)
                         "
+                        v-on:input-organization-ror="organizationRorInput(f, $event)"
                         v-on:input-organization-other="
                           f.organizationText = $event
                         "
@@ -1758,7 +1760,7 @@ export default {
             let response = await axios.get(
               "https://" +
                 this.config.apis.doi.baseurl +
-                "/" +
+                "/works/" +
                 this.doiToImport,
               {
                 headers: {
@@ -1767,7 +1769,7 @@ export default {
               }
             );
 
-            let crossrefData = response.data;
+            let crossrefData = response.data.message;
 
             this.doiImportData = {
               doi: this.doiToImport,
@@ -2397,6 +2399,16 @@ export default {
         });
       }
     },
+    affiliationRorInput: function (f, event) {
+      f.affiliation = ''
+      f.affiliationSelectedName = []
+      if (event) {
+        for (const id of event['skos:exactMatch']) {
+          f.affiliation = id
+        }
+        f.affiliationSelectedName = event['schema:name']
+      }
+    },
     publisherSelectInput: function (f, event) {
       f.publisherOrgUnit = "";
       f.publisherSelectedName = [];
@@ -2425,6 +2437,16 @@ export default {
             "@language": key,
           });
         });
+      }
+    },
+    organizationRorInput: function (f, event) {
+      f.organization = ''
+      f.organizationSelectedName = []
+      if (event) {
+        for (const id of event['skos:exactMatch']) {
+          f.organization = id
+        }
+        f.organizationSelectedName = event['schema:name']
       }
     },
     selectJournal: function (fields, f, event) {
@@ -3224,6 +3246,18 @@ export default {
                     }
                     hasLocalAffiliation = true;
                   }
+                  if (f.affiliationType === "ror") {
+                    if (
+                      !f.affiliation ||
+                      f.affiliation === "" ||
+                      f.affiliation.length < 1
+                    ) {
+                      f.affiliationErrorMessages.push(
+                        this.$t("Missing affiliation")
+                      );
+                      this.validationStatus = "error";
+                    }
+                  }
                   if (f.affiliationType === "other") {
                     if (f.affiliationText.length < 1) {
                       f.affiliationTextErrorMessages.push(
@@ -3242,6 +3276,14 @@ export default {
                       this.validationStatus = "error";
                     } else {
                       hasLocalAffiliation = true;
+                    }
+                  }
+                  if (f.organizationType === "ror") {
+                    if (f.organization.length < 1) {
+                      f.organizationErrorMessages.push(
+                        this.$t("Missing organization")
+                      );
+                      this.validationStatus = "error";
                     }
                   }
                   if (f.organizationType === "other") {
