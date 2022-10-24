@@ -733,7 +733,7 @@ export default {
               }
             })
 
-            let crossrefData = response.data
+            let crossrefData = response.data.message
 
             this.doiImportData = {
               doi: this.doiToImport.replace(/\s\s+/g, ' ').trim(),
