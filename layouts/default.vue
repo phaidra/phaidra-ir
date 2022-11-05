@@ -198,7 +198,7 @@
                 <v-hover v-slot:default="{ hover }">
                   <nuxt-link
                     :class="hover ? 'ph-button primary' : 'ph-button grey'"
-                    v-show="signedin"
+                    v-show="signedin && user.username === config.iraccount"
                     :to="{ path: '/ucris' }"
                     >u:cris</nuxt-link
                   >

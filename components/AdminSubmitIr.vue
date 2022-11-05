@@ -61,7 +61,7 @@
 
       <v-stepper-items>
 
-        <v-stepper-content v-if="!targetPid" step="3">
+        <v-stepper-content v-if="!targetPid" step="3" :class="{ 'pad-0': doiImportDataForUcris }">
           <v-container>
             <v-row no-gutters>
               <h3 class="title font-weight-light primary--text mb-4">{{ $t('Metadata-Import via DOI') }}</h3>
@@ -108,7 +108,7 @@
             </v-alert>
             <v-slide-y-transition>
               <v-row no-gutters justify="center">
-                <v-col v-if="doiImportDataForUcris" cols="5" class="ucris-metadbox-container">
+                <v-col v-if="doiImportDataForUcris" :cols="uCrisId && doiImportDataForUcris ? '6' :'5'" :class="{'ucris-metadbox-container': !doiImportDataForUcris}">
                   <v-card>
                     <v-card-title class="title font-weight-light grey white--text">{{ $t('u:cris Metadata') }}
                       <v-checkbox
@@ -199,7 +199,7 @@
                     </v-card-text>
                   </v-card>
                 </v-col>
-                <v-col  v-if="doiImportData" :cols="uCrisId && doiImportDataForUcris ? '5' :'12'"  :md="uCrisId && doiImportDataForUcris ? '5' :'7'">
+                <v-col  v-if="doiImportData" :cols="uCrisId && doiImportDataForUcris ? '6' :'12'"  :md="uCrisId && doiImportDataForUcris ? '6' :'7'">
                   <v-card>
                     <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}
                       <v-checkbox
@@ -3314,5 +3314,8 @@ export default {
 }
 .ucris-metadbox-container {
   margin-right: 15px;
+}
+.pad-0 {
+  padding: 0
 }
 </style>
