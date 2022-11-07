@@ -3,7 +3,7 @@
     <template v-for="(doc, i) in this.docs">
       <v-row :key="'doc'+i">
         <v-col cols="5">
-          <nuxt-link class="font-weight-light primary--text" :to="{ path: `/detail/${doc.pid}`}">{{ doc.title.value | truncate(100) }}</nuxt-link>
+          <a class="font-weight-light primary--text" @click="showUcrisObj(doc)">{{ doc.title.value | truncate(100) }}</a>
         </v-col>
         <v-col cols="5">
           {{ getDoiForCol(doc) | truncate(100) }}
@@ -45,6 +45,32 @@
       </v-row>
       <v-divider :key="'div'+doc.pureId" class="my-4 mr-2"></v-divider>
     </template>
+    <v-dialog
+      v-model="showJsonViewer"
+      scrollable
+      max-width="700px"
+    >
+      <v-card>
+      <v-card-title class="text-h5 primary">
+        <span style="color: white;">UCRIS JSON</span>
+      </v-card-title>
+      <v-card-text>
+        <v-card>
+          <div class="error-display-container">
+            <div class="msg-container">
+              <json-viewer :expand-depth="15" expanded :value="selectedUcrisInfo"></json-viewer>
+            </div>
+          </div>
+        </v-card>
+      </v-card-text>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn color="primary" text @click="showJsonViewer = false">
+          Close
+        </v-btn>
+      </v-card-actions>
+    </v-card>
+    </v-dialog>
     <v-dialog v-model="historyDialog" max-width="800px">
       <v-card>
         <v-card-title>
@@ -139,10 +165,16 @@ export default {
       uploadPid: {},
       uploadCmodel: {},
       fileUploadErrors: [],
-      fileUpload: null
+      fileUpload: null,
+      selectedUcrisInfo: {},
+      showJsonViewer: false,
     }
   },
   methods: {
+    showUcrisObj(doc){
+      this.selectedUcrisInfo = doc;
+      this.showJsonViewer = true
+    },
     ucrisRowSelected(doc){
       this.$store.commit('setSelectedUcrisData', doc)
       this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)

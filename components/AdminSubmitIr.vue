@@ -7,7 +7,7 @@
     >
       <v-card>
       <v-card-title class="text-h5 primary">
-        Metadata JSON
+        <span style="color: white;">Metadata JSON</span>
       </v-card-title>
       <v-card-text>
         <v-card>
