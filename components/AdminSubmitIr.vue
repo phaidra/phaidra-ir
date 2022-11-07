@@ -1230,6 +1230,35 @@ export default {
             break;
         }
       }
+
+      // License
+
+      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.licenseType?.term?.text?.length){
+        const licenseTypeVal = ucrisData?.electronicVersions[0]?.licenseType?.term?.text[0]?.value
+        switch (licenseTypeVal) {
+          case 'CC BY 4.0':
+              localImportData.license = 'http://creativecommons.org/licenses/by/4.0/'
+            break;
+            case 'CC BY-NC-ND 4.0':
+              localImportData.license = 'http://creativecommons.org/licenses/by-nc-nd/4.0/'
+            break;
+            case 'CC BY-NC 4.0':
+              localImportData.license = 'http://creativecommons.org/licenses/by-nc/4.0/'
+            break;
+            case 'CC BY-NC-SA 4.0':
+              localImportData.license = 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
+            break;
+            case 'CC BY-ND 4.0':
+              localImportData.license = 'http://creativecommons.org/licenses/by-nd/4.0/'
+            break;
+            case 'CC BY-SA 4.0':
+              localImportData.license = 'http://creativecommons.org/licenses/by-sa/4.0/'
+            break;
+          default:
+            break;
+        }
+      }
+
       return localImportData
     },
     importDOI: async function () {
