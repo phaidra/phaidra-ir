@@ -6,7 +6,7 @@
           <v-spacer></v-spacer>
         </v-row>
         <v-divider class="my-3"></v-divider>
-        <v-row no-gutters>
+        <v-row no-gutters class="display-flex flex-column">
           <ucris-search-results
             :docs="docs"
             :total="total"
