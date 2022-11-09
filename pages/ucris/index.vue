@@ -1,9 +1,8 @@
 <template>
     <v-row no-gutters>
       <v-col cols="12">
-        <v-row justify="start">
+        <v-row justify="center">
           <v-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage"/>
-          <v-spacer></v-spacer>
         </v-row>
         <v-divider class="my-3"></v-divider>
         <v-row no-gutters class="display-flex flex-column">
