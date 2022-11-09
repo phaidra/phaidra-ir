@@ -2,37 +2,20 @@
   <v-container>
     <template v-for="(doc, i) in this.docs">
       <v-row :key="'doc'+i">
-        <v-col cols="5">
+        <v-col cols="3">
           <a class="font-weight-light primary--text" @click="showUcrisObj(doc)">{{ doc.title.value | truncate(100) }}</a>
         </v-col>
-        <v-col cols="5">
+        <v-col cols="3">
           {{ getDoiForCol(doc) | truncate(100) }}
         </v-col>
-        <!-- <v-col cols="2">
-          <span v-if="doc.uploader">{{ doc.uploader }}</span>
-          <span v-else>{{ doc.owner }}</span>
-        </v-col> -->
-        <!-- <v-col cols="1">
-          <a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doc.pid">{{ doc.pid }}</a>
-        </v-col> -->
-        <!-- <v-col cols="2" v-if="doc.requestedlicense === doc.currentlicense">
-          {{ doc.requestedlicense }}
-        </v-col> -->
-        <!-- <v-col cols="2" v-else>
-          <div>{{ doc.currentlicense }}</div>
-          <div class="grey--text pt-2">{{ doc.requestedlicense }}</div>
-        </v-col> -->
-        <!-- <v-col cols="2">
-          <v-btn icon :color="'grey darken-1'" @click="downloadFile(config.api + '/object/' + doc.pid + '/diss/Content/download')">
-            <v-icon>mdi-download</v-icon>
-          </v-btn>
-          <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">
-            <v-icon dark>history</v-icon>
-          </v-btn>
-          <v-btn v-if="isAccepted(doc)" icon :color="'grey darken-1'" @click="openUpload(doc.pid, doc.cmodel)">
-            <v-icon>mdi-upload</v-icon>
-          </v-btn>
-        </v-col> -->
+        <v-col cols="2">
+          <div v-for="(item) in getAuthorList(doc)">
+            {{item.firstname}} {{item.lastname}}
+          </div>
+        </v-col>
+        <v-col cols="2">
+          {{ getPublicationType(doc) | truncate(100) }}
+        </v-col>
         <v-col cols="2">
           <v-spacer></v-spacer>
           <v-btn class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">Import</v-btn>
@@ -178,6 +161,98 @@ export default {
     ucrisRowSelected(doc){
       this.$store.commit('setSelectedUcrisData', doc)
       this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)
+    },
+    getPublicationType(ucrisData){
+      let localImportData = {}
+      if(ucrisData?.type?.term?.text?.length){
+        let ucrisType = ucrisData.type.term.text[0].value || ''
+        localImportData.publicationTypeName = ucrisType
+        ucrisType = ucrisType.toLowerCase()
+        switch (ucrisType) {
+            case 'article':
+            case 'journal-article':
+            case 'article-journal':
+                localImportData.publicationType = 'article'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+                break
+            case 'review':
+                localImportData.publicationType = 'review'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JJKV-B1CG'
+                break
+            case 'report':
+                localImportData.publicationType = 'report'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
+                break
+            case 'book':
+            case 'monograph':
+            case 'reference-book':
+            case 'edited-book':
+                localImportData.publicationType = 'book'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
+                break
+            case 'book-chapter':
+            case 'book-part':
+            case 'book-section':
+                localImportData.publicationType = 'book_part'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
+                break
+            case 'dissertation':
+                localImportData.publicationType = 'doctoral_thesis'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
+                break
+            case 'proceedings-article':
+            case 'proceedings':
+                localImportData.publicationType = 'conference_object'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
+                break
+            case 'dataset':
+                localImportData.publicationType = 'research_data'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
+                break
+            case 'other':
+            case 'standard':
+            case 'standard-series':
+            case 'book-entry':
+            case 'book-series':
+            case 'book-set':
+            case 'book-track':
+            case 'component':
+            case 'journal-issue':
+            case 'journal-volume':
+            case 'journal':
+            case 'report-series':
+                localImportData.publicationType = 'other'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+                break
+            default:
+                localImportData.publicationType = 'other'
+                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+        }
+      }
+      return localImportData.publicationTypeName
+    },
+    getAuthorList(ucrisData){
+      let authors = [];
+      if(ucrisData?.personAssociations && ucrisData?.personAssociations.length){
+        let authorRecords = ucrisData.personAssociations;
+        authorRecords.forEach(authorRec => {
+          if (authorRec['name'] &&
+          authorRec?.personRole?.term?.text &&
+          authorRec?.personRole?.term?.text.length && authorRec?.personRole?.term?.text[0].value === 'Author') {
+            const Firstname = authorRec['name']['firstName'] ? authorRec['name']['firstName'].replace(/\s\s+/g, ' ').trim() : '';
+            const Lastname = authorRec['name']['lastName'] ? authorRec['name']['lastName'].replace(/\s\s+/g, ' ').trim() : '';
+            const auth = {
+              firstname: Firstname,
+              lastname: Lastname,
+            }
+            authors.push(auth)
+          }
+        });
+      }
+      if(authors.length > 3){
+        return authors.slice(0, 3)
+      }
+      return authors;
     },
     getDoiForCol(row){
       return row?.electronicVersions?.length && row?.electronicVersions[0]?.doi ? row?.electronicVersions[0]?.doi : 'N/A'
