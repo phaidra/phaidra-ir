@@ -89,7 +89,7 @@ export default {
 
         Object.assign(this, options)
         let offset = (this.page - 1) * this.pagesize
-        let ucrisResponse = await axios.get(this.$store.state.instanceconfig.api + `/ir/puresearch?size=${this.pagesize}&offset=${offset}`,
+        let ucrisResponse = await axios.get(this.$store.state.instanceconfig.api + `/ir/puresearch?size=${this.pagesize}&offset=${offset}&ir_status=ir_pending`,
           {
             headers: {
               'X-XSRF-TOKEN': this.$store.state.user.token

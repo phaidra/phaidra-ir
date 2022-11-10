@@ -127,73 +127,207 @@
                       <v-container>
                         <v-row v-if="doiImportDataForUcris.title">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.title }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.title }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisTitle"
+                              v-model="ucrisSelectedFields.title"
+                              @change="ucrisCheckFieldChange('title', ucrisSelectedFields.title)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.subtitle">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.subtitle }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.subtitle }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrissubtitle"
+                              v-model="ucrisSelectedFields.subtitle"
+                              @change="ucrisCheckFieldChange('subtitle', ucrisSelectedFields.subtitle)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.dateIssued">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.dateIssued }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.dateIssued }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisdateIssued"
+                              v-model="ucrisSelectedFields.dateIssued"
+                              @change="ucrisCheckFieldChange('dateIssued', ucrisSelectedFields.dateIssued)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-for="(author, i) of doiImportDataForUcris.authors" :key="'aut'+i">
                           <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
                           <v-col v-else md="2" cols="12"></v-col>
-                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
+                          <v-col md="8" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
                             <template v-if="author['affiliation']">
                               <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
                             </template>
                           </v-col>
-                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                          <v-col md="8" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisauthors"
+                              v-model="ucrisSelectedFields.authors"
+                              @change="ucrisCheckFieldChange('authors', ucrisSelectedFields.authors)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.keywords">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
-                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportDataForUcris.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                          <v-col md="8" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportDataForUcris.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucriskeywords"
+                              v-model="ucrisSelectedFields.keywords"
+                              @change="ucrisCheckFieldChange('keywords', ucrisSelectedFields.keywords)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.language">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.language }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.language }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrislanguage"
+                              v-model="ucrisSelectedFields.language"
+                              @change="ucrisCheckFieldChange('language', ucrisSelectedFields.language)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.publicationType">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publicationType }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.publicationType }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrispublicationType"
+                              v-model="ucrisSelectedFields.publicationType"
+                              @change="ucrisCheckFieldChange('publicationType', ucrisSelectedFields.publicationType)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.publisher">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publisher }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.publisher }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrispublisher"
+                              v-model="ucrisSelectedFields.publisher"
+                              @change="ucrisCheckFieldChange('publisher', ucrisSelectedFields.publisher)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.journalTitle">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalTitle }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.journalTitle }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisjournalTitle"
+                              v-model="ucrisSelectedFields.journalTitle"
+                              @change="ucrisCheckFieldChange('journalTitle', ucrisSelectedFields.journalTitle)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.journalISSN">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalISSN }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.journalISSN }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisjournalISSN"
+                              v-model="ucrisSelectedFields.journalISSN"
+                              @change="ucrisCheckFieldChange('journalISSN', ucrisSelectedFields.journalISSN)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.journalVolume">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalVolume }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.journalVolume }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisjournalVolume"
+                              v-model="ucrisSelectedFields.journalVolume"
+                              @change="ucrisCheckFieldChange('journalVolume', ucrisSelectedFields.journalVolume)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.journalIssue">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalIssue }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.journalIssue }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisjournalIssue"
+                              v-model="ucrisSelectedFields.journalIssue"
+                              @change="ucrisCheckFieldChange('journalIssue', ucrisSelectedFields.journalIssue)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.pageStart">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageStart }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.pageStart }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrispageStart"
+                              v-model="ucrisSelectedFields.pageStart"
+                              @change="ucrisCheckFieldChange('pageStart', ucrisSelectedFields.pageStart)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.pageEnd">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageEnd }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.pageEnd }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrispageEnd"
+                              v-model="ucrisSelectedFields.pageEnd"
+                              @change="ucrisCheckFieldChange('pageEnd', ucrisSelectedFields.pageEnd)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.ISBN">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.ISBN }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.ISBN }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisISBN"
+                              v-model="ucrisSelectedFields.ISBN"
+                              @change="ucrisCheckFieldChange('ISBN', ucrisSelectedFields.ISBN)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.license">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.license }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.license }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrislicense"
+                              v-model="ucrisSelectedFields.license"
+                              @change="ucrisCheckFieldChange('license', ucrisSelectedFields.license)"
+                            ></v-checkbox>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.accessrights">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Access Rights') }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.accessrights }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisaccessrights"
+                              v-model="ucrisSelectedFields.accessrights"
+                              @change="ucrisCheckFieldChange('accessrights', ucrisSelectedFields.accessrights)"
+                            ></v-checkbox>
+                          </v-col>
+                        </v-row>
+                        <v-row v-if="doiImportDataForUcris.version">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Version') }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.version }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="ucrisversion"
+                              v-model="ucrisSelectedFields.version"
+                              @change="ucrisCheckFieldChange('version', ucrisSelectedFields.version)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -212,73 +346,185 @@
                       <v-container>
                         <v-row v-if="doiImportData.title">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.title }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.title }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossReftitle"
+                              v-model="crossRefSelectedFields.title"
+                              @change="crossRefCheckFieldChange('title', crossRefSelectedFields.title)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.subtitle">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.subtitle }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.subtitle }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefsubtitle"
+                              v-model="crossRefSelectedFields.subtitle"
+                              @change="crossRefCheckFieldChange('subtitle', crossRefSelectedFields.subtitle)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.dateIssued">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.dateIssued }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.dateIssued }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefdateIssued"
+                              v-model="crossRefSelectedFields.dateIssued"
+                              @change="crossRefCheckFieldChange('dateIssued', crossRefSelectedFields.dateIssued)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-for="(author, i) of doiImportData.authors" :key="'aut'+i">
                           <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
                           <v-col v-else md="2" cols="12"></v-col>
-                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
+                          <v-col md="8" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
                             <template v-if="author['affiliation']">
                               <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
                             </template>
                           </v-col>
-                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                          <v-col md="8" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefauthors"
+                              v-model="crossRefSelectedFields.authors"
+                              @change="crossRefCheckFieldChange('authors', crossRefSelectedFields.authors)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.keywords">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
-                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportData.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                          <v-col md="8" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportData.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefkeywords"
+                              v-model="crossRefSelectedFields.keywords"
+                              @change="crossRefCheckFieldChange('keywords', crossRefSelectedFields.keywords)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.language">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.language }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.language }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossReflanguage"
+                              v-model="crossRefSelectedFields.language"
+                              @change="crossRefCheckFieldChange('language', crossRefSelectedFields.language)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.publicationType">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.publicationType }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.publicationType }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefpublicationType"
+                              v-model="crossRefSelectedFields.publicationType"
+                              @change="crossRefCheckFieldChange('publicationType', crossRefSelectedFields.publicationType)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.publisher">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.publisher }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.publisher }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefpublisher"
+                              v-model="crossRefSelectedFields.publisher"
+                              @change="crossRefCheckFieldChange('publisher', crossRefSelectedFields.publisher)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.journalTitle">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.journalTitle }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.journalTitle }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefjournalTitle"
+                              v-model="crossRefSelectedFields.journalTitle"
+                              @change="crossRefCheckFieldChange('journalTitle', crossRefSelectedFields.journalTitle)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.journalISSN">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.journalISSN }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.journalISSN }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefjournalISSN"
+                              v-model="crossRefSelectedFields.journalISSN"
+                              @change="crossRefCheckFieldChange('journalISSN', crossRefSelectedFields.journalISSN)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.journalVolume">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.journalVolume }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.journalVolume }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefjournalVolume"
+                              v-model="crossRefSelectedFields.journalVolume"
+                              @change="crossRefCheckFieldChange('journalVolume', crossRefSelectedFields.journalVolume)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.journalIssue">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.journalIssue }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.journalIssue }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefjournalIssue"
+                              v-model="crossRefSelectedFields.journalIssue"
+                              @change="crossRefCheckFieldChange('journalIssue', crossRefSelectedFields.journalIssue)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.pageStart">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.pageStart }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.pageStart }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefpageStart"
+                              v-model="crossRefSelectedFields.pageStart"
+                              @change="crossRefCheckFieldChange('pageStart', crossRefSelectedFields.pageStart)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.pageEnd">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.pageEnd }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.pageEnd }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefpageEnd"
+                              v-model="crossRefSelectedFields.pageEnd"
+                              @change="crossRefCheckFieldChange('pageEnd', crossRefSelectedFields.pageEnd)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.ISBN">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.ISBN }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.ISBN }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefISBN"
+                              v-model="crossRefSelectedFields.ISBN"
+                              @change="crossRefCheckFieldChange('ISBN', crossRefSelectedFields.ISBN)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                         <v-row v-if="doiImportData.license">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportData.license }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.license }}</v-col>
+                          <v-col md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossReflicense"
+                              v-model="crossRefSelectedFields.license"
+                              @change="crossRefCheckFieldChange('license', crossRefSelectedFields.license)"
+                            ></v-checkbox>
+                          </v-col>
                         </v-row>
                       </v-container>
                     </v-card-text>
@@ -372,7 +618,7 @@
             </v-slide-y-transition>
             <v-divider class="mt-5 mb-7"></v-divider> -->
             <v-row no-gutters class="justify-end">
-              <v-btn color="primary" @click="step = 5; $vuetify.goTo(1)">
+              <v-btn color="primary" @click="firstMetaTabContinue()">
                 <template v-if="doiImportData || doiImportDataForUcris">{{ $t('Continue') }}</template>
                 <template v-else>{{ $t('Skip') }}</template>
               </v-btn>
@@ -914,6 +1160,44 @@ export default {
       validationEnabled: true,
       isImportCrossRef: true,
       isImportUcris: false,
+      crossRefSelectedFields: {
+        title: true,
+        subtitle: true,
+        dateIssued: true,
+        authors: true,
+        keywords: true,
+        language: true,
+        publicationType: true,
+        publisher: true,
+        journalTitle: true,
+        journalISSN: true,
+        journalVolume: true,
+        journalIssue: true,
+        pageStart: true,
+        pageEnd: true,
+        ISBN: true,
+        license: true,
+      },
+      ucrisSelectedFields: {
+        title: false,
+        subtitle: false,
+        dateIssued: false,
+        authors: false,
+        keywords: false,
+        language: false,
+        publicationType: false,
+        publisher: false,
+        journalTitle: false,
+        journalISSN: false,
+        journalVolume: false,
+        journalIssue: false,
+        pageStart: false,
+        pageEnd: false,
+        ISBN: false,
+        license: false,
+        accessrights: false,
+        version: false,
+      },
     }
   },
   watch: {
@@ -940,20 +1224,108 @@ export default {
     }
   },
   methods: {
+    firstMetaTabContinue(){
+      console.log('crossRefSelectedFields =>>', this.crossRefSelectedFields)
+      console.log('ucrisSelectedFields =>>', this.ucrisSelectedFields)
+      let commonImportData = {
+        doi: this.doiToImport ? this.doiToImport.replace(/\s\s+/g, ' ').trim() : null,
+        title: '',
+        dateIssued: '',
+        authors: [],
+        publicationType: '',
+        publisher: '',
+        journalTitle: '',
+        journalISSN: '',
+        journalVolume: '',
+        journalIssue: '',
+        pageStart: '',
+        pageEnd: ''
+      }
+      for (const key in this.crossRefSelectedFields) {
+        if (Object.hasOwnProperty.call(this.crossRefSelectedFields, key)) {
+          const element = this.crossRefSelectedFields[key];
+          if(element){
+            if(key === 'publicationType'){
+              commonImportData['publicationTypeId'] = this.doiImportData['publicationTypeId']
+            }
+            commonImportData[key] = this.doiImportData[key];
+          }
+        }
+      }
+      for (const key in this.ucrisSelectedFields) {
+        if (Object.hasOwnProperty.call(this.ucrisSelectedFields, key)) {
+          const element = this.ucrisSelectedFields[key];
+          if(element){
+            if(key === 'publicationType'){
+              commonImportData['publicationTypeId'] = this.doiImportDataForUcris['publicationTypeId']
+            }
+            commonImportData[key] = this.doiImportDataForUcris[key];
+          }
+        }
+      }
+      console.log('commonImportData =>>', commonImportData)
+      this.resetForm(this, commonImportData)
+      this.step = 5;
+      this.$vuetify.goTo(1);
+    },
+    crossRefCheckFieldChange(name, value){
+      // console.log('ucrisCheckFieldChange name =>>', name)
+      // console.log('ucrisCheckFieldChange value =>>', value)
+      // console.log('ucrisCheckFieldChange crossRefSelectedFields =>>', this.crossRefSelectedFields)
+      // console.log('ucrisCheckFieldChange ucrisSelectedFields =>>', this.ucrisSelectedFields)
+      if(value){
+        this.ucrisSelectedFields[name] = false
+      }
+    },
+    ucrisCheckFieldChange(name, value){
+      // console.log('ucrisCheckFieldChange name =>>', name)
+      // console.log('ucrisCheckFieldChange value =>>', value)
+      // console.log('ucrisCheckFieldChange crossRefSelectedFields =>>', this.crossRefSelectedFields)
+      // console.log('ucrisCheckFieldChange ucrisSelectedFields =>>', this.ucrisSelectedFields)
+      if(value){
+        this.crossRefSelectedFields[name] = false
+      }
+    },
+    toggleSelectAllForMetaBox(metaboxType, value){
+      if(metaboxType === 'ucris'){
+        for (const key in this.ucrisSelectedFields) {
+          if (Object.hasOwnProperty.call(this.ucrisSelectedFields, key)) {
+            this.ucrisSelectedFields[key] = value;
+
+          }
+        }
+      }
+      if(metaboxType === 'crossRef'){
+        for (const key in this.crossRefSelectedFields) {
+          if (Object.hasOwnProperty.call(this.crossRefSelectedFields, key)) {
+            this.crossRefSelectedFields[key] = value;
+
+          }
+        }
+      }
+    },
     importMetaBoxCheckChange(name, value){
       if(name === 'ucris' && value){
         this.isImportCrossRef = false
+        this.toggleSelectAllForMetaBox('ucris', true)
+        this.toggleSelectAllForMetaBox('crossRef', false)
         this.resetForm(this, this.doiImportDataForUcris)
       }
       if(name === 'ucris' && !value){
         this.isImportCrossRef = true
+        this.toggleSelectAllForMetaBox('ucris', false)
+        this.toggleSelectAllForMetaBox('crossRef', true)
       }
       if(name === 'crossref' && value){
         this.isImportUcris = false
+        this.toggleSelectAllForMetaBox('ucris', false)
+        this.toggleSelectAllForMetaBox('crossRef', true)
         this.resetForm(this, this.doiImportData)
       }
       if(name === 'crossref' && !value){
         this.isImportUcris = true
+        this.toggleSelectAllForMetaBox('ucris', true)
+        this.toggleSelectAllForMetaBox('crossRef', false)
       }
     },
     searchForDoiRecord: async function () {
