@@ -285,7 +285,9 @@ export default {
     },
     setTitle (self) {
       if (process.browser) {
-        document.title = self.objectInfo.metatags.citation_title + ' (' + self.config.title + ' - ' + self.objectInfo.pid + ')'
+        if(self.objectInfo && self.objectInfo.metatags){
+          document.title = self.objectInfo.metatags.citation_title + ' (' + self.config.title + ' - ' + self.objectInfo.pid + ')'
+        }
       }
     }
   },
