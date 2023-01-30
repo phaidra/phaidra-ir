@@ -318,9 +318,19 @@ import "@/compiled-icons/univie-right";
 
 export default {
   mixins: [context, config],
-  metaInfo: {
-    title: config.title,
-    meta: [],
+  //metaInfo: {
+  //  title: config.title,
+  //  meta: [],
+  //},
+  metaInfo() {
+    let metaInfo = {
+      title: config.title,
+      meta: [
+        { charset: 'utf-8' },
+        { name: 'viewport', content: 'width=device-width, initial-scale=1' }
+      ]
+    };
+    return metaInfo;
   },
   data() {
     return {
