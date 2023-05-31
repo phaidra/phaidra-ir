@@ -26,7 +26,8 @@ export const state = () => ({
   groups: [],
   breadcrumbs: [],
   pagetitle: null,
-  skipsubmitrouteleavehook: false
+  skipsubmitrouteleavehook: false,
+  selectedUcrisData: null,
 })
 
 export const mutations = {
@@ -239,6 +240,9 @@ export const mutations = {
     if (usepagetitle && process.browser) {
       document.title = state.pagetitle
     }
+  },
+  setSelectedUcrisData (state, data) {
+    state.selectedUcrisData = data
   },
   setLoading (state, loading) {
     state.loading = loading

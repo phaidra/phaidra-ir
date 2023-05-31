@@ -22,6 +22,7 @@
     "nuxt-i18n": "^6.28.1",
     "path": "^0.12.7",
     "qs": "^6.10.3",
+    "vue-json-viewer": "^2.2.22",
     "vue-loader": "^15.9.7",
     "vue-meta": "^2.4.0",
     "vue-svgicon": "^3.2.9",
