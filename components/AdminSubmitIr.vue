@@ -85,7 +85,7 @@
                 <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="searchForDoiRecord()">{{ $t('Search') }}</v-btn>
               </v-col>
             </v-row>
-            <v-row v-if="showDoiSearchTable">
+            <div v-if="showDoiSearchTable">
               <!-- <doi-search-results
                 :docs="doiSearchResultDocs"
                 :total="doiSearchTotal">
@@ -102,7 +102,7 @@
                   <v-btn class="mx-1 font-weight-regular" @click="importDoiFromSearchRow(doc)" color="primary">Show Metadata</v-btn>
                 </v-col>
               </v-row>
-            </v-row>
+            </div>
             <v-alert outlined type="error" color="primary" transition="slide-y-transition" v-if="doiDuplicate">
               <span class="mr-2 black--text">{{ $t('Possible duplicate found') }}:</span><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doiDuplicate.pid">{{ doiDuplicate.title }}</a>
             </v-alert>
@@ -122,6 +122,8 @@
                       >
                         <v-icon>info</v-icon>
                       </v-btn>
+                      <v-spacer></v-spacer>
+                      <v-btn class="mx-1 font-weight-regular" @click="navigateToUcris(uCrisId)" color="primary">Show in ucris</v-btn>
                     </v-card-title>
                     <v-card-text>
                       <v-container>
@@ -298,7 +300,7 @@
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.license">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
-                          <v-col md="8" cols="12">{{ doiImportDataForUcris.license }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.licenceLabel }}</v-col>
                           <v-col md="2" cols="12" class="primary--text text-right">
                             <v-checkbox
                               name="ucrislicense"
@@ -309,7 +311,7 @@
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.accessrights">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Access Rights') }}</v-col>
-                          <v-col md="8" cols="12">{{ doiImportDataForUcris.accessrights }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.accessRightsLabel }}</v-col>
                           <v-col md="2" cols="12" class="primary--text text-right">
                             <v-checkbox
                               name="ucrisaccessrights"
@@ -320,7 +322,7 @@
                         </v-row>
                         <v-row v-if="doiImportDataForUcris.version">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Version') }}</v-col>
-                          <v-col md="8" cols="12">{{ doiImportDataForUcris.version }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportDataForUcris.versionLabel }}</v-col>
                           <v-col md="2" cols="12" class="primary--text text-right">
                             <v-checkbox
                               name="ucrisversion"
@@ -517,7 +519,7 @@
                         </v-row>
                         <v-row v-if="doiImportData.license">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
-                          <v-col md="8" cols="12">{{ doiImportData.license }}</v-col>
+                          <v-col md="8" cols="12">{{ doiImportData.licenceLabel }}</v-col>
                           <v-col md="2" cols="12" class="primary--text text-right">
                             <v-checkbox
                               name="crossReflicense"
@@ -1224,6 +1226,9 @@ export default {
     }
   },
   methods: {
+    navigateToUcris(uCrisId) {
+      window.open(`https://ucris.univie.ac.at/admin/editor/dk/atira/pure/api/shared/model/researchoutput/editor/contributiontojournaleditor.xhtml?scheme=&type=&id=${uCrisId} `, '_blank');
+    },
     firstMetaTabContinue(){
       console.log('crossRefSelectedFields =>>', this.crossRefSelectedFields)
       console.log('ucrisSelectedFields =>>', this.ucrisSelectedFields)
@@ -1398,7 +1403,10 @@ export default {
         journalVolume: '',
         journalIssue: '',
         pageStart: '',
-        pageEnd: ''
+        pageEnd: '',
+        licenceLabel: '',
+        accessRightsLabel: '',
+        versionLabel: '',
       }
       if(ucrisData?.title?.value){
         localImportData.title = this.$_.unescape(ucrisData?.title?.value.replace(/\s\s+/g, ' ').trim())
@@ -1561,6 +1569,7 @@ export default {
       }
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.accessType?.term?.text?.length){
         const accessTypeVal = ucrisData?.electronicVersions[0]?.accessType?.term?.text[1]?.value
+        localImportData.accessRightsLabel = ucrisData?.electronicVersions[0]?.accessType?.term?.text[0]?.value
         switch (accessTypeVal.toLowerCase()) {
           case 'offen':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QW5R-NG4J'
@@ -1581,6 +1590,7 @@ export default {
       // Version Type
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.versionType?.term?.text?.length){
         const versionTypeVal = ucrisData?.electronicVersions[0]?.versionType?.term?.text[1]?.value
+        localImportData.versionLabel = ucrisData?.electronicVersions[0]?.versionType?.term?.text[0]?.value
         switch (versionTypeVal.toLowerCase()) {
           case 'kein wert':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/TV31-080M'
@@ -1607,6 +1617,7 @@ export default {
 
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.licenseType?.term?.text?.length){
         const licenseTypeVal = ucrisData?.electronicVersions[0]?.licenseType?.term?.text[0]?.value
+        localImportData.licenceLabel = licenseTypeVal
         switch (licenseTypeVal) {
           case 'CC BY 4.0':
               localImportData.license = 'http://creativecommons.org/licenses/by/4.0/'
@@ -1669,7 +1680,8 @@ export default {
               journalVolume: '',
               journalIssue: '',
               pageStart: '',
-              pageEnd: ''
+              pageEnd: '',
+              licenceLabel: ''
             }
 
             if (crossrefData['title']) {
@@ -1871,7 +1883,9 @@ export default {
               if (Array.isArray(crossrefData['license'])) {
                 for (let lic of crossrefData['license']) {
                   if (lic['URL']) {
-                    if (this.getTerm('alllicenses', lic['URL'])) {
+                    const licTerm = this.getTerm('alllicenses', lic['URL'])
+                    if (licTerm) {
+                      this.doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
                       this.doiImportData.license = lic['URL']
                     }
                   }
