@@ -626,10 +626,8 @@
             </v-slide-y-transition>
             <v-divider class="mt-5 mb-7"></v-divider> -->
             <v-row no-gutters class="justify-end">
-              <v-btn color="primary" @click="firstMetaTabContinue()">
-                <template v-if="doiImportData || doiImportDataForUcris">{{ $t('Continue') }}</template>
-                <template v-else>{{ $t('Skip') }}</template>
-              </v-btn>
+              <v-btn v-if="doiImportData || doiImportDataForUcris" @click="firstMetaTabContinue()" color="primary">{{ $t('Continue') }}</v-btn>
+              <v-btn v-else @click="step = 5; $vuetify.goTo(1)" color="primary">{{ $t('Skip') }}</v-btn>
             </v-row>
           </v-container>
         </v-stepper-content>

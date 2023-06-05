@@ -28,7 +28,7 @@
               <v-row no-gutters class="pt-2">
                 <template v-if="objectInfo.readrights && accessRights === 'open'">
                   <v-btn v-if="objectInfo.cmodel === 'Resource'" color="primary" :href="config.api + '/object/' + objectInfo.pid + '/diss/Resource/get'" primary>{{ $t('To resource') }}</v-btn>
-                  <v-btn v-else color="primary" @click="trackDownload()" :href="config.api + '/object/' + objectInfo.pid + '/diss/Content/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
+                  <v-btn v-else color="primary" :href="config.api + '/object/' + objectInfo.pid + '/download'" primary>{{ getFormatLabel(objectInfo) }}</v-btn>
                 </template>
                 <template v-else-if="(!objectInfo.readrights && accessRights === 'open') || (accessRights === 'restricted')">
                   <p>{{ $t('Not publicly available via {name}', { name: config.title }) }}</p>
