@@ -211,7 +211,7 @@ export function buildAssociationFacet (orgUnitsTree) {
 
     associationFacet.queries.push({
       query: 'association_id:"' + l1Unit['@id'] + '"',
-      active: i === 1,
+      active: i === 2,
       id: l1Unit['@id'],
       label: {
         'skos:prefLabel': l1Unit['skos:prefLabel']
