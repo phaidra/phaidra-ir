@@ -5,20 +5,21 @@
         <v-col cols="3">
           <a class="font-weight-light primary--text" @click="showUcrisObj(doc)">{{ doc.title.value | truncate(100) }}</a>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="3" class="word-break">
           {{ getDoiForCol(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" class="word-break">
           <div v-for="(item) in getAuthorList(doc)">
             {{item.firstname}} {{item.lastname}}
           </div>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="1" class="word-break">
           {{ getPublicationType(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-spacer></v-spacer>
           <v-btn class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">Import</v-btn>
+          <v-btn class="mt-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">Show in ucris</v-btn>
           <!-- <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="primary" v-if="isNew(doc)" @click="accept(doc.pid)">Accept</v-btn>
           <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="grey darken-1 white--text" v-if="isNew(doc)" @click="reject(doc.pid)">Reject</v-btn>
           <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="grey darken-1 white--text" v-if="isAccepted(doc)" :to="{ path: `/metadata/${doc.pid}/edit`}">Edit</v-btn>
@@ -161,6 +162,9 @@ export default {
     ucrisRowSelected(doc){
       this.$store.commit('setSelectedUcrisData', doc)
       this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)
+    },
+    navigateToUcris(doc) {
+      window.open(`https://ucris.univie.ac.at/admin/editor/dk/atira/pure/api/shared/model/researchoutput/editor/contributiontojournaleditor.xhtml?scheme=&type=&id=${doc.pureId} `, '_blank');
     },
     getPublicationType(ucrisData){
       let localImportData = {}
@@ -475,6 +479,10 @@ export default {
 
 .v-application a {
   text-decoration: none;
+}
+
+.word-break {
+  word-wrap: break-word;
 }
 
 </style>
