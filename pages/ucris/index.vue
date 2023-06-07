@@ -135,6 +135,7 @@ export default {
           this.docs = ucrisResponse.data.response.items.map(elem => {
             const lockIndex = lockedData.findIndex(x => +x.pureId === +elem.pureId)
             if(lockIndex >= 0) {
+              elem.lockName = lockedData[lockIndex].lockName
               elem.isLocked = true
             }
             return elem

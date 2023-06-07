@@ -97,8 +97,9 @@
         <v-col cols="1" class="word-break">
           {{ getPublicationType(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="3">
+        <v-col cols="3" class="word-break">
           <v-spacer></v-spacer>
+          <span v-if="doc.isLocked && doc.lockName">Locked By: <span class="text-bold">{{doc.lockName}}</span></span>
           <v-btn
               v-if="doc.isLocked"
               icon
@@ -685,6 +686,9 @@ export default {
 
 .word-break {
   word-wrap: break-word;
+}
+.text-bold {
+  font-weight: bold;
 }
 
 </style>
