@@ -132,9 +132,10 @@ export default {
         //   }
         // })
         if(ucrisResponse?.data?.response){
+          const existingLockName = localStorage.getItem('lockName')
           this.docs = ucrisResponse.data.response.items.map(elem => {
             const lockIndex = lockedData.findIndex(x => +x.pureId === +elem.pureId)
-            if(lockIndex >= 0) {
+            if(lockIndex >= 0 && existingLockName !== lockedData[lockIndex].lockName) {
               elem.lockName = lockedData[lockIndex].lockName
               elem.isLocked = true
             }
