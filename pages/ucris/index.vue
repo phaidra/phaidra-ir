@@ -89,6 +89,15 @@ export default {
 
         Object.assign(this, options)
         let offset = (this.page - 1) * this.pagesize
+        let lockedData = []
+        let lockedPureIdResp = await axios.get(this.$store.state.instanceconfig.api + `/ir/pureimport/locks`, {
+            headers: {
+              'X-XSRF-TOKEN': this.$store.state.user.token
+            }
+        })
+        if(lockedPureIdResp && lockedPureIdResp.data && lockedPureIdResp.data.locks){
+          lockedData = lockedPureIdResp.data.locks
+        }
         let ucrisResponse = await axios.get(this.$store.state.instanceconfig.api + `/ir/puresearch?size=${this.pagesize}&offset=${offset}&ir_status=ir_pending`,
           {
             headers: {
@@ -123,7 +132,13 @@ export default {
         //   }
         // })
         if(ucrisResponse?.data?.response){
-          this.docs = ucrisResponse.data.response.items
+          this.docs = ucrisResponse.data.response.items.map(elem => {
+            const lockIndex = lockedData.findIndex(x => +x.pureId === +elem.pureId)
+            if(lockIndex >= 0) {
+              elem.isLocked = true
+            }
+            return elem
+          })
           this.total = ucrisResponse.data.response.count
         }
         // this.facet_counts = response.data.facet_counts
