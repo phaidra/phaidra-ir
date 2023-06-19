@@ -371,8 +371,8 @@ export default {
     },
     getPublicationType(ucrisData){
       let localImportData = {}
-      if(ucrisData?.type?.term?.text?.length){
-        let ucrisType = ucrisData.type.term.text[0].value || ''
+      if(ucrisData?.type?.term?.en_GB){
+        let ucrisType = ucrisData.type.term.en_GB || ''
         localImportData.publicationTypeName = ucrisType
         ucrisType = ucrisType.toLowerCase()
         switch (ucrisType) {
