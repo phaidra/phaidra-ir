@@ -122,8 +122,6 @@
                       >
                         <v-icon>info</v-icon>
                       </v-btn>
-                      <v-spacer></v-spacer>
-                      <v-btn class="mx-1 font-weight-regular" @click="navigateToUcris(uCrisId)" color="primary">Show in ucris</v-btn>
                     </v-card-title>
                     <v-card-text>
                       <v-container>
@@ -1237,9 +1235,6 @@ export default {
         this.$refs[item2].style.height = `${maxItemHeight}px`;
       }
       return 0
-    },
-    navigateToUcris(uCrisId) {
-      window.open(`https://ucris.univie.ac.at/admin/editor/dk/atira/pure/api/shared/model/researchoutput/editor/contributiontojournaleditor.xhtml?scheme=&type=&id=${uCrisId} `, '_blank');
     },
     firstMetaTabContinue(){
       console.log('crossRefSelectedFields =>>', this.crossRefSelectedFields)

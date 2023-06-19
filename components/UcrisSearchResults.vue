@@ -1,24 +1,115 @@
 <template>
   <v-container>
+    <v-dialog
+      v-model="unlockConfirmationDialog"
+      persistent
+      max-width="500"
+    >
+      <v-card>
+        <v-card-title class="text-h5">
+          Sure to unlock this item?
+        </v-card-title>
+        <v-card-text>Are you sure to unlock this item ?</v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="red darken-1"
+            text
+            @click="unlockConfirmationDialog = false"
+          >
+            Cancel
+          </v-btn>
+          <v-btn
+            color="green darken-1"
+            text
+            @click="unlockDoc()"
+            :loading="isLockLoading"
+          >
+            Unlock
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+    <v-dialog
+      v-model="lockDialog"
+      persistent
+      max-width="600px"
+    >
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">
+            <span v-if="lockDialogType === 'lock'">Lock this import</span>
+            <span v-else>unlock this import</span>
+          </span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+              <v-form ref="lockForm">
+                <v-text-field
+                  label="full name*"
+                  required
+                  :rules="[val => (val || '').length > 0 || 'This field is required']"
+                  v-model="fullName"
+                ></v-text-field>
+              </v-form>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="lockDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            :loading="isLockLoading"
+            @click="onLockFormSubmit()"
+          >
+            Save
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <template v-for="(doc, i) in this.docs">
       <v-row :key="'doc'+i">
         <v-col cols="3">
           <a class="font-weight-light primary--text" @click="showUcrisObj(doc)">{{ doc.title.value | truncate(100) }}</a>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="3" class="word-break">
           {{ getDoiForCol(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="2">
+        <v-col cols="2" class="word-break">
           <div v-for="(item) in getAuthorList(doc)">
             {{item.firstname}} {{item.lastname}}
           </div>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="1" class="word-break">
           {{ getPublicationType(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3" class="word-break">
           <v-spacer></v-spacer>
-          <v-btn class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">Import</v-btn>
+          <span v-if="doc.isLocked && doc.lockName">Locked By: <span class="text-bold">{{doc.lockName}}</span></span>
+          <v-btn
+              v-if="doc.isLocked"
+              icon
+              @click="unlockConfirmation(doc)"
+              color="primary"
+            >
+              <v-icon>mdi-lock</v-icon>
+            </v-btn>
+          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">Import</v-btn>
+          <v-btn class="mt-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">Show in ucris</v-btn>
           <!-- <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="primary" v-if="isNew(doc)" @click="accept(doc.pid)">Accept</v-btn>
           <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="grey darken-1 white--text" v-if="isNew(doc)" @click="reject(doc.pid)">Reject</v-btn>
           <v-btn :disabled="loading[doc.pid]" :loading="loading[doc.pid]" class="mx-1 font-weight-regular" color="grey darken-1 white--text" v-if="isAccepted(doc)" :to="{ path: `/metadata/${doc.pid}/edit`}">Edit</v-btn>
@@ -117,6 +208,12 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-snackbar
+      v-model="snackbarVisible"
+      :timeout="3000"
+    >
+      {{ snackbarText }}
+    </v-snackbar>
   </v-container>
 </template>
 
@@ -151,16 +248,126 @@ export default {
       fileUpload: null,
       selectedUcrisInfo: {},
       showJsonViewer: false,
+      lockDialog: false,
+      lockDialogType: 'lock',
+      fullName: "",
+      selectedDoc: null,
+      isLockLoading: null,
+      unlockConfirmationDialog: false,
+      snackbarText: "",
+      snackbarVisible: false
     }
   },
   methods: {
+    lockImport: async function (pureId, fullName){
+      return axios.post(`${this.config.api}/ir/pureimport/lock/${pureId}/${fullName}`, {}, {
+        headers: {
+          'X-XSRF-TOKEN': this.$store.state.user.token
+        }
+      })
+    },
+    unLockImport: async function (pureId, fullName){
+      return axios.post(`${this.config.api}/ir/pureimport/unlock/${pureId}/${fullName}`, {}, {
+        headers: {
+          'X-XSRF-TOKEN': this.$store.state.user.token
+        }
+      })
+    },
+    showSnackbar(text){
+      this.snackbarVisible = true;
+      this.snackbarText = text
+    },
+    onLockFormSubmit: async function (){
+      this.unlockConfirmationDialog = false
+      console.log('full name', this.fullName)
+      this.$refs.lockForm.validate();
+      if(!this.fullName){
+        return
+      }
+      if(this.lockDialogType === 'unlock'){
+        this.isLockLoading = true
+        try {
+          let response = await this.unLockImport(this.selectedDoc.pureId, this.fullName)
+          this.isLockLoading = false
+          console.log('response =>>', response)
+          this.docs = this.docs.map(elem => {
+              if(+elem.pureId === +this.selectedDoc.pureId) {
+                elem.isLocked = false
+              }
+              return elem
+          })
+        } catch (error) {
+          this.showSnackbar(error.message || 'something went wrong')
+          this.isLockLoading = false
+        }
+      }else{
+        this.isLockLoading = true
+        try {
+          await this.lockImport(this.selectedDoc.pureId, this.fullName)
+          this.isLockLoading = false
+          this.$store.commit('setSelectedUcrisData', this.selectedDoc)
+          this.$router.push('/admin/submit?type=ucris&id='+this.selectedDoc.pureId)
+        } catch (error) {
+          this.showSnackbar(error.message || 'something went wrong')
+          this.isLockLoading = false
+        }
+
+      }
+      localStorage.setItem('lockName', this.fullName)
+      this.lockDialog = false
+    },
+    unlockDoc: async function (){
+      const existingLockName = localStorage.getItem('lockName')
+      if(existingLockName) {
+        this.isLockLoading = true
+        try {
+          await this.unLockImport(this.selectedDoc.pureId, existingLockName)
+          this.unlockConfirmationDialog = false
+          this.docs = this.docs.map(elem => {
+              if(+elem.pureId === +this.selectedDoc.pureId) {
+                elem.isLocked = false
+              }
+              return elem
+          })
+          this.isLockLoading = false
+        } catch (error) {
+          this.showSnackbar(error.message || 'something went wrong')
+          this.isLockLoading = false
+        }
+        return
+      }
+      this.lockDialogType = 'unlock'
+      this.lockDialog = true
+    },
     showUcrisObj(doc){
       this.selectedUcrisInfo = doc;
       this.showJsonViewer = true
     },
-    ucrisRowSelected(doc){
-      this.$store.commit('setSelectedUcrisData', doc)
-      this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)
+    unlockConfirmation: async function (doc){
+      this.selectedDoc = doc;
+      this.unlockConfirmationDialog = true
+    },
+    ucrisRowSelected: async function (doc){
+      const existingLockName = localStorage.getItem('lockName')
+      if(existingLockName) {
+        this.isLockLoading = true
+        try {
+          await this.lockImport(doc.pureId, existingLockName)
+          this.isLockLoading = false
+          this.$store.commit('setSelectedUcrisData', doc)
+          this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)
+        } catch (error) {
+          this.showSnackbar(error.message || 'something went wrong')
+          this.isLockLoading = false
+        }
+        return
+      }
+      this.selectedDoc = doc;
+      this.lockDialogType = 'lock'
+      this.lockDialog = true
+    },
+    navigateToUcris(doc) {
+      window.open(`https://ucris.univie.ac.at/admin/editor/dk/atira/pure/api/shared/model/researchoutput/editor/contributiontojournaleditor.xhtml?scheme=&type=&id=${doc.pureId} `, '_blank');
     },
     getPublicationType(ucrisData){
       let localImportData = {}
@@ -475,6 +682,13 @@ export default {
 
 .v-application a {
   text-decoration: none;
+}
+
+.word-break {
+  word-wrap: break-word;
+}
+.text-bold {
+  font-weight: bold;
 }
 
 </style>
