@@ -181,8 +181,11 @@ export default {
     }
   },
   methods: {
-    lockImport: async function (pureId, fullName){
-      return axios.post(`${this.config.api}/ir/pureimport/lock/${pureId}/${fullName}`, {}, {
+    lockImport: async function (doc, fullName){
+      if(doc.lockName === fullName){
+        return
+      }
+      return axios.post(`${this.config.api}/ir/pureimport/lock/${doc.pureId}/${fullName}`, {}, {
         headers: {
           'X-XSRF-TOKEN': this.$store.state.user.token
         }
@@ -225,7 +228,7 @@ export default {
       }else{
         this.isLockLoading = true
         try {
-          await this.lockImport(this.selectedDoc.pureId, this.fullName)
+          await this.lockImport(this.selectedDoc, this.fullName)
           this.isLockLoading = false
           this.$store.commit('setSelectedUcrisData', this.selectedDoc)
           this.$router.push('/admin/submit?type=ucris&id='+this.selectedDoc.pureId)
@@ -274,7 +277,7 @@ export default {
       if(existingLockName) {
         this.isLockLoading = true
         try {
-          await this.lockImport(doc.pureId, existingLockName)
+          await this.lockImport(doc, existingLockName)
           this.isLockLoading = false
           this.$store.commit('setSelectedUcrisData', doc)
           this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)
