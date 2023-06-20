@@ -1928,7 +1928,10 @@ export default {
       httpFormData.append('metadata', JSON.stringify(this.getMetadata()))
 
       try {
-        let response = await axios.post(this.$store.state.config.api + '/ir/submit', httpFormData, {
+        const search = location.search.substring(1);
+        const queryParams = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+        const url = queryParams.id ? this.$store.state.config.api + '/ir/submit?pureid=' + queryParams.id : this.$store.state.config.api + '/ir/submit'
+        let response = await axios.post(url, httpFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'X-XSRF-TOKEN': this.$store.state.user.token
