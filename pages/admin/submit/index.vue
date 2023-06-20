@@ -24,7 +24,7 @@ export default {
   methods: {
     getQueryParams(){
       if(this?.$route?.query?.type === 'ucris'){
-        return `?type=ucris&id=${this?.$route?.query?.id}`
+        return `?type=ucris&id=${this?.$route?.query?.id}&uuid=${this?.$route?.query?.uuid}`
       }
       return ''
     }
