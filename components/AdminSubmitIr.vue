@@ -539,90 +539,6 @@
               </v-row>
             </v-slide-y-transition>
             <v-divider class="mt-5 mb-7"></v-divider>
-            <!-- <v-slide-y-transition>
-              <v-row no-gutters v-if="doiImportDataForUcris" justify="center">
-                <v-col cols="12" md="7">
-                  <v-card>
-                    <v-card-title class="title font-weight-light grey white--text">{{ $t('u:cris Metadata') }}</v-card-title>
-                    <v-card-text>
-                      <v-container>
-                        <v-row v-if="doiImportDataForUcris.title">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Title') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.title }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.subtitle">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Subtitle') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.subtitle }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.dateIssued">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Date issued') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.dateIssued }}</v-col>
-                        </v-row>
-                        <v-row v-for="(author, i) of doiImportDataForUcris.authors" :key="'aut'+i">
-                          <v-col v-if="i === 0" md="2" cols="12" class="primary--text text-right">{{ $t('Authors') }}</v-col>
-                          <v-col v-else md="2" cols="12"></v-col>
-                          <v-col md="10" cols="12" v-if="author.firstname || author.lastname"><span class="font-weight-regular">{{ author.firstname + ' ' + author.lastname }}</span><span v-if="author['orcid']"> ({{ author['orcid'] }})</span>
-                            <template v-if="author['affiliation']">
-                              <template v-for="(af, i) in author['affiliation']"><p :key="'doiaf'+i">{{ af }}</p></template>
-                            </template>
-                          </v-col>
-                          <v-col md="10" cols="12" v-else><span class="font-weight-regular">{{ author.name }}</span></v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.keywords">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
-                          <v-col md="10" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportDataForUcris.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.language">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Language') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.language }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.publicationType">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Type of publication') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publicationType }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.publisher">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('PUBLISHER_VERLAG') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.publisher }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.journalTitle">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Appeared in') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalTitle }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.journalISSN">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISSN') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalISSN }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.journalVolume">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Volume') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalVolume }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.journalIssue">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Issue') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.journalIssue }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.pageStart">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Start page') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageStart }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.pageEnd">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('End page') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.pageEnd }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.ISBN">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('ISBN') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.ISBN }}</v-col>
-                        </v-row>
-                        <v-row v-if="doiImportDataForUcris.license">
-                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('License') }}</v-col>
-                          <v-col md="10" cols="12">{{ doiImportDataForUcris.license }}</v-col>
-                        </v-row>
-                      </v-container>
-                    </v-card-text>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </v-slide-y-transition>
-            <v-divider class="mt-5 mb-7"></v-divider> -->
             <v-row no-gutters class="justify-end">
               <v-btn v-if="doiImportData || doiImportDataForUcris" @click="firstMetaTabContinue()" color="primary">{{ $t('Continue') }}</v-btn>
               <v-btn v-else @click="step = 5; $vuetify.goTo(1)" color="primary">{{ $t('Skip') }}</v-btn>
@@ -1414,6 +1330,9 @@ export default {
         licenceLabel: '',
         accessRightsLabel: '',
         versionLabel: '',
+      }
+      if(ucrisData?.subTitle?.value){
+        localImportData.subtitle = this.$_.unescape(ucrisData?.subTitle?.value.replace(/\s\s+/g, ' ').trim())
       }
       if(ucrisData?.title?.value){
         localImportData.title = this.$_.unescape(ucrisData?.title?.value.replace(/\s\s+/g, ' ').trim())
