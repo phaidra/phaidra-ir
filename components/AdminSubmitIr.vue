@@ -181,7 +181,7 @@
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
                           <!-- <div v-if="doiImportDataForUcris.keywords"> -->
                             <v-col v-if="doiImportDataForUcris.keywords" md="8" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportDataForUcris.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
-                            <v-col v-if="doiImportDataForUcris.keywords" md="2" cols="12" class="primary--text text-right">
+                            <v-col v-if="doiImportDataForUcris.keywords && doiImportDataForUcris.keywords.length" md="2" cols="12" class="primary--text text-right">
                               <v-checkbox
                                 name="ucriskeywords"
                                 v-model="ucrisSelectedFields.keywords"
@@ -403,7 +403,7 @@
                         <v-row ref="item2KeywordRef">
                           <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Keywords') }}</v-col>
                           <v-col v-if="doiImportData.keywords" md="8" cols="12"><v-chip :key="'kw' + i" v-for="(kw, i) in doiImportData.keywords" class="mr-2 mb-2">{{kw}}</v-chip></v-col>
-                          <v-col v-if="doiImportData.keywords" md="2" cols="12" class="primary--text text-right">
+                          <v-col v-if="doiImportData.keywords && doiImportData.keywords.length" md="2" cols="12" class="primary--text text-right">
                             <v-checkbox
                               name="crossRefkeywords"
                               v-model="crossRefSelectedFields.keywords"
