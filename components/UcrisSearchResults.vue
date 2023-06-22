@@ -280,7 +280,7 @@ export default {
           await this.lockImport(doc, existingLockName)
           this.isLockLoading = false
           this.$store.commit('setSelectedUcrisData', doc)
-          this.$router.push('/admin/submit?type=ucris&id='+doc.pureId)
+          this.$router.push('/admin/submit?type=ucris&id='+doc.pureId+'&uuid='+doc.uuid)
         } catch (error) {
           this.showSnackbar(error.message || 'something went wrong')
           this.isLockLoading = false
