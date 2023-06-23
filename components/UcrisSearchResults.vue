@@ -81,6 +81,60 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <v-dialog
+      v-model="rejectConfirmationDialog"
+      persistent
+      max-width="600px"
+    >
+      <v-card>
+        <v-card-title>
+          <span class="text-h5">
+            Reject this item ?
+          </span>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <v-row>
+              <v-col
+                cols="12"
+              >
+              <v-form ref="rejectForm">
+                <v-text-field
+                  label="full name*"
+                  required
+                  :rules="[val => (val || '').length > 0 || 'This field is required']"
+                  v-model="rejectName"
+                ></v-text-field>
+                <v-text-field
+                  label="Reject Reason"
+                  v-model="rejectReason"
+                ></v-text-field>
+              </v-form>
+              </v-col>
+            </v-row>
+          </v-container>
+          <small>*indicates required field</small>
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="rejectConfirmationDialog = false"
+          >
+            Close
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            :loading="isRejectLoading"
+            @click="onRejectSubmit()"
+          >
+            Reject
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <template v-for="(doc, i) in this.docs">
       <v-row :key="'doc'+i">
         <v-col cols="3">
@@ -108,6 +162,7 @@
             >
               <v-icon>mdi-lock</v-icon>
             </v-btn>
+          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="rejectSelected(doc)" color="error">Reject</v-btn>
           <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">Import</v-btn>
           <v-btn class="mt-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">Show in ucris</v-btn>
         </v-col>
@@ -163,7 +218,8 @@ export default {
       type: Array
     },
     total: Number,
-    search: Function
+    search: Function,
+    resetTable: Function
   },
   data () {
     return {
@@ -177,7 +233,10 @@ export default {
       isLockLoading: null,
       unlockConfirmationDialog: false,
       snackbarText: "",
-      snackbarVisible: false
+      snackbarVisible: false,
+      rejectConfirmationDialog: false,
+      rejectName: '',
+      rejectReason: '',
     }
   },
   methods: {
@@ -271,6 +330,38 @@ export default {
     unlockConfirmation: async function (doc){
       this.selectedDoc = doc;
       this.unlockConfirmationDialog = true
+    },
+    onRejectSubmit: async function (){
+      console.log('onRejectSubmit', this.selectedDoc, this.fullName, this.rejectReason)
+      try {
+        this.$refs.rejectForm.validate();
+        if(!this.rejectName){
+          return
+        }
+        localStorage.setItem('rejectName', this.rejectName);
+        this.isRejectLoading = true
+        await axios.post(`${this.config.api}/ir/pureimport/reject/${this.selectedDoc.uuid}`, {
+          reason: this.rejectReason || '',
+          rejectedBy: this.rejectName
+        }, {
+        headers: {
+          'X-XSRF-TOKEN': this.$store.state.user.token
+        }
+      })
+      this.resetTable()
+      this.showSnackbar('The item has been rejected successfully!')
+      this.isRejectLoading = false
+      this.rejectConfirmationDialog = false
+    } catch (error) {
+      this.showSnackbar(error.message || 'something went wrong')
+      this.isRejectLoading = false
+      this.rejectConfirmationDialog = false
+      }
+    },
+    rejectSelected: async function (doc){
+      this.selectedDoc = doc;
+      this.rejectName = localStorage.getItem('rejectName')
+      this.rejectConfirmationDialog = true
     },
     ucrisRowSelected: async function (doc){
       const existingLockName = localStorage.getItem('lockName')

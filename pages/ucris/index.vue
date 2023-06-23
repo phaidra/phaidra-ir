@@ -9,7 +9,9 @@
           <ucris-search-results
             :docs="docs"
             :total="total"
-            :search="search">
+            :search="search"
+            :resetTable="resetTable"
+            >
           </ucris-search-results>
           <v-pagination v-if="total>pagesize" v-bind:length="totalPages" total-visible="10" v-model="currentPage" class="mb-3" />
         </v-row>
@@ -79,6 +81,12 @@ export default {
     }
   },
   methods: {
+    resetTable: function () {
+      this.docs = [];
+      this.total = [];
+      this.page = 0;
+      this.search()
+    },
     search: async function (options) {
       try{
         this.$store.commit('setLoading', true)
