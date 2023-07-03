@@ -7,9 +7,9 @@
     >
       <v-card>
         <v-card-title class="text-h5">
-          Sure to unlock this item?
+          {{ $t('Unlock this item?') }}
         </v-card-title>
-        <v-card-text>Are you sure to unlock this item ?</v-card-text>
+        <v-card-text>{{ $t('Are you sure you want to unlock this item?') }}</v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
@@ -17,7 +17,7 @@
             text
             @click="unlockConfirmationDialog = false"
           >
-            Cancel
+          {{ $t('Cancel') }}
           </v-btn>
           <v-btn
             color="green darken-1"
@@ -25,7 +25,7 @@
             @click="unlockDoc()"
             :loading="isLockLoading"
           >
-            Unlock
+          {{ $t('Unlock') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -38,8 +38,8 @@
       <v-card>
         <v-card-title>
           <span class="text-h5">
-            <span v-if="lockDialogType === 'lock'">Lock this import</span>
-            <span v-else>unlock this import</span>
+            <span v-if="lockDialogType === 'lock'">{{ $t('Lock this import') }}</span>
+            <span v-else>{{ $t('Unlock this import') }}</span>
           </span>
         </v-card-title>
         <v-card-text>
@@ -50,7 +50,7 @@
               >
               <v-form ref="lockForm">
                 <v-text-field
-                  label="full name*"
+                  label="Lock name"
                   required
                   :rules="[val => (val || '').length > 0 || 'This field is required']"
                   v-model="fullName"
@@ -59,7 +59,6 @@
               </v-col>
             </v-row>
           </v-container>
-          <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -89,7 +88,7 @@
       <v-card>
         <v-card-title>
           <span class="text-h5">
-            Reject this item ?
+            {{ $t('Reject this item?') }}
           </span>
         </v-card-title>
         <v-card-text>
@@ -98,22 +97,10 @@
               <v-col
                 cols="12"
               >
-              <v-form ref="rejectForm">
-                <v-text-field
-                  label="full name*"
-                  required
-                  :rules="[val => (val || '').length > 0 || 'This field is required']"
-                  v-model="rejectName"
-                ></v-text-field>
-                <v-text-field
-                  label="Reject Reason"
-                  v-model="rejectReason"
-                ></v-text-field>
-              </v-form>
+              <span>{{ $t('Are you sure you want to reject this item?') }}</span>
               </v-col>
             </v-row>
           </v-container>
-          <small>*indicates required field</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -130,7 +117,7 @@
             :loading="isRejectLoading"
             @click="onRejectSubmit()"
           >
-            Reject
+          {{ $t('Reject') }}
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -140,20 +127,20 @@
         <v-col cols="3">
           <a class="font-weight-light primary--text" @click="showUcrisObj(doc)">{{ doc.title.value | truncate(100) }}</a>
         </v-col>
-        <v-col cols="3" class="word-break">
-          {{ getDoiForCol(doc) | truncate(100) }}
+        <v-col cols="3">
+          {{ getDoiForCol(doc) }}
         </v-col>
-        <v-col cols="2" class="word-break">
+        <v-col cols="2">
           <div v-for="(item) in getAuthorList(doc)">
             {{item.firstname}} {{item.lastname}}
           </div>
         </v-col>
-        <v-col cols="1" class="word-break">
+        <v-col cols="2">
           {{ getPublicationType(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="3" class="word-break">
+        <v-col cols="2">
           <v-spacer></v-spacer>
-          <span v-if="doc.isLocked && doc.lockName">Locked By: <span class="text-bold">{{doc.lockName}}</span></span>
+          <span v-if="doc.isLocked && doc.lockName">{{ $t('Locked By: ') }}<span class="text-bold">{{doc.lockName}}</span></span>
           <v-btn
               v-if="doc.isLocked"
               icon
@@ -162,9 +149,9 @@
             >
               <v-icon>mdi-lock</v-icon>
             </v-btn>
-          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="rejectSelected(doc)" color="error">Reject</v-btn>
-          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">Import</v-btn>
-          <v-btn class="mt-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">Show in ucris</v-btn>
+          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="rejectSelected(doc)" color="error">{{ $t('Reject') }}</v-btn>
+          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">{{ $t('Import') }}</v-btn>
+          <v-btn class="mt-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">{{ $t('Show in ucris') }}</v-btn>
         </v-col>
       </v-row>
       <v-divider :key="'div'+doc.pureId" class="my-4 mr-2"></v-divider>
@@ -176,7 +163,7 @@
     >
       <v-card>
       <v-card-title class="text-h5 primary">
-        <span style="color: white;">UCRIS JSON</span>
+        <span style="color: white;">u:cris json</span>
       </v-card-title>
       <v-card-text>
         <v-card>
@@ -190,7 +177,7 @@
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color="primary" text @click="showJsonViewer = false">
-          Close
+          {{ $t('Close') }}
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -205,7 +192,6 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { config } from '@/mixins/config'
 import { context } from '@/mixins/context'
 import axios from 'axios'
@@ -224,6 +210,7 @@ export default {
   data () {
     return {
       loading: {},
+      isRejectLoading: false,
       selectedUcrisInfo: {},
       showJsonViewer: false,
       lockDialog: false,
@@ -236,7 +223,7 @@ export default {
       snackbarVisible: false,
       rejectConfirmationDialog: false,
       rejectName: '',
-      rejectReason: '',
+      rejectReason: ''
     }
   },
   methods: {
@@ -386,82 +373,19 @@ export default {
       window.open(`https://ucris.univie.ac.at/admin/editor/dk/atira/pure/api/shared/model/researchoutput/editor/contributiontojournaleditor.xhtml?scheme=&type=&id=${doc.pureId} `, '_blank');
     },
     getPublicationType(ucrisData){
-      let localImportData = {}
-      if(ucrisData?.type?.term?.en_GB){
-        let ucrisType = ucrisData.type.term.en_GB || ''
-        localImportData.publicationTypeName = ucrisType
-        ucrisType = ucrisType.toLowerCase()
-        switch (ucrisType) {
-            case 'article':
-            case 'journal-article':
-            case 'article-journal':
-                localImportData.publicationType = 'article'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                break
-            case 'review':
-                localImportData.publicationType = 'review'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JJKV-B1CG'
-                break
-            case 'report':
-                localImportData.publicationType = 'report'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
-                break
-            case 'book':
-            case 'monograph':
-            case 'reference-book':
-            case 'edited-book':
-                localImportData.publicationType = 'book'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
-                break
-            case 'book-chapter':
-            case 'book-part':
-            case 'book-section':
-                localImportData.publicationType = 'book_part'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
-                break
-            case 'dissertation':
-                localImportData.publicationType = 'doctoral_thesis'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
-                break
-            case 'proceedings-article':
-            case 'proceedings':
-                localImportData.publicationType = 'conference_object'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
-                break
-            case 'dataset':
-                localImportData.publicationType = 'research_data'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                break
-            case 'other':
-            case 'standard':
-            case 'standard-series':
-            case 'book-entry':
-            case 'book-series':
-            case 'book-set':
-            case 'book-track':
-            case 'component':
-            case 'journal-issue':
-            case 'journal-volume':
-            case 'journal':
-            case 'report-series':
-                localImportData.publicationType = 'other'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
-                break
-            default:
-                localImportData.publicationType = 'other'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
-        }
-      }
-      return localImportData.publicationTypeName
+      let ucrisType = ucrisData?.type?.uri || 'No type found'
+      ucrisType = ucrisType.replace('/dk/atira/pure/researchoutput/researchoutputtypes/','')
+      ucrisType = ucrisType.replace('/',"/\n")
+      return ucrisType
     },
     getAuthorList(ucrisData){
       let authors = [];
-      if(ucrisData?.personAssociations && ucrisData?.personAssociations.length){
-        let authorRecords = ucrisData.personAssociations;
+      if(ucrisData?.contributors && ucrisData?.contributors.length){
+        let authorRecords = ucrisData.contributors;
         authorRecords.forEach(authorRec => {
           if (authorRec['name'] &&
-          authorRec?.personRole?.term?.text &&
-          authorRec?.personRole?.term?.text.length && authorRec?.personRole?.term?.text[0].value === 'Author') {
+          authorRec?.role?.uri &&
+          authorRec?.role?.uri === '/dk/atira/pure/researchoutput/roles/contributiontojournal/author') {
             const Firstname = authorRec['name']['firstName'] ? authorRec['name']['firstName'].replace(/\s\s+/g, ' ').trim() : '';
             const Lastname = authorRec['name']['lastName'] ? authorRec['name']['lastName'].replace(/\s\s+/g, ' ').trim() : '';
             const auth = {
@@ -477,8 +401,16 @@ export default {
       }
       return authors;
     },
-    getDoiForCol(row){
-      return row?.electronicVersions?.length && row?.electronicVersions[0]?.doi ? row?.electronicVersions[0]?.doi : 'N/A'
+    getDoiForCol(ucrisData){
+      if (ucrisData?.electronicVersions) {
+        for (let i = 0; i < ucrisData.electronicVersions.length; i++) {
+          let ev = ucrisData.electronicVersions[i]
+          if (ev.doi) {
+            return ev.doi
+          }
+        }
+      }
+      return "N/A"
     },
   }
 }
@@ -505,9 +437,6 @@ export default {
   text-decoration: none;
 }
 
-.word-break {
-  word-wrap: break-word;
-}
 .text-bold {
   font-weight: bold;
 }

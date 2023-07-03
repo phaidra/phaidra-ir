@@ -1340,12 +1340,12 @@ export default {
       if(ucrisData?.publicationStatuses && ucrisData?.publicationStatuses.length && ucrisData?.publicationStatuses[0]?.publicationDate?.year){
         localImportData.dateIssued = ucrisData.publicationStatuses[0].publicationDate.year.toString()
       }
-      if(ucrisData?.personAssociations && ucrisData?.personAssociations.length){
-        let authorRecords = ucrisData.personAssociations;
+      if(ucrisData?.contributors && ucrisData?.contributors.length){
+        let authorRecords = ucrisData.contributors;
         authorRecords.forEach(authorRec => {
           if (authorRec['name'] &&
-          authorRec?.personRole?.term?.text &&
-          authorRec?.personRole?.term?.text.length && authorRec?.personRole?.term?.text[0].value === 'Author') {
+          authorRec?.role?.uri &&
+          authorRec?.role?.uri === '/dk/atira/pure/researchoutput/roles/contributiontojournal/author') {
             const Firstname = authorRec['name']['firstName'] ? authorRec['name']['firstName'].replace(/\s\s+/g, ' ').trim() : '';
             const Lastname = authorRec['name']['lastName'] ? authorRec['name']['lastName'].replace(/\s\s+/g, ' ').trim() : '';
             const auth = {
@@ -1401,72 +1401,58 @@ export default {
       if(ucrisData?.journalNumber){
         localImportData.journalIssue = ucrisData?.journalNumber
       }
-      if(ucrisData?.type?.term?.text?.length){
-        let ucrisType = ucrisData.type.term.text[0].value || ''
-        ucrisType = ucrisType.toLowerCase()
+      if(ucrisData?.type?.uri){
+        let ucrisType = ucrisData?.type?.uri || ''
+        ucrisType = ucrisType.replace('/dk/atira/pure/researchoutput/researchoutputtypes/','')
+        let ns = 'https://pid.phaidra.org/vocabulary/'
         switch (ucrisType) {
-            case 'article':
-            case 'journal-article':
-            case 'article-journal':
+            case 'contributiontojournal/article':
+            case 'contributiontoperiodical/article':
                 localImportData.publicationType = 'article'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+                localImportData.publicationTypeId = ns + 'VKA6-9XTY'
                 break
-            case 'review':
-                localImportData.publicationType = 'review'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JJKV-B1CG'
+            case 'workingpaper/preprint_draft':
+                localImportData.publicationType = 'preprint'
+                localImportData.publicationTypeId = ns + 'T023-BGTD'
                 break
-            case 'report':
-                localImportData.publicationType = 'report'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
+            case 'workingpaper/workingpaper':
+            case 'workingpaper/preprint':
+                localImportData.publicationType = 'working paper'
+                localImportData.publicationTypeId = ns + '489N-Y6VX'
                 break
-            case 'book':
-            case 'monograph':
-            case 'reference-book':
-            case 'edited-book':
+            case 'contributiontojournal/letter':
+            case 'contributiontojournal/comment':
+            case 'contributiontojournal/scientific':
+            case 'contributiontojournal/editorial':
+            case 'contributiontojournal/abstract':
+            case 'contributiontojournal/correction':
+                localImportData.publicationType = 'contribution to journal'
+                localImportData.publicationTypeId = ns + 'MF25-FDGW'
+                break
+            case 'bookanthology/book':
+            case 'bookanthology/anthology':
+            case 'contributiontoperiodical/book':
+            case 'contributiontoconference/paper':
                 localImportData.publicationType = 'book'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
+                localImportData.publicationTypeId = ns + '47QB-8QF1'
                 break
-            case 'book-chapter':
-            case 'book-part':
-            case 'book-section':
+            case 'contributiontobookanthology/chapter':
                 localImportData.publicationType = 'book_part'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
+                localImportData.publicationTypeId = ns + 'XA52-09WA'
                 break
-            case 'dissertation':
-                localImportData.publicationType = 'doctoral_thesis'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
-                break
-            case 'proceedings-article':
-            case 'proceedings':
-                localImportData.publicationType = 'conference_object'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
-                break
-            case 'dataset':
-                localImportData.publicationType = 'research_data'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                break
-            case 'other':
-            case 'standard':
-            case 'standard-series':
-            case 'book-entry':
-            case 'book-series':
-            case 'book-set':
-            case 'book-track':
-            case 'component':
-            case 'journal-issue':
-            case 'journal-volume':
-            case 'journal':
-            case 'report-series':
-                localImportData.publicationType = 'other'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+            case 'contributiontoconference/poster':
+            case 'contributiontoconference/poster':
+                localImportData.publicationType = 'conference object'
+                localImportData.publicationTypeId = ns + 'QKDF-E5HA'
                 break
             default:
                 localImportData.publicationType = 'other'
-                localImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+                localImportData.publicationTypeId = ns + 'PYRE-RAWJ'
         }
       }
+      // FIXME: (I tried but it does not seem to work)
       if(ucrisData?.language?.term?.text?.length){
-        const metaLangVal = ucrisData.language.term.text[0].value;
+        const metaLangVal = ucrisData.language.term['en_GB'].value;
         if(metaLangVal){
           const langUtilList = langUtil.get_lang()
           const langIndex = langUtilList.findIndex(x => x['skos:prefLabel'] && x['skos:prefLabel']['eng'] && x['skos:prefLabel']['eng'] === metaLangVal)
@@ -1478,6 +1464,7 @@ export default {
           }
         }
       }
+      // FIXME:
       if(ucrisData?.keywordGroups?.length){
         localImportData.keywords = []
         ucrisData.keywordGroups.forEach(keyGroup => {
@@ -1493,9 +1480,11 @@ export default {
           }
         });
       }
-      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.accessType?.term?.text?.length){
-        const accessTypeVal = ucrisData?.electronicVersions[0]?.accessType?.term?.text[1]?.value
-        localImportData.accessRightsLabel = ucrisData?.electronicVersions[0]?.accessType?.term?.text[0]?.value
+      // FIXME:
+      // Access type
+      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.accessType?.uri){
+        const accessTypeVal = ucrisData?.electronicVersions[0]?.accessType?.uri
+        localImportData.accessRightsLabel = ucrisData?.electronicVersions[0]?.accessType?.uri
         switch (accessTypeVal.toLowerCase()) {
           case 'offen':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QW5R-NG4J'
@@ -1513,7 +1502,8 @@ export default {
             break;
         }
       }
-      // Version Type
+      // FIXME:
+      // Version type
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.versionType?.term?.text?.length){
         const versionTypeVal = ucrisData?.electronicVersions[0]?.versionType?.term?.text[1]?.value
         localImportData.versionLabel = ucrisData?.electronicVersions[0]?.versionType?.term?.text[0]?.value
@@ -1538,9 +1528,8 @@ export default {
             break;
         }
       }
-
+      // FIXME:
       // License
-
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.licenseType?.term?.text?.length){
         const licenseTypeVal = ucrisData?.electronicVersions[0]?.licenseType?.term?.text[0]?.value
         localImportData.licenceLabel = licenseTypeVal
