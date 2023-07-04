@@ -1121,6 +1121,10 @@ export default {
     }
   },
   watch: {
+    '$i18n.locale': function(newVal, oldVal) {
+      this.doiImportDataForUcris = this.buildUcrisMetadata(this.selectedUcrisInfo)
+      this.resetForm(this, this.doiImportDataForUcris)
+    },
     step (val) {
       if (val > this.maxStep) {
         this.maxStep = val
@@ -1387,8 +1391,8 @@ export default {
       if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.journal && ucrisData?.journalAssociation?.journal?.name?.text?.length){
         localImportData.journalTitle = ucrisData.journalAssociation.journal && ucrisData.journalAssociation.journal.name.text[0].value
       }
-      if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.issn?.value){
-        localImportData.journalISSN = ucrisData?.journalAssociation?.issn?.value
+      if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.issn?.issn){
+        localImportData.journalISSN = ucrisData?.journalAssociation?.issn?.issn
       }
       if(ucrisData?.volume){
         localImportData.journalVolume = ucrisData?.volume
@@ -1471,14 +1475,13 @@ export default {
       if(ucrisData?.keywordGroups?.length){
         localImportData.keywords = []
         ucrisData.keywordGroups.forEach(keyGroup => {
-          if(keyGroup?.keywordContainers?.length && keyGroup?.keywordContainers[0]?.structuredKeyword?.term?.text?.length){
-            if(keyGroup.keywordContainers[0].structuredKeyword.uri){
-              let uriIdSplit = keyGroup.keywordContainers[0].structuredKeyword.uri.split('/')
-              let uriId = uriIdSplit[uriIdSplit.length - 1]
-              let key = keyGroup.keywordContainers[0].structuredKeyword.term.text[0].value.replace(`${uriId} `, '')
-              localImportData.keywords.push(key)
-            }else {
-              localImportData.keywords.push(keyGroup.keywordContainers[0].structuredKeyword.term.text[0].value)
+          if(this.$i18n.locale === 'eng'){
+            if(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.en_GB){
+              localImportData.keywords.push(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.en_GB)
+            }
+          }else{
+            if(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.de_DE){
+              localImportData.keywords.push(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.de_DE)
             }
           }
         });
