@@ -1484,7 +1484,7 @@ export default {
       // Access type
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.accessType?.uri){
         const accessTypeVal = ucrisData?.electronicVersions[0]?.accessType?.uri
-        localImportData.accessRightsLabel = ucrisData?.electronicVersions[0]?.accessType?.uri
+        localImportData.accessRightsLabel = ucrisData?.electronicVersions[0]?.accessType?.term?.en_GB
         switch (accessTypeVal.toLowerCase()) {
           case '/dk/atira/pure/core/openaccesspermission/open':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QW5R-NG4J'
@@ -1506,7 +1506,7 @@ export default {
       // Version type
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.versionType?.uri){
         const versionTypeVal = ucrisData?.electronicVersions[0]?.versionType?.uri
-        localImportData.versionLabel = ucrisData?.electronicVersions[0]?.versionType?.uri
+        localImportData.versionLabel = ucrisData?.electronicVersions[0]?.versionType?.term?.en_GB
         switch (versionTypeVal.toLowerCase()) {
           case '/dk/atira/pure/researchoutput/electronicversion/versiontype/authorsversion':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/TV31-080M'
@@ -1532,7 +1532,7 @@ export default {
       // License
       if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.licenseType?.uri){
         const licenseTypeVal = ucrisData?.electronicVersions[0]?.licenseType?.uri
-        localImportData.licenceLabel = licenseTypeVal
+        localImportData.licenceLabel = ucrisData?.electronicVersions[0]?.licenseType?.term?.en_GB
         switch (licenseTypeVal) {
           case "/dk/atira/pure/core/document/licenses/unspecified":
               localImportData.license = "http://rightsstatements.org/vocab/InC/1.0/"
