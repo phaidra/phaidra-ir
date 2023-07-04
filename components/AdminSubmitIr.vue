@@ -1453,9 +1453,8 @@ export default {
                 localImportData.publicationTypeId = ns + 'PYRE-RAWJ'
         }
       }
-      // Language
-      if(ucrisData?.language?.term?.text?.length){
-        const metaLangVal = ucrisData.language.term['en_GB'].value;
+      if(ucrisData?.language?.term?.en_GB){
+        const metaLangVal = ucrisData.language.term['en_GB'];
         if(metaLangVal){
           const langUtilList = langUtil.get_lang()
           const langIndex = langUtilList.findIndex(x => x['skos:prefLabel'] && x['skos:prefLabel']['eng'] && x['skos:prefLabel']['eng'] === metaLangVal)
