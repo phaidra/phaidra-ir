@@ -1450,9 +1450,8 @@ export default {
                 localImportData.publicationTypeId = ns + 'PYRE-RAWJ'
         }
       }
-      // FIXME: (I tried but it does not seem to work)
-      if(ucrisData?.language?.term?.text?.length){
-        const metaLangVal = ucrisData.language.term['en_GB'].value;
+      if(ucrisData?.language?.term?.en_GB){
+        const metaLangVal = ucrisData.language.term['en_GB'];
         if(metaLangVal){
           const langUtilList = langUtil.get_lang()
           const langIndex = langUtilList.findIndex(x => x['skos:prefLabel'] && x['skos:prefLabel']['eng'] && x['skos:prefLabel']['eng'] === metaLangVal)
@@ -1519,7 +1518,7 @@ export default {
             break;
             case '/dk/atira/pure/researchoutput/electronicversion/versiontype/proof':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/83ZP-CPP2'
-            case '/dk/atira/pure/researchoutput/electronicversion/versiontype/publishersversion':
+            case '/dk/atira/pure1456/researchoutput/electronicversion/versiontype/publishersversion':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/PMR8-3C8D'
             case '/dk/atira/pure/researchoutput/electronicversion/versiontype/other':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/MT1G-APSB'
