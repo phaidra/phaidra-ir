@@ -1486,16 +1486,16 @@ export default {
         const accessTypeVal = ucrisData?.electronicVersions[0]?.accessType?.uri
         localImportData.accessRightsLabel = ucrisData?.electronicVersions[0]?.accessType?.uri
         switch (accessTypeVal.toLowerCase()) {
-          case 'offen':
+          case '/dk/atira/pure/core/openaccesspermission/open':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QW5R-NG4J'
             break;
-            case 'gesperrt':
+            case '/dk/atira/pure/core/openaccesspermission/embargoed':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
             break;
-            case 'begrenzt':
+            case '/dk/atira/pure/core/openaccesspermission/restricted':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/KC3K-CCGM'
             break;
-            case 'geschlossen':
+            case '/dk/atira/pure/core/openaccesspermission/closed':
               localImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QNGE-V02H'
             break;
           default:
@@ -1504,24 +1504,24 @@ export default {
       }
       // FIXME:
       // Version type
-      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.versionType?.term?.text?.length){
-        const versionTypeVal = ucrisData?.electronicVersions[0]?.versionType?.term?.text[1]?.value
-        localImportData.versionLabel = ucrisData?.electronicVersions[0]?.versionType?.term?.text[0]?.value
+      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.versionType?.uri){
+        const versionTypeVal = ucrisData?.electronicVersions[0]?.versionType?.uri
+        localImportData.versionLabel = ucrisData?.electronicVersions[0]?.versionType?.uri
         switch (versionTypeVal.toLowerCase()) {
-          case 'kein wert':
+          case '/dk/atira/pure/researchoutput/electronicversion/versiontype/authorsversion':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/TV31-080M'
             break;
-            case 'eingereichtes manuskript':
+            case '/dk/atira/pure/researchoutput/electronicversion/versiontype/preprint':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/JTD4-R26P'
             break;
-            case 'akzeptiertes autorenmanuskript':
+            case '/dk/atira/pure/researchoutput/electronicversion/versiontype/other':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/PHXV-R6B3'
             break;
-            case 'nachweis':
+            case '/dk/atira/pure/researchoutput/electronicversion/versiontype/proof':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/83ZP-CPP2'
-            case 'endgültige, publizierte fassung':
+            case '/dk/atira/pure/researchoutput/electronicversion/versiontype/publishersversion':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/PMR8-3C8D'
-            case 'andere versionen':
+            case '/dk/atira/pure/researchoutput/electronicversion/versiontype/other':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/MT1G-APSB'
             break;
           default:
@@ -1530,28 +1530,106 @@ export default {
       }
       // FIXME:
       // License
-      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.licenseType?.term?.text?.length){
-        const licenseTypeVal = ucrisData?.electronicVersions[0]?.licenseType?.term?.text[0]?.value
+      if(ucrisData?.electronicVersions?.length && ucrisData?.electronicVersions[0]?.licenseType?.uri){
+        const licenseTypeVal = ucrisData?.electronicVersions[0]?.licenseType?.uri
         localImportData.licenceLabel = licenseTypeVal
         switch (licenseTypeVal) {
-          case 'CC BY 4.0':
-              localImportData.license = 'http://creativecommons.org/licenses/by/4.0/'
-            break;
-            case 'CC BY-NC-ND 4.0':
-              localImportData.license = 'http://creativecommons.org/licenses/by-nc-nd/4.0/'
-            break;
-            case 'CC BY-NC 4.0':
-              localImportData.license = 'http://creativecommons.org/licenses/by-nc/4.0/'
-            break;
-            case 'CC BY-NC-SA 4.0':
-              localImportData.license = 'http://creativecommons.org/licenses/by-nc-sa/4.0/'
-            break;
-            case 'CC BY-ND 4.0':
-              localImportData.license = 'http://creativecommons.org/licenses/by-nd/4.0/'
-            break;
-            case 'CC BY-SA 4.0':
-              localImportData.license = 'http://creativecommons.org/licenses/by-sa/4.0/'
-            break;
+          case "/dk/atira/pure/core/document/licenses/unspecified":
+              localImportData.license = "http://rightsstatements.org/vocab/InC/1.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by":
+              localImportData.license = "http://creativecommons.org/licenses/by/4.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc/4.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_nd":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-nd/4.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_sa":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-sa/4.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nd":
+              localImportData.license = "http://creativecommons.org/licenses/by-nd/4.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_sa":
+              localImportData.license = "http://creativecommons.org/licenses/by-sa/4.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/publicdomain/mark/1.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_3_0":
+              localImportData.license = "http://creativecommons.org/licenses/by/3.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_3_0":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc/3.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_nd_3_0":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-nd/3.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_sa_3_0":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-sa/3.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nd_3_0":
+              localImportData.license = "http://creativecommons.org/licenses/by-nd/3.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_sa_3_0":
+              localImportData.license = "http://creativecommons.org/licenses/by-sa/3.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_3_0_at":
+              localImportData.license = "http://creativecommons.org/licenses/by/3.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_3_0_at":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc/3.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_nd_3_0_at":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-nd/3.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nc_sa_3_0_at":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-sa/3.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_nd_3_0_at":
+              localImportData.license = "http://creativecommons.org/licenses/by-nd/3.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/cc_by_sa_3_0_at":
+              localImportData.license = "http://creativecommons.org/licenses/by-sa/3.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by/2.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc/2.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-nd/2.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-sa/2.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nd/2.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-sa/2.0/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by/2.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc/2.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-nd/2.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nc-sa/2.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-nd/2.0/at/"
+          break;
+          case "/dk/atira/pure/core/document/licenses/other":
+              localImportData.license = "http://creativecommons.org/licenses/by-sa/2.0/at/"
+          break;
           default:
             break;
         }
