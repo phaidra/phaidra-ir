@@ -1388,8 +1388,8 @@ export default {
         });
       }
 
-      if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.journal && ucrisData?.journalAssociation?.journal?.name?.text?.length){
-        localImportData.journalTitle = ucrisData.journalAssociation.journal && ucrisData.journalAssociation.journal.name.text[0].value
+      if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.title?.title){
+        localImportData.journalTitle = ucrisData.journalAssociation.title?.title
       }
       if(ucrisData?.journalAssociation && ucrisData?.journalAssociation?.issn?.issn){
         localImportData.journalISSN = ucrisData?.journalAssociation?.issn?.issn
@@ -1475,13 +1475,13 @@ export default {
       if(ucrisData?.keywordGroups?.length){
         localImportData.keywords = []
         ucrisData.keywordGroups.forEach(keyGroup => {
-          if(this.$i18n.locale === 'eng'){
-            if(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.en_GB){
-              localImportData.keywords.push(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.en_GB)
-            }
-          }else{
-            if(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.de_DE){
-              localImportData.keywords.push(keyGroup?.classifications?.length && keyGroup?.classifications[0]?.term?.de_DE)
+          if(keyGroup.typeDiscriminator === "FreeKeywordsKeywordGroup"){
+            if(keyGroup.keywords){
+              const selectedLang = this.$i18n.locale === 'eng' ? 'en_GB' : 'de_DE'
+              const langIndex = keyGroup.keywords.findIndex(x => x.locale === selectedLang)
+              if(langIndex >= 0){
+                localImportData.keywords.push(...keyGroup.keywords[langIndex].freeKeywords)
+              }
             }
           }
         });
