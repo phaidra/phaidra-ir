@@ -1525,8 +1525,10 @@ export default {
             break;
             case '/dk/atira/pure/researchoutput/electronicversion/versiontype/proof':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/83ZP-CPP2'
+            break;
             case '/dk/atira/pure/researchoutput/electronicversion/versiontype/publishersversion':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/PMR8-3C8D'
+            break;
             case '/dk/atira/pure/researchoutput/electronicversion/versiontype/other':
               localImportData.version = 'https://pid.phaidra.org/vocabulary/MT1G-APSB'
             break;
