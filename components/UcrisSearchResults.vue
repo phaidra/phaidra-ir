@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <v-dialog
       v-model="unlockConfirmationDialog"
       persistent
@@ -127,7 +127,7 @@
         <v-col cols="3">
           <a class="font-weight-light primary--text" @click="showUcrisObj(doc)">{{ doc.title.value | truncate(100) }}</a>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="2">
           {{ getDoiForCol(doc) }}
         </v-col>
         <v-col cols="2">
@@ -138,7 +138,7 @@
         <v-col cols="2">
           {{ getPublicationType(doc) | truncate(100) }}
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-spacer></v-spacer>
           <span v-if="doc.isLocked && doc.lockName">{{ $t('Locked By: ') }}<span class="text-bold">{{doc.lockName}}</span></span>
           <v-btn
@@ -149,9 +149,9 @@
             >
               <v-icon>mdi-lock</v-icon>
             </v-btn>
-          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="rejectSelected(doc)" color="error">{{ $t('Reject') }}</v-btn>
-          <v-btn v-if="!doc.isLocked" class="mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">{{ $t('Import') }}</v-btn>
-          <v-btn class="mt-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">{{ $t('Show in ucris') }}</v-btn>
+          <v-btn v-if="!doc.isLocked" class="my-1 mx-1 font-weight-regular" @click="ucrisRowSelected(doc)" color="primary">{{ $t('Import') }}</v-btn>
+          <v-btn class="my-1 mx-1 font-weight-regular" @click="navigateToUcris(doc)" color="primary">{{ $t('Show in ucris') }}</v-btn>
+          <v-btn v-if="!doc.isLocked" class="my-1 mx-1 font-weight-regular" @click="rejectSelected(doc)" color="error">{{ $t('Reject') }}</v-btn>
         </v-col>
       </v-row>
       <v-divider :key="'div'+doc.pureId" class="my-4 mr-2"></v-divider>
@@ -188,7 +188,7 @@
     >
       {{ snackbarText }}
     </v-snackbar>
-  </v-container>
+  </div>
 </template>
 
 <script>

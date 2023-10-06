@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <v-row>
       <v-col>
         <h3 class="title font-weight-light primary--text pt-1">
@@ -69,7 +69,7 @@
         }}
       </v-col>
     </v-row>
-  </v-container>
+  </div>
 </template>
 
 <script>

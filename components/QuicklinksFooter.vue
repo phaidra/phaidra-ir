@@ -4,7 +4,7 @@
 
     <v-row class="grey lighten-4 quicklinksfooter">
 
-      <v-col cols="12" md="8" offset-md="2">
+      <v-col cols="12" md="10" offset-md="1">
 
         <v-row no-gutters>
           <v-col cols="12">
@@ -68,7 +68,7 @@
 
       </v-col>
 
-      <v-col cols="12" md="8" offset-md="2">
+      <v-col cols="12" md="10" offset-md="1">
 
         <v-row no-gutters>
           <v-col cols="12">

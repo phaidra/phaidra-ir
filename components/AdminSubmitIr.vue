@@ -1970,6 +1970,7 @@ export default {
         const search = location.search.substring(1);
         const queryParams = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
         const url = queryParams.uuid ? this.$store.state.config.api + '/ir/submit?uuid=' + queryParams.uuid : this.$store.state.config.api + '/ir/submit'
+        console.log(url)
         let response = await axios.post(url, httpFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',

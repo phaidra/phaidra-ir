@@ -6,7 +6,7 @@
         :showquicklinks="quicklinksenabled"
       ></quicklinks>
       <v-row no-gutters>
-        <v-col cols="12" md="8" offset-md="2">
+        <v-col cols="12" md="10" offset-md="1">
           <v-row justify="end" class="no-margin">
             <icon
               v-if="signedin"
@@ -282,7 +282,7 @@
       </v-row>
 
       <v-row>
-        <v-col cols="12" md="8" offset-md="2">
+        <v-col cols="12" md="10" offset-md="1">
           <v-divider v-if="!config.quicklinks"></v-divider>
           <v-row>
             <v-col class="text-left">

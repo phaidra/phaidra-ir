@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <div>
     <template v-for="(doc, i) in this.docs">
       <v-row :key="'doc'+i">
         <v-col cols="1" class="text-right">
@@ -113,7 +113,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-container>
+  </div>
 </template>
 
 <script>
