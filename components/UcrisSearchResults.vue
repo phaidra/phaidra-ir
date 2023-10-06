@@ -222,8 +222,6 @@ export default {
       snackbarText: "",
       snackbarVisible: false,
       rejectConfirmationDialog: false,
-      rejectName: '',
-      rejectReason: ''
     }
   },
   methods: {
@@ -277,7 +275,7 @@ export default {
           await this.lockImport(this.selectedDoc, this.fullName)
           this.isLockLoading = false
           this.$store.commit('setSelectedUcrisData', this.selectedDoc)
-          this.$router.push('/admin/submit?type=ucris&id='+this.selectedDoc.pureId)
+          this.$router.push('/admin/submit?type=ucris&id='+this.selectedDoc.pureId+'&uuid='+this.selectedDoc.uuid)
         } catch (error) {
           this.showSnackbar(error.message || 'something went wrong')
           this.isLockLoading = false
@@ -319,18 +317,9 @@ export default {
       this.unlockConfirmationDialog = true
     },
     onRejectSubmit: async function (){
-      console.log('onRejectSubmit', this.selectedDoc, this.fullName, this.rejectReason)
       try {
-        this.$refs.rejectForm.validate();
-        if(!this.rejectName){
-          return
-        }
-        localStorage.setItem('rejectName', this.rejectName);
         this.isRejectLoading = true
-        await axios.post(`${this.config.api}/ir/pureimport/reject/${this.selectedDoc.uuid}`, {
-          reason: this.rejectReason || '',
-          rejectedBy: this.rejectName
-        }, {
+        await axios.post(`${this.config.api}/ir/pureimport/reject/${this.selectedDoc.uuid}`, {}, {
         headers: {
           'X-XSRF-TOKEN': this.$store.state.user.token
         }
@@ -347,7 +336,6 @@ export default {
     },
     rejectSelected: async function (doc){
       this.selectedDoc = doc;
-      this.rejectName = localStorage.getItem('rejectName')
       this.rejectConfirmationDialog = true
     },
     ucrisRowSelected: async function (doc){
