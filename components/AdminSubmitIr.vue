@@ -1967,9 +1967,12 @@ export default {
       httpFormData.append('metadata', JSON.stringify(this.getMetadata()))
 
       try {
-        const search = location.search.substring(1);
-        const queryParams = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
-        const url = queryParams.uuid ? this.$store.state.config.api + '/ir/submit?uuid=' + queryParams.uuid : this.$store.state.config.api + '/ir/submit'
+        let url = this.$store.state.config.api + '/ir/submit'
+        if(this.$route.query?.type === 'ucris'){
+          const search = location.search.substring(1);
+          const queryParams = JSON.parse('{"' + decodeURI(search).replace(/"/g, '\\"').replace(/&/g, '","').replace(/=/g,'":"') + '"}')
+          url = queryParams.uuid ? this.$store.state.config.api + '/ir/submit?uuid=' + queryParams.uuid : this.$store.state.config.api + '/ir/submit'
+        }
         console.log(url)
         let response = await axios.post(url, httpFormData, {
           headers: {
