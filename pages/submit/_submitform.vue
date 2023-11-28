@@ -759,22 +759,34 @@
                     </template>
 
                     <template v-else-if="f.component === 'p-select'">
-                      <p-i-select
-                        v-show="
-                          f.predicate !== 'dcterms:type' &&
-                          !(
-                            f.predicate === 'edm:hasType' &&
-                            (submitformparam === 'book-part' ||
-                              submitformparam === 'book')
-                          )
-                        "
-                        v-bind.sync="f"
-                        v-on:input="selectInput(s.fields, f, $event)"
-                        v-on:add="addField(s.fields, f)"
-                        v-on:remove="removeField(s.fields, f)"
-                        :inputStyle="inputStyle"
-                        class="my-2"
-                      ></p-i-select>
+                      <template v-if="f.predicate === 'edm:rights'">
+                        <submit-ir-license
+                          v-bind.sync="f"
+                          v-on:input="selectInput(s.fields, f, $event)"
+                          v-on:add="addField(s.fields, f)"
+                          v-on:remove="removeField(s.fields, f)"
+                          :inputStyle="inputStyle"
+                          class="my-2"
+                        ></submit-ir-license>
+                      </template>
+                      <template v-else>
+                        <p-i-select
+                          v-show="
+                            f.predicate !== 'dcterms:type' &&
+                            !(
+                              f.predicate === 'edm:hasType' &&
+                              (submitformparam === 'book-part' ||
+                                submitformparam === 'book')
+                            )
+                          "
+                          v-bind.sync="f"
+                          v-on:input="selectInput(s.fields, f, $event)"
+                          v-on:add="addField(s.fields, f)"
+                          v-on:remove="removeField(s.fields, f)"
+                          :inputStyle="inputStyle"
+                          class="my-2"
+                        ></p-i-select>
+                      </template>
                     </template>
 
                     <template v-else-if="f.component === 'p-date-edtf'">
@@ -1096,14 +1108,16 @@
                   </v-row>
                 </template>
 
-                <v-row v-if="license" no-gutters>
+                <!-- <v-row v-if="license" no-gutters>
                   <v-col cols="12" md="10">
-                    <submit-ir-license-info
-                      v-if="s.id === 5"
-                      :license="license"
-                    ></submit-ir-license-info>
+                    <v-row class="px-4">
+                      <submit-ir-license-info
+                        v-if="s.id === 5"
+                        :license="license"
+                      ></submit-ir-license-info>
+                    </v-row>
                   </v-col>
-                </v-row>
+                </v-row> -->
                 <v-row no-gutters v-if="showSubmitWarning">
                   <v-col cols="12">
                     <v-alert type="error" outlined>
@@ -2996,7 +3010,10 @@ export default {
       let lic = fields.getField("license");
       if (doiImportData && doiImportData.license) {
         lic.value = doiImportData.license;
+      } else {
+        lic.value = 'http://rightsstatements.org/vocab/InC/1.0/';
       }
+      lic.label = 'Rights';
       lic.backgroundColor = self.config.mandatorybgcolor;
       smf.push(lic);
 

@@ -5,7 +5,7 @@
       <v-slide-y-transition hide-on-leave>
         <div v-if="license === 'http://rightsstatements.org/vocab/InC/1.0/'" class="license-desc">
           <p>
-            Dieses Objekt ist durch das Urheberrecht und/oder verwandte Schutzrechte geschützt. Sie sind berechtigt, das Objekt in jeder Form zu nutzen, die das Urheberrechtsgesetz und/oder einschlägige verwandte Schutzrechte gestatten. Für weitere Nutzungsarten benötigen Sie die Zustimmung der/des Rechteinhaber/s. Siehe https://rightsstatements.org/page/InC/1.0/?language=de
+            Dieses Objekt ist durch das Urheberrecht und/oder verwandte Schutzrechte geschützt. Sie sind berechtigt, das Objekt in jeder Form zu nutzen, die das Urheberrechtsgesetz und/oder einschlägige verwandte Schutzrechte gestatten. Für weitere Nutzungsarten benötigen Sie die Zustimmung der/des Rechteinhaber/s. Siehe <a href="https://rightsstatements.org/page/InC/1.0/?language=de" target="_blank">https://rightsstatements.org/page/InC/1.0/</a>
           </p>
         </div>
       </v-slide-y-transition>

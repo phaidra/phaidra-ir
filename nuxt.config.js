@@ -60,9 +60,14 @@ export default {
   modules: [
     'nuxt-i18n',
     '@nuxt/http',
+    '@nuxtjs/axios',
     ['cookie-universal-nuxt', { alias: 'cookies' }],
     '@nuxtjs/sentry'
   ],
+  axios: {
+    baseURL: 'https://services.phaidra-sandbox.univie.ac.at/api',
+    browserBaseURL: 'https://services.phaidra-sandbox.univie.ac.at/api'
+  },
   sentry: {
     dsn: config?.monitor?.sentry?.dsn
   },
