@@ -1464,6 +1464,8 @@
 </template>
 
 <script>
+import {constructDataCite} from '@/utils/doiconstructor'
+// import {univeJson} from '@/utils/univie'
 import arrays from "phaidra-vue-components/src/utils/arrays";
 import jsonLd from "phaidra-vue-components/src/utils/json-ld";
 import fields from "phaidra-vue-components/src/utils/fields";
@@ -1762,6 +1764,25 @@ export default {
       this.doiImportData = null;
       if (this.doiImportInput) {
         try {
+          let doiAgency = null
+          try {
+            const agencyResp = await axios.get(`https://api.crossref.org/works/${this.doiToImport}/agency`)
+            doiAgency = agencyResp?.data?.message?.agency?.id
+          } catch (error) {
+            console.log('Doi agency error', error)
+          }
+          if(doiAgency === 'datacite'){
+              this.doiImportData = {}
+              const dataciteResp = await axios.get(`https://api.datacite.org/dois/${this.doiToImport}`)
+              const dataciteData = dataciteResp?.data;
+              this.doiImportData = constructDataCite(dataciteData, this)
+              this.resetForm(this, this.doiImportData);
+              if (this.doiImportData.journalISSN) {
+                this.journalSearchISSN = this.doiImportData.journalISSN;
+                this.journalSearch();
+              }
+              return
+          }
           let solrResponse = await axios.get(
             `${this.config.solr}/select?wt=json&q=dc_identifier:"${this.doiToImport}"`
           );
