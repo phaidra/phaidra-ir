@@ -42,8 +42,7 @@ export const constructDataCite = (dataciteData, that) => {
             auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
           }
           doiImportData.authors.push(auth)
-        }
-        if (author['name']) {
+        } else if (author['name']) {
           let auth = {
             type: 'schema:Organization',
             name: author['name']
@@ -124,12 +123,29 @@ export const constructDataCite = (dataciteData, that) => {
     if (Array.isArray(dataciteData.data.attributes.subjects)) {
       doiImportData.keywords = []
       for (let kw of dataciteData.data.attributes.subjects) {
-        doiImportData.keywords.push(kw)
+        doiImportData.keywords.push(kw.subject)
       }
     }
   }
   if (dataciteData?.data?.attributes?.container?.title) {
     doiImportData.journalTitle = that.$_.unescape(dataciteData?.data?.attributes?.container?.title.replace(/\s\s+/g, ' ').trim())
+  }
+  if (dataciteData?.data?.attributes?.container?.firstPage) {
+    doiImportData.pageStart = dataciteData.data.attributes.container.firstPage
+  }
+  if (dataciteData?.data?.attributes?.container?.lastPage) {
+    doiImportData.pageEnd = dataciteData.data.attributes.container.lastPage
+  }
+  if (dataciteData?.data?.attributes?.container?.volume) {
+    doiImportData.journalVolume = dataciteData.data.attributes.container.lastPage
+  }
+  if (dataciteData?.data?.attributes?.rightsList?.length) {
+    let licUrl = dataciteData.data.attributes.rightsList[0].rightsUri
+    const licTerm = that.getTerm('alllicenses', licUrl)
+    if (licTerm) {
+      doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
+      doiImportData.license =licUrl
+    }
   }
   return doiImportData
 }
