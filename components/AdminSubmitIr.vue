@@ -340,6 +340,7 @@
                 <v-col  v-if="doiImportData" :cols="uCrisId && doiImportDataForUcris ? '6' :'12'"  :md="uCrisId && doiImportDataForUcris ? '6' :'7'">
                   <v-card>
                     <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}
+                      <p class="m-0" v-if="metaProviderName"> ( {{ metaProviderName }} )</p>
                       <v-checkbox
                         name="crossref"
                         v-model="isImportCrossRef"
@@ -1119,6 +1120,7 @@ export default {
         accessrights: false,
         version: false,
       },
+      metaProviderName: '',
     }
   },
   watch: {
@@ -1263,6 +1265,7 @@ export default {
     },
     searchForDoiRecord: async function () {
       try {
+        this.metaProviderName = ''
         let doiAgency = null
         // return
         this.loading = true
@@ -1274,15 +1277,20 @@ export default {
         }
         console.log('doiAgency', doiAgency)
         if(doiAgency === 'datacite'){
+          this.metaProviderName = 'Datacite'
           this.loading = false
           this.showDoiSearchTable = false;
           this.doiImportData = {}
           const dataciteResp = await axios.get(`https://api.datacite.org/dois/${this.doiSearchInput}`)
           const dataciteData = dataciteResp?.data;
           this.doiImportData = constructDataCite(dataciteData, this)
+          setTimeout(() => {
+              this.alignMetadataItems()
+          }, 1000);
           // this.resetForm(this, this.doiImportData)
           return
         }
+        this.metaProviderName = 'Crossref'
         let response = await axios.get(`https://api.crossref.org/works?rows=5&offset=0&query=${this.doiSearchInput}`)
         this.loading = false
         if(response?.data?.message?.items){
@@ -1880,22 +1888,7 @@ export default {
             }
             this.resetForm(this, this.doiImportData)
             setTimeout(() => {
-              this.adjustItemHeight('doiImportDataForUcrisAuthorsRef', 'doiImportDataAuthorsRef')
-              this.adjustItemHeight('item1TitleRef', 'item2TitleRef')
-              this.adjustItemHeight('item1SubtitleRef', 'item2SubtitleRef')
-              this.adjustItemHeight('item1DateIssuedRef', 'item2DateIssuedRef')
-              this.adjustItemHeight('item1KeywordRef', 'item2KeywordRef')
-              this.adjustItemHeight('item1LanguageRef', 'item2LanguageRef')
-              this.adjustItemHeight('item1PublicationRef', 'item2PublicationRef')
-              this.adjustItemHeight('item1PublisherRef', 'item2PublisherRef')
-              this.adjustItemHeight('item1AppearedRef', 'item2AppearedRef')
-              this.adjustItemHeight('item1IssnRef', 'item2IssnRef')
-              this.adjustItemHeight('item1VolumeRef', 'item2VolumeRef')
-              this.adjustItemHeight('item1IssueRef', 'item2IssueRef')
-              this.adjustItemHeight('item1StartRef', 'item2StartRef')
-              this.adjustItemHeight('item1EndRef', 'item2EndRef')
-              this.adjustItemHeight('item1IsbnRef', 'item2IsbnRef')
-              this.adjustItemHeight('item1LLicenseRef', 'item2LLicenseRef')
+              this.alignMetadataItems()
             }, 1000);
           }
         } catch (error) {
@@ -1909,6 +1902,24 @@ export default {
           this.loading = false
         }
       }
+    },
+    alignMetadataItems() {
+      this.adjustItemHeight('doiImportDataForUcrisAuthorsRef', 'doiImportDataAuthorsRef')
+      this.adjustItemHeight('item1TitleRef', 'item2TitleRef')
+      this.adjustItemHeight('item1SubtitleRef', 'item2SubtitleRef')
+      this.adjustItemHeight('item1DateIssuedRef', 'item2DateIssuedRef')
+      this.adjustItemHeight('item1KeywordRef', 'item2KeywordRef')
+      this.adjustItemHeight('item1LanguageRef', 'item2LanguageRef')
+      this.adjustItemHeight('item1PublicationRef', 'item2PublicationRef')
+      this.adjustItemHeight('item1PublisherRef', 'item2PublisherRef')
+      this.adjustItemHeight('item1AppearedRef', 'item2AppearedRef')
+      this.adjustItemHeight('item1IssnRef', 'item2IssnRef')
+      this.adjustItemHeight('item1VolumeRef', 'item2VolumeRef')
+      this.adjustItemHeight('item1IssueRef', 'item2IssueRef')
+      this.adjustItemHeight('item1StartRef', 'item2StartRef')
+      this.adjustItemHeight('item1EndRef', 'item2EndRef')
+      this.adjustItemHeight('item1IsbnRef', 'item2IsbnRef')
+      this.adjustItemHeight('item1LLicenseRef', 'item2LLicenseRef')
     },
     getMetadata: function () {
       return { metadata: { 'json-ld': this.getJsonld() } }
@@ -3743,5 +3754,8 @@ export default {
 }
 .pad-0 {
   padding: 0
+}
+.m-0 {
+  margin: 0;
 }
 </style>
