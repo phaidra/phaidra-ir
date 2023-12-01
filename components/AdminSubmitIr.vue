@@ -340,7 +340,7 @@
                 <v-col  v-if="doiImportData" :cols="uCrisId && doiImportDataForUcris ? '6' :'12'"  :md="uCrisId && doiImportDataForUcris ? '6' :'7'">
                   <v-card>
                     <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}
-                      <p class="m-0" v-if="metaProviderName"> ( Agency: {{ metaProviderName }} )</p>
+                      <p class="m-0 ml-2" v-if="metaProviderName"> (Agency: {{ metaProviderName }})</p>
                       <v-checkbox
                         name="crossref"
                         v-model="isImportCrossRef"
@@ -1263,25 +1263,32 @@ export default {
         this.toggleSelectAllForMetaBox('crossRef', false)
       }
     },
+    getDoiAgency: async function (doi) {
+      let doiAgencyVal = null
+      try {
+        const agencyResp = await axios.get(`https://api.crossref.org/works/${doi}/agency`)
+        doiAgencyVal = agencyResp?.data?.message?.agency?.id
+      } catch (error) {
+        console.log('Doi agency error', error)
+      }
+      return doiAgencyVal;
+    },
+    getDataSiteInfo: async function (doi) {
+      return axios.get(`https://api.datacite.org/dois/${doi}`);
+    },
+
     searchForDoiRecord: async function () {
       try {
         this.metaProviderName = ''
-        let doiAgency = null
+        let doiAgency = await this.getDoiAgency(this.doiSearchInput);
         // return
         this.loading = true
-        try {
-          const agencyResp = await axios.get(`https://api.crossref.org/works/${this.doiSearchInput}/agency`)
-          doiAgency = agencyResp?.data?.message?.agency?.id
-        } catch (error) {
-          console.log('Doi agency error', error)
-        }
-        console.log('doiAgency', doiAgency)
         if(doiAgency === 'datacite'){
           this.metaProviderName = 'Datacite'
           this.loading = false
           this.showDoiSearchTable = false;
           this.doiImportData = {}
-          const dataciteResp = await axios.get(`https://api.datacite.org/dois/${this.doiSearchInput}`)
+          const dataciteResp = await this.getDataSiteInfo(this.doiSearchInput)
           const dataciteData = dataciteResp?.data;
           this.doiImportData = constructDataCite(dataciteData, this)
           setTimeout(() => {
@@ -1643,6 +1650,21 @@ export default {
       this.doiDuplicate = null
       this.doiImportData = null
       if (this.doiImportInput) {
+        let doiAgency = await this.getDoiAgency(this.doiImportInput);
+        if(doiAgency === 'datacite'){
+          this.metaProviderName = 'Datacite'
+          this.loading = false
+          this.showDoiSearchTable = false;
+          this.doiImportData = {}
+          const dataciteResp = await this.getDataSiteInfo(this.doiImportInput)
+          const dataciteData = dataciteResp?.data;
+          this.doiImportData = constructDataCite(dataciteData, this)
+          setTimeout(() => {
+              this.alignMetadataItems()
+          }, 1000);
+          // this.resetForm(this, this.doiImportData)
+          return
+        }
         try {
           let solrResponse = await axios.get( `${this.config.solr}/select?wt=json&q=dc_identifier:"${this.doiToImport}"`)
 
@@ -1710,7 +1732,7 @@ export default {
             }
 
             let authors = crossrefData['author']
-            if (authors.length > 0) {
+            if (authors && authors.length > 0) {
               for (let author of authors) {
                 if (author['given'] || author['family']) {
                   let auth = {
