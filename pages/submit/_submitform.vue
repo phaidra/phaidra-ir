@@ -533,6 +533,17 @@
                             doiImportData.license
                           }}</v-col>
                         </v-row>
+                        <v-row v-if="doiImportData.accessrights">
+                          <v-col
+                            md="2"
+                            cols="12"
+                            class="primary--text text-right"
+                            >{{ $t("Access Rights") }}</v-col
+                          >
+                          <v-col md="10" cols="12">{{
+                            doiImportData.accessrightsLabel
+                          }}</v-col>
+                        </v-row>
                       </v-container>
                     </v-card-text>
                   </v-card>
@@ -3021,6 +3032,9 @@ export default {
       arf.vocabulary = "iraccessright";
       arf.backgroundColor = self.config.mandatorybgcolor;
       arf.showValueDefinition = true;
+      if (doiImportData && doiImportData.accessrights) {
+        arf.value = doiImportData.accessrights
+      }
       smf.push(arf);
 
       let embargoDate = fields.getField("date-edtf");

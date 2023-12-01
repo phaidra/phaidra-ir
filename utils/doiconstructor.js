@@ -140,11 +140,46 @@ export const constructDataCite = (dataciteData, that) => {
     doiImportData.journalVolume = dataciteData.data.attributes.container.lastPage
   }
   if (dataciteData?.data?.attributes?.rightsList?.length) {
-    let licUrl = dataciteData.data.attributes.rightsList[0].rightsUri
-    const licTerm = that.getTerm('alllicenses', licUrl)
-    if (licTerm) {
-      doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
-      doiImportData.license =licUrl
+    const licenseIndex = dataciteData.data.attributes.rightsList.findIndex(x => x.schemeUri && x.schemeUri.includes('/licenses/'))
+    const accessRightsIndex = dataciteData.data.attributes.rightsList.findIndex(x => x.rightsUri && x.rightsUri.includes('/access_right/'))
+    if(licenseIndex >= 0){
+      let licUrl = dataciteData.data.attributes.rightsList[licenseIndex].rightsUri
+      if(licUrl){
+        const modifiedUrl = licUrl.replace(/^https/, "http");
+        // Remove the last word from the path
+        const pathArray = modifiedUrl.split("/");
+        pathArray.pop(); // Remove the last element
+        const finalUrl = pathArray.join("/") + '/';
+        const licTerm = that.getTerm('alllicenses', finalUrl)
+        if (licTerm) {
+          doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
+          doiImportData.license = finalUrl
+        }
+      }
+    }
+    if(accessRightsIndex >= 0){
+      let rightsName = dataciteData.data.attributes.rightsList[accessRightsIndex].rights
+      switch (rightsName) {
+        case 'open access':
+          doiImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QW5R-NG4J'
+          doiImportData.accessrightsLabel = 'open access'
+          break;
+        case 'embargoed access':
+          doiImportData.accessrights = 'https://pid.phaidra.org/vocabulary/AVFC-ZZSZ'
+          doiImportData.accessrightsLabel = 'embargoed access'
+          break;
+        case 'restricted access':
+          doiImportData.accessrights = 'https://pid.phaidra.org/vocabulary/KC3K-CCGM'
+          doiImportData.accessrightsLabel = 'restricted access'
+          break;
+        case 'metadata only access':
+          doiImportData.accessrights = 'https://pid.phaidra.org/vocabulary/QNGE-V02H'
+          doiImportData.accessrightsLabel = 'metadata only access'
+          break;
+
+        default:
+          break;
+      }
     }
   }
   return doiImportData

@@ -533,6 +533,17 @@
                             ></v-checkbox>
                           </v-col>
                         </v-row>
+                        <v-row ref="item2AccessRightsRef">
+                          <v-col md="2" cols="12" class="primary--text text-right">{{ $t('Access Rights') }}</v-col>
+                          <v-col v-if="doiImportData.accessrights" md="8" cols="12">{{ doiImportData.accessrightsLabel }}</v-col>
+                          <v-col v-if="doiImportData.accessrights" md="2" cols="12" class="primary--text text-right">
+                            <v-checkbox
+                              name="crossRefAccessRights"
+                              v-model="crossRefSelectedFields.accessrights"
+                              @change="crossRefCheckFieldChange('accessrights', crossRefSelectedFields.accessrights)"
+                            ></v-checkbox>
+                          </v-col>
+                        </v-row>
                       </v-container>
                     </v-card-text>
                   </v-card>
@@ -1099,6 +1110,7 @@ export default {
         pageEnd: true,
         ISBN: true,
         license: true,
+        accessrights: true,
       },
       ucrisSelectedFields: {
         title: false,
