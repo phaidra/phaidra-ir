@@ -323,7 +323,9 @@
                       class="title font-weight-light grey white--text"
                       >{{
                         $t("Following metadata were retrieved")
-                      }}</v-card-title
+                      }}
+                      <p class="m-0" v-if="metaProviderName"> ( Agency: {{ metaProviderName }} )</p>
+                      </v-card-title
                     >
                     <v-card-text>
                       <v-container>
@@ -1646,6 +1648,7 @@ export default {
       ],
       submitBackDialog: false,
       confirmBackDialog: false,
+      metaProviderName: '',
     };
   },
   watch: {
@@ -1762,6 +1765,7 @@ export default {
       this.doiImportErrors = [];
       this.doiDuplicate = null;
       this.doiImportData = null;
+      this.metaProviderName = ''
       if (this.doiImportInput) {
         try {
           let doiAgency = null
@@ -1772,6 +1776,7 @@ export default {
             console.log('Doi agency error', error)
           }
           if(doiAgency === 'datacite'){
+              this.metaProviderName = 'Datacite'
               this.doiImportData = {}
               const dataciteResp = await axios.get(`https://api.datacite.org/dois/${this.doiToImport}`)
               const dataciteData = dataciteResp?.data;
@@ -3604,5 +3609,8 @@ export default {
 .v-stepper__step--editable {
   border-bottom: 3px solid;
   border-color: #9e9e9e;
+}
+.m-0 {
+  margin: 0;
 }
 </style>

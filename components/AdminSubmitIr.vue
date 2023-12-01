@@ -340,7 +340,7 @@
                 <v-col  v-if="doiImportData" :cols="uCrisId && doiImportDataForUcris ? '6' :'12'"  :md="uCrisId && doiImportDataForUcris ? '6' :'7'">
                   <v-card>
                     <v-card-title class="title font-weight-light grey white--text">{{ $t('Following metadata were retrieved') }}
-                      <p class="m-0" v-if="metaProviderName"> ( {{ metaProviderName }} )</p>
+                      <p class="m-0" v-if="metaProviderName"> ( Agency: {{ metaProviderName }} )</p>
                       <v-checkbox
                         name="crossref"
                         v-model="isImportCrossRef"
