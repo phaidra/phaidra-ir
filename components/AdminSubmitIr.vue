@@ -85,7 +85,7 @@
                 <v-btn :loading="loading" :disabled="loading" class="mx-2" color="primary" @click="searchForDoiRecord()">{{ $t('Search') }}</v-btn>
               </v-col>
             </v-row>
-            <div v-if="showDoiSearchTable">
+            <div v-if="showDoiSearchTable" class="col col-10 offset-2">
               <!-- <doi-search-results
                 :docs="doiSearchResultDocs"
                 :total="doiSearchTotal">
@@ -960,6 +960,7 @@
 </template>
 
 <script>
+import {constructDataCite} from '@/utils/doiconstructor'
 import SubmitIrFundingField from '@/components/SubmitIrFundingField'
 import SubmitIrAlternateIdentifier from '@/components/SubmitIrAlternateIdentifier'
 import SubmitIrDescriptionKeywords from '@/components/SubmitIrDescriptionKeywords'
@@ -1262,7 +1263,26 @@ export default {
     },
     searchForDoiRecord: async function () {
       try {
+        let doiAgency = null
+        // return
         this.loading = true
+        try {
+          const agencyResp = await axios.get(`https://api.crossref.org/works/${this.doiSearchInput}/agency`)
+          doiAgency = agencyResp?.data?.message?.agency?.id
+        } catch (error) {
+          console.log('Doi agency error', error)
+        }
+        console.log('doiAgency', doiAgency)
+        if(doiAgency === 'datacite'){
+          this.loading = false
+          this.showDoiSearchTable = false;
+          this.doiImportData = {}
+          const dataciteResp = await axios.get(`https://api.datacite.org/dois/${this.doiSearchInput}`)
+          const dataciteData = dataciteResp?.data;
+          this.doiImportData = constructDataCite(dataciteData, this)
+          // this.resetForm(this, this.doiImportData)
+          return
+        }
         let response = await axios.get(`https://api.crossref.org/works?rows=5&offset=0&query=${this.doiSearchInput}`)
         this.loading = false
         if(response?.data?.message?.items){
