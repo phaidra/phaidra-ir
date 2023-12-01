@@ -324,7 +324,7 @@
                       >{{
                         $t("Following metadata were retrieved")
                       }}
-                      <p class="m-0" v-if="metaProviderName"> ( Agency: {{ metaProviderName }} )</p>
+                      <p class="m-0 ml-2" v-if="metaProviderName">(Agency: {{ metaProviderName }})</p>
                       </v-card-title
                     >
                     <v-card-text>
