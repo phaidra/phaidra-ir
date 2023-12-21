@@ -1867,8 +1867,11 @@ export default {
 
             if (crossrefData["issued"]) {
               if (crossrefData["issued"]["date-parts"]) {
+if (crossrefData['issued']['date-parts'][0]) {
+                  if (crossrefData['issued']['date-parts'][0][0]) {
                 this.doiImportData.dateIssued =
                   crossrefData["issued"]["date-parts"][0][0].toString();
+}}
               }
             }
 

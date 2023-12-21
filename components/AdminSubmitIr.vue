@@ -1733,7 +1733,11 @@ export default {
 
             if (crossrefData['issued']) {
               if (crossrefData['issued']['date-parts']) {
-                this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
+		if (crossrefData['issued']['date-parts'][0]) {
+                  if (crossrefData['issued']['date-parts'][0][0]) {
+                    this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
+                  }
+                }
               }
             }
 
