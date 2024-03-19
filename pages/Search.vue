@@ -188,10 +188,12 @@ export default {
         this.docs = response.data.response.docs;
         this.total = response.data.response.numFound;
         this.facet_counts = response.data.facet_counts;
-        updateFacetQueries(
-          response.data.facet_counts.facet_queries,
-          facetQueries
-        );
+        if (this.facet_counts) {
+          updateFacetQueries(
+            response.data.facet_counts.facet_queries,
+            facetQueries
+          );
+        }
       } catch (error) {
         console.log(error);
         this.$store.commit("setAlerts", [{ type: "danger", msg: error }]);
