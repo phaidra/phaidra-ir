@@ -165,15 +165,23 @@ export default {
       let { ands } = adminBuildSearchDef(this)
       ands.push('isinadminset:"' + this.config.adminset + '"')
       let params = adminBuildParams(this, ands)
-      let response = await axios.post(this.config.solr + '/select',
+      let response = await axios.post(
+        this.config.solr + "/select",
+        qs.stringify(params, { arrayFormat: "repeat" }),
         {
-          params: params
+          headers: {
+            "content-type": "application/x-www-form-urlencoded",
+          },
         }
-      )
+      );
+
       this.docs = response.data.response.docs
       this.total = response.data.response.numFound
       this.facet_counts = response.data.facet_counts
-      updateFacetQueries(response.data.facet_counts.facet_queries, adminFacetQueries)
+      if (this.facet_counts) {
+         updateFacetQueries(response.data.facet_counts.facet_queries, adminFacetQueries)
+      }
+
 
       for (let d of this.docs) {
         if (d.hasOwnProperty('dc_license')) {
