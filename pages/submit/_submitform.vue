@@ -1694,9 +1694,9 @@ export default {
         if (response.data.alerts && response.data.alerts.length > 0) {
           this.$store.commit("setAlerts", response.data.alerts);
         }
-        if (response.data.allowsubmit) {
+        //if (response.data.allowsubmit) {
           this.checkAllowSubmitRes.allowsubmit = response.data.allowsubmit;
-        }
+        //}
         if (response.data.candobulkupload) {
           this.checkAllowSubmitRes.candobulkupload =
             response.data.candobulkupload;
