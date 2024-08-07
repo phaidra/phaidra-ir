@@ -1661,14 +1661,14 @@ export default {
       this.doiImportErrors = []
       this.doiDuplicate = null
       this.doiImportData = null
-      if (this.doiImportInput) {
-        let doiAgency = await this.getDoiAgency(this.doiImportInput);
+      if (this.doiToImport) {
+        let doiAgency = await this.getDoiAgency(this.doiToImport);
         if(doiAgency === 'datacite'){
           this.metaProviderName = 'Datacite'
           this.loading = false
           this.showDoiSearchTable = false;
           this.doiImportData = {}
-          const dataciteResp = await this.getDataSiteInfo(this.doiImportInput)
+          const dataciteResp = await this.getDataSiteInfo(this.doiToImport)
           const dataciteData = dataciteResp?.data;
           this.doiImportData = constructDataCite(dataciteData, this)
           setTimeout(() => {
