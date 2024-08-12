@@ -413,6 +413,16 @@ export default {
                         importData['containedin'].isbn = isbn
                       }
                       break
+                    case 'skos:exactMatch':
+                      for (let id of values1) {
+                        if (id['@value']) {
+                          importData['containedin'].identifier = id['@value']
+                          importData['containedin'].identifierType = id['@type']
+                        } else {
+                          importData['containedin'].identifier = id
+                        }
+                      }
+                      break
                     case 'rdau:P60193':
                       importData['containedin']['series'] = []
                       for (let v of values1) {
@@ -470,8 +480,13 @@ export default {
                               }
                               break
                             case 'skos:exactMatch':
-                              for (let v of values2) {
-                                ser.identifier = v
+                              for (let id of values2) {
+                                if (id['@value']) {
+                                  ser.identifier = id['@value']
+                                  ser.identifierType = id['@type']
+                                } else {
+                                  ser.identifier = id
+                                }
                               }
                               break
                             default:
