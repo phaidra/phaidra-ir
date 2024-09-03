@@ -3212,6 +3212,7 @@ export default {
           lic.value = doiImportData.license
         }
       }
+      lic.showDisclaimer = false
       lic.vocabulary = 'alllicenses'
       lic.backgroundColor = self.config.mandatorybgcolor
       smf.push(lic)
