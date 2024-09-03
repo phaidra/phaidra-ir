@@ -864,6 +864,8 @@
                                     v-on:select-funder="setFunder(f, $event)"
                                     v-on:input-funder-name="f.funderName=$event"
                                     v-on:input-identifier="f.identifier=$event"
+                                    v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                                    v-on:input-code="f.code=$event"
                                     v-on:add="addProject(s.fields, f)"
                                     v-on:add-clear="addProjectClear(s.fields, f)"
                                     v-on:remove="removeField(s.fields, f)"
@@ -1719,249 +1721,249 @@ export default {
               pid: solrResponse.data.response.docs[0].pid,
               title: solrResponse.data.response.docs[0].dc_title[0]
             }
-          } else {
-            let response = await axios.get('https://' + this.config.apis.doi.baseurl + '/works/' + this.doiToImport + '?mailto=' + this.config.email, {
-              headers: {
-                'Accept': this.config.apis.doi.accept
-              }
-            })
+          } 
 
-            let crossrefData = response.data.message
-
-            this.doiImportData = {
-              doi: this.doiToImport.replace(/\s\s+/g, ' ').trim(),
-              title: '',
-              dateIssued: '',
-              authors: [],
-              publicationType: '',
-              publisher: '',
-              journalTitle: '',
-              journalISSN: '',
-              journalVolume: '',
-              journalIssue: '',
-              pageStart: '',
-              pageEnd: '',
-              licenceLabel: ''
+          let response = await axios.get('https://' + this.config.apis.doi.baseurl + '/works/' + this.doiToImport + '?mailto=' + this.config.email, {
+            headers: {
+              'Accept': this.config.apis.doi.accept
             }
+          })
 
-            if (crossrefData['title']) {
-              if (Array.isArray(crossrefData['title'])) {
-                if (crossrefData['title'].length > 0) {
-                  this.doiImportData.title = this.$_.unescape(crossrefData['title'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.title = this.$_.unescape(crossrefData['title'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
+          let crossrefData = response.data.message
 
-            if (crossrefData['subtitle']) {
-              if (Array.isArray(crossrefData['subtitle'])) {
-                if (crossrefData['subtitle'].length > 0) {
-                  this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
-
-            if (crossrefData['issued']) {
-              if (crossrefData['issued']['date-parts']) {
-		if (crossrefData['issued']['date-parts'][0]) {
-                  if (crossrefData['issued']['date-parts'][0][0]) {
-                    this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
-                  }
-                }
-              }
-            }
-
-            if (crossrefData['language']) {
-              if (this.lang2to3map[crossrefData['language']]) {
-                this.doiImportData.language = this.lang2to3map[crossrefData['language']]
-              }
-            }
-
-            let authors = crossrefData['author']
-            if (authors && authors.length > 0) {
-              for (let author of authors) {
-                if (author['given'] || author['family']) {
-                  let auth = {
-                    type: 'schema:Person',
-                    firstname: author['given'] ? author['given'].replace(/\s\s+/g, ' ').trim() : '',
-                    lastname: author['family'] ? author['family'].replace(/\s\s+/g, ' ').trim() : ''
-                  }
-                  if (author['affiliation']) {
-                    if (Array.isArray(author['affiliation'])) {
-                      auth.affiliation = []
-                      for (let af of author['affiliation']) {
-                        auth.affiliation.push(af['name'])
-                      }
-                    }
-                  }
-                  if (author['ORCID']) {
-                    auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
-                  }
-                  this.doiImportData.authors.push(auth)
-                }
-                if (author['name']) {
-                  let auth = {
-                    type: 'schema:Organization',
-                    name: author['name']
-                  }
-                  this.doiImportData.authors.push(auth)
-                }
-              }
-            }
-
-            if (crossrefData['subject']) {
-              if (Array.isArray(crossrefData['subject'])) {
-                this.doiImportData.keywords = []
-                for (let kw of crossrefData['subject']) {
-                  this.doiImportData.keywords.push(kw)
-                }
-              }
-            }
-
-            // https://github.com/citation-style-language/schema/blob/master/csl-types.rnc
-            // https://wiki.univie.ac.at/display/IR/Mapping+CrossRef-Erscheinungsformen
-            switch (crossrefData['type']) {
-              case 'article':
-              case 'journal-article':
-              case 'article-journal':
-                this.doiImportData.publicationType = 'article'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                break
-              case 'report':
-                this.doiImportData.publicationType = 'report'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
-                break
-              case 'book':
-              case 'monograph':
-              case 'reference-book':
-              case 'edited-book':
-                this.doiImportData.publicationType = 'book'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
-                break
-              case 'book-chapter':
-              case 'book-part':
-              case 'book-section':
-                this.doiImportData.publicationType = 'book_part'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
-                break
-              case 'dissertation':
-                this.doiImportData.publicationType = 'doctoral_thesis'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
-                break
-              case 'proceedings-article':
-              case 'proceedings':
-                this.doiImportData.publicationType = 'conference_object'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
-                break
-              case 'dataset':
-                this.doiImportData.publicationType = 'research_data'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                break
-              case 'other':
-              case 'standard':
-              case 'standard-series':
-              case 'book-entry':
-              case 'book-series':
-              case 'book-set':
-              case 'book-track':
-              case 'component':
-              case 'journal-issue':
-              case 'journal-volume':
-              case 'journal':
-              case 'report-series':
-                this.doiImportData.publicationType = 'other'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
-                break
-              default:
-                this.doiImportData.publicationType = 'other'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
-            }
-
-            if (crossrefData['publisher']) {
-              if (Array.isArray(crossrefData['publisher'])) {
-                if (crossrefData['publisher'].length > 0) {
-                  this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
-
-            if (crossrefData['container-title']) {
-              if (Array.isArray(crossrefData['container-title'])) {
-                if (crossrefData['container-title'].length > 0) {
-                  this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
-
-            if (crossrefData['ISSN']) {
-              if (Array.isArray(crossrefData['ISSN'])) {
-                if (crossrefData['ISSN'].length > 0) {
-                  this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
-                }
-              } else {
-                this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
-              }
-            }
-
-            if (crossrefData['ISBN']) {
-              if (Array.isArray(crossrefData['ISBN'])) {
-                if (crossrefData['ISBN'].length > 0) {
-                  this.doiImportData.ISBN = crossrefData['ISBN'][0].replace(/\s\s+/g, ' ').trim()
-                }
-              } else {
-                this.doiImportData.ISBN = crossrefData['ISBN'].replace(/\s\s+/g, ' ').trim()
-              }
-            }
-
-            if (crossrefData['volume']) {
-              this.doiImportData.journalVolume = crossrefData['volume'].replace(/\s\s+/g, ' ').trim()
-            }
-
-            if (crossrefData['issue']) {
-              this.doiImportData.journalIssue = crossrefData['issue'].replace(/\s\s+/g, ' ').trim()
-            }
-
-            if (crossrefData['page']) {
-              let page = crossrefData['page'].split('-')
-              let regexnum = new RegExp('^[0-9]+$')
-              let startpage = page[0]
-              if (regexnum.test(startpage)) {
-                this.doiImportData.pageStart = startpage
-              }
-              if (page.length > 1) {
-                let endpage = page[1]
-                if (regexnum.test(endpage)) {
-                  this.doiImportData.pageEnd = endpage
-                }
-              }
-            }
-
-            if (crossrefData['license']) {
-              if (Array.isArray(crossrefData['license'])) {
-                for (let lic of crossrefData['license']) {
-                  if (lic['URL']) {
-                    const licTerm = this.getTerm('alllicenses', lic['URL'])
-                    console.log('licTerm =>>', licTerm)
-                    if (licTerm) {
-                      this.doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
-                      this.doiImportData.license = lic['URL']
-                    }
-                  }
-                }
-              }
-            }
-            this.resetForm(this, this.doiImportData)
-            setTimeout(() => {
-              this.alignMetadataItems()
-            }, 1000);
+          this.doiImportData = {
+            doi: this.doiToImport.replace(/\s\s+/g, ' ').trim(),
+            title: '',
+            dateIssued: '',
+            authors: [],
+            publicationType: '',
+            publisher: '',
+            journalTitle: '',
+            journalISSN: '',
+            journalVolume: '',
+            journalIssue: '',
+            pageStart: '',
+            pageEnd: '',
+            licenceLabel: ''
           }
+
+          if (crossrefData['title']) {
+            if (Array.isArray(crossrefData['title'])) {
+              if (crossrefData['title'].length > 0) {
+                this.doiImportData.title = this.$_.unescape(crossrefData['title'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.title = this.$_.unescape(crossrefData['title'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['subtitle']) {
+            if (Array.isArray(crossrefData['subtitle'])) {
+              if (crossrefData['subtitle'].length > 0) {
+                this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['issued']) {
+            if (crossrefData['issued']['date-parts']) {
+              if (crossrefData['issued']['date-parts'][0]) {
+                if (crossrefData['issued']['date-parts'][0][0]) {
+                  this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
+                }
+              }
+            }
+          }
+
+          if (crossrefData['language']) {
+            if (this.lang2to3map[crossrefData['language']]) {
+              this.doiImportData.language = this.lang2to3map[crossrefData['language']]
+            }
+          }
+
+          let authors = crossrefData['author']
+          if (authors && authors.length > 0) {
+            for (let author of authors) {
+              if (author['given'] || author['family']) {
+                let auth = {
+                  type: 'schema:Person',
+                  firstname: author['given'] ? author['given'].replace(/\s\s+/g, ' ').trim() : '',
+                  lastname: author['family'] ? author['family'].replace(/\s\s+/g, ' ').trim() : ''
+                }
+                if (author['affiliation']) {
+                  if (Array.isArray(author['affiliation'])) {
+                    auth.affiliation = []
+                    for (let af of author['affiliation']) {
+                      auth.affiliation.push(af['name'])
+                    }
+                  }
+                }
+                if (author['ORCID']) {
+                  auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
+                }
+                this.doiImportData.authors.push(auth)
+              }
+              if (author['name']) {
+                let auth = {
+                  type: 'schema:Organization',
+                  name: author['name']
+                }
+                this.doiImportData.authors.push(auth)
+              }
+            }
+          }
+
+          if (crossrefData['subject']) {
+            if (Array.isArray(crossrefData['subject'])) {
+              this.doiImportData.keywords = []
+              for (let kw of crossrefData['subject']) {
+                this.doiImportData.keywords.push(kw)
+              }
+            }
+          }
+
+          // https://github.com/citation-style-language/schema/blob/master/csl-types.rnc
+          // https://wiki.univie.ac.at/display/IR/Mapping+CrossRef-Erscheinungsformen
+          switch (crossrefData['type']) {
+            case 'article':
+            case 'journal-article':
+            case 'article-journal':
+              this.doiImportData.publicationType = 'article'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+              break
+            case 'report':
+              this.doiImportData.publicationType = 'report'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
+              break
+            case 'book':
+            case 'monograph':
+            case 'reference-book':
+            case 'edited-book':
+              this.doiImportData.publicationType = 'book'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
+              break
+            case 'book-chapter':
+            case 'book-part':
+            case 'book-section':
+              this.doiImportData.publicationType = 'book_part'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
+              break
+            case 'dissertation':
+              this.doiImportData.publicationType = 'doctoral_thesis'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
+              break
+            case 'proceedings-article':
+            case 'proceedings':
+              this.doiImportData.publicationType = 'conference_object'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
+              break
+            case 'dataset':
+              this.doiImportData.publicationType = 'research_data'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
+              break
+            case 'other':
+            case 'standard':
+            case 'standard-series':
+            case 'book-entry':
+            case 'book-series':
+            case 'book-set':
+            case 'book-track':
+            case 'component':
+            case 'journal-issue':
+            case 'journal-volume':
+            case 'journal':
+            case 'report-series':
+              this.doiImportData.publicationType = 'other'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+              break
+            default:
+              this.doiImportData.publicationType = 'other'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+          }
+
+          if (crossrefData['publisher']) {
+            if (Array.isArray(crossrefData['publisher'])) {
+              if (crossrefData['publisher'].length > 0) {
+                this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['container-title']) {
+            if (Array.isArray(crossrefData['container-title'])) {
+              if (crossrefData['container-title'].length > 0) {
+                this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['ISSN']) {
+            if (Array.isArray(crossrefData['ISSN'])) {
+              if (crossrefData['ISSN'].length > 0) {
+                this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
+              }
+            } else {
+              this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
+            }
+          }
+
+          if (crossrefData['ISBN']) {
+            if (Array.isArray(crossrefData['ISBN'])) {
+              if (crossrefData['ISBN'].length > 0) {
+                this.doiImportData.ISBN = crossrefData['ISBN'][0].replace(/\s\s+/g, ' ').trim()
+              }
+            } else {
+              this.doiImportData.ISBN = crossrefData['ISBN'].replace(/\s\s+/g, ' ').trim()
+            }
+          }
+
+          if (crossrefData['volume']) {
+            this.doiImportData.journalVolume = crossrefData['volume'].replace(/\s\s+/g, ' ').trim()
+          }
+
+          if (crossrefData['issue']) {
+            this.doiImportData.journalIssue = crossrefData['issue'].replace(/\s\s+/g, ' ').trim()
+          }
+
+          if (crossrefData['page']) {
+            let page = crossrefData['page'].split('-')
+            let regexnum = new RegExp('^[0-9]+$')
+            let startpage = page[0]
+            if (regexnum.test(startpage)) {
+              this.doiImportData.pageStart = startpage
+            }
+            if (page.length > 1) {
+              let endpage = page[1]
+              if (regexnum.test(endpage)) {
+                this.doiImportData.pageEnd = endpage
+              }
+            }
+          }
+
+          if (crossrefData['license']) {
+            if (Array.isArray(crossrefData['license'])) {
+              for (let lic of crossrefData['license']) {
+                if (lic['URL']) {
+                  const licTerm = this.getTerm('alllicenses', lic['URL'])
+                  console.log('licTerm =>>', licTerm)
+                  if (licTerm) {
+                    this.doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
+                    this.doiImportData.license = lic['URL']
+                  }
+                }
+              }
+            }
+          }
+          this.resetForm(this, this.doiImportData)
+          setTimeout(() => {
+            this.alignMetadataItems()
+          }, 1000);
         } catch (error) {
           console.error(error)
           if (error?.response?.status === 404) {
@@ -2205,7 +2207,9 @@ export default {
       if (newField) {
         newField.id = (new Date()).getTime()
         newField.removable = true
+        newField.code = ''
         newField.identifier = ''
+        newField.identifierType = ''
         newField.funderIdentifier = ''
         newField.funderName = ''
         newField.subloopFlag = false
@@ -2217,6 +2221,8 @@ export default {
         newField.id = (new Date()).getTime()
         newField.removable = true
         newField.identifier = ''
+        newField.identifierType = ''
+        newField.code = ''
         newField.subloopFlag = false
       }
     },
@@ -3273,6 +3279,12 @@ export default {
           }
           if (funding.projectid) {
             pof.identifier = funding.projectid
+          }
+          if (funding.projectidtype) {
+            pof.identifierType = funding.projectidtype
+          }
+          if (funding.projectcode) {
+            pof.code = funding.projectcode
           }
           sof.push(pof)
         }

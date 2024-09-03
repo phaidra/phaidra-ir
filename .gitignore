@@ -103,7 +103,6 @@ sw.*
 *.swp
 
 components/info
-locales
 pages/info
 
 static/favicon.ico

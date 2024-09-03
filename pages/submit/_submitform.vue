@@ -1088,9 +1088,9 @@
                                     v-on:input-funder-name="
                                       f.funderName = $event
                                     "
-                                    v-on:input-identifier="
-                                      f.identifier = $event
-                                    "
+                                    v-on:input-identifier="f.identifier=$event"
+                                    v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                                    v-on:input-code="f.code=$event"
                                     v-on:add="addProject(s.fields, f)"
                                     v-on:add-clear="
                                       addProjectClear(s.fields, f)
@@ -2291,6 +2291,7 @@ if (crossrefData['issued']['date-parts'][0]) {
         newField.id = new Date().getTime();
         newField.removable = true;
         newField.identifier = "";
+        newField.code = "";
         newField.funderIdentifier = "";
         newField.funderName = "";
         newField.subloopFlag = false;
@@ -2302,6 +2303,7 @@ if (crossrefData['issued']['date-parts'][0]) {
         newField.id = new Date().getTime();
         newField.removable = true;
         newField.identifier = "";
+        newField.code = "";
         newField.subloopFlag = false;
       }
     },

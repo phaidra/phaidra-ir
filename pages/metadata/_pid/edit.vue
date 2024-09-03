@@ -808,7 +808,21 @@ export default {
                         importData.errors.push('Multiple frapo:isOutputOf > skos:exactMatch: ' + JSON.stringify(values1))
                       } else {
                         for (let id of values1) {
-                          funding['projectid'] = id
+                          if (id['@type']) {
+                            funding['projectidtype'] = id['@type']
+                            funding['projectid'] = id['@value']
+                          } else {
+                            funding['projectid'] = id
+                          }
+                        }
+                      }
+                      break
+                    case 'frapo:hasProjectIdentifier':
+                      if (funding['projectcode']) {
+                        importData.errors.push('Multiple frapo:isOutputOf > frapo:hasProjectIdentifier: ' + JSON.stringify(values1))
+                      } else {
+                        for (let code of values1) {
+                          funding['projectcode'] = code
                         }
                       }
                       break

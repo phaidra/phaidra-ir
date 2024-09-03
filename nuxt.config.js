@@ -65,8 +65,8 @@ export default {
     '@nuxtjs/sentry'
   ],
   axios: {
-    baseURL: 'https://services.phaidra.univie.ac.at/api',
-    browserBaseURL: 'https://services.phaidra.univie.ac.at/api'
+    baseURL: 'https://sandbox.phaidra.org/api',
+    browserBaseURL: 'https://sandbox.phaidra.org/api'
   },
   sentry: {
     dsn: config?.monitor?.sentry?.dsn
