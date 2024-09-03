@@ -752,6 +752,8 @@
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         class="my-2"
                       ></p-i-text-field>
                     </template>
@@ -766,6 +768,8 @@
                         v-on:remove="removeField(s.fields, f)"
                         v-on:up="sortFieldUp(s.fields, f)"
                         v-on:down="sortFieldDown(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-title>
@@ -778,6 +782,8 @@
                           v-on:input="selectInput(s.fields, f, $event)"
                           v-on:add="addField(s.fields, f)"
                           v-on:remove="removeField(s.fields, f)"
+                          v-on:configure="editFieldProps(f)"
+                          :configurable="enablefieldconfig || f.configurable"
                           :inputStyle="inputStyle"
                           class="my-2"
                         ></submit-ir-license>
@@ -796,6 +802,8 @@
                           v-on:input="selectInput(s.fields, f, $event)"
                           v-on:add="addField(s.fields, f)"
                           v-on:remove="removeField(s.fields, f)"
+                          v-on:configure="editFieldProps(f)"
+                          :configurable="enablefieldconfig || f.configurable"
                           :inputStyle="inputStyle"
                           class="my-2"
                         ></p-i-select>
@@ -814,6 +822,8 @@
                         v-on:input-date-type="setSelected(f, 'type', $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-date-edtf>
@@ -834,11 +844,14 @@
                         v-on:input-issued="f.issued = $event"
                         v-on:input-issn="f.issn = $event"
                         v-on:input-identifier="f.identifier = $event"
+                        v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
                         v-on:input-page-start="f.pageStart = $event"
                         v-on:input-page-end="f.pageEnd = $event"
                         v-on:add="addField(s.fields, f)"
                         v-on:add-clear="addSeriesClear(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-4"
                       ></p-i-series>
@@ -859,6 +872,8 @@
                         v-on:input-publishing-date="f.publishingDate = $event"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="mt-2 mb-8"
                       ></p-i-bf-publication>
@@ -868,52 +883,31 @@
                       <p-i-contained-in
                         class="mt-2 mb-6"
                         v-bind.sync="f"
-                        v-on:input-title="f.title = $event"
-                        v-on:input-subtitle="f.subtitle = $event"
-                        v-on:input-title-language="
-                          setSelected(f, 'titleLanguage', $event)
-                        "
+                        v-on:input-title="f.title=$event"
+                        v-on:input-subtitle="f.subtitle=$event"
+                        v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
                         v-on:input-role="containedInRoleInput(f, $event)"
                         v-on:input-series="containedInSeriesInput(f, $event)"
-                        v-on:input-series-title="f.seriesTitle = $event"
-                        v-on:input-series-title-language="
-                          setSelected(f, 'seriesTitleLanguage', $event)
-                        "
-                        v-on:input-series-volume="f.seriesVolume = $event"
-                        v-on:input-series-issue="f.seriesIssue = $event"
-                        v-on:input-series-issued="f.seriesIssued = $event"
-                        v-on:input-series-issn="f.seriesIssn = $event"
-                        v-on:input-series-identifier="
-                          f.seriesIdentifier = $event
-                        "
-                        v-on:input-page-start="f.pageStart = $event"
-                        v-on:input-page-end="f.pageEnd = $event"
-                        v-on:input-isbn="f.isbn = $event"
-                        v-on:input-suggest-publisher="
-                          publisherSuggestInput(f, $event)
-                        "
-                        v-on:input-publisher-name="f.publisherName = $event"
+                        v-on:input-page-start="f.pageStart=$event"
+                        v-on:input-page-end="f.pageEnd=$event"
+                        v-on:input-isbn="f.isbn=$event"
+                        v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                        v-on:input-identifier="f.identifier = $event"
+                        v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
+                        v-on:input-publisher-name="f.publisherName=$event"
                         v-on:change-publisher-type="f.publisherType = $event"
-                        v-on:input-publisher-select="
-                          publisherSelectInput(f, $event)
-                        "
-                        v-on:input-publishing-place="f.publishingPlace = $event"
-                        v-on:input-publishing-date="f.publishingDate = $event"
+                        v-on:input-publisher-select="publisherSelectInput(f, $event)"
+                        v-on:input-publishing-place="f.publishingPlace=$event"
+                        v-on:input-publishing-date="f.publishingDate=$event"
                         v-on:add-series="addContainedInSeries(f.series, $event)"
-                        v-on:add-clear-series="
-                          addClearContainedInSeries(f.series, $event)
-                        "
-                        v-on:remove-series="
-                          removeContainedInSeries(f.series, $event)
-                        "
+                        v-on:add-clear-series="addClearContainedInSeries(f.series, $event)"
+                        v-on:remove-series="removeContainedInSeries(f.series, $event)"
                         v-on:add-role="addContainedInRole(f.roles, $event)"
-                        v-on:remove-role="
-                          removeContainedInRole(f.roles, $event)
-                        "
+                        v-on:remove-role="removeContainedInRole(f.roles, $event)"
                         v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
-                        v-on:down-role="
-                          sortContainedInRoleDown(f.roles, $event)
-                        "
+                        v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                       ></p-i-contained-in>
                     </template>
@@ -953,6 +947,8 @@
                         v-on:remove="removeField(s.fields, f)"
                         v-on:up="sortFieldUp(s.fields, f)"
                         v-on:down="sortFieldDown(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="mb-6"
                       ></p-i-entity-extended>
@@ -966,6 +962,8 @@
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
                         :inputStyle="inputStyle"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         class="my-2"
                       ></p-i-subject-gnd>
                     </template>
@@ -976,6 +974,8 @@
                       <p-i-vocab-ext-readonly
                         v-bind.sync="f"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                       ></p-i-vocab-ext-readonly>
                     </template>
@@ -986,6 +986,8 @@
                         v-on:input-value="f.value = $event"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-literal>
@@ -997,6 +999,8 @@
                         v-on:input="selectInput(s.fields, f, $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-association>
@@ -1009,6 +1013,8 @@
                         v-on:input-identifier-type="
                           setSelected(f, 'type', $event)
                         "
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-alternate-identifier>
@@ -1082,9 +1088,9 @@
                                     v-on:input-funder-name="
                                       f.funderName = $event
                                     "
-                                    v-on:input-identifier="
-                                      f.identifier = $event
-                                    "
+                                    v-on:input-identifier="f.identifier=$event"
+                                    v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                                    v-on:input-code="f.code=$event"
                                     v-on:add="addProject(s.fields, f)"
                                     v-on:add-clear="
                                       addProjectClear(s.fields, f)
@@ -1112,6 +1118,8 @@
                             "
                             v-on:add="addField(s.fields, f)"
                             v-on:remove="removeField(s.fields, f)"
+                            v-on:configure="editFieldProps(f)"
+                            :configurable="enablefieldconfig || f.configurable"
                             :inputStyle="inputStyle"
                             class="my-2"
                           ></p-i-file>
@@ -1491,6 +1499,12 @@ import axios from "axios";
 
 export default {
   mixins: [context, config, validationrules, vocabulary],
+  props: {
+    enablefieldconfig: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     lang2to3map: function () {
       return Object.keys(lang3to2map).reduce((ret, key) => {
@@ -2277,6 +2291,7 @@ if (crossrefData['issued']['date-parts'][0]) {
         newField.id = new Date().getTime();
         newField.removable = true;
         newField.identifier = "";
+        newField.code = "";
         newField.funderIdentifier = "";
         newField.funderName = "";
         newField.subloopFlag = false;
@@ -2288,6 +2303,7 @@ if (crossrefData['issued']['date-parts'][0]) {
         newField.id = new Date().getTime();
         newField.removable = true;
         newField.identifier = "";
+        newField.code = "";
         newField.subloopFlag = false;
       }
     },
@@ -2352,26 +2368,29 @@ if (crossrefData['issued']['date-parts'][0]) {
     containedInSeriesInput: function (f, event) {
       for (let s of f.series) {
         if (s.id === event.series.id) {
-          if (event.seriesTitleLanguageTerm) {
-            s.seriesTitleLanguage = event.seriesTitleLanguageTerm["@id"];
+          if (event.hasOwnProperty('seriesTitleLanguageTerm')) {
+            s.seriesTitleLanguage = event.seriesTitleLanguageTerm['@id']
           }
-          if (event.seriesTitle) {
-            s.seriesTitle = event.seriesTitle;
+          if (event.hasOwnProperty('seriesTitle')) {
+            s.seriesTitle = event.seriesTitle
           }
-          if (event.seriesVolume) {
-            s.seriesVolume = event.seriesVolume;
+          if (event.hasOwnProperty('seriesVolume')) {
+            s.seriesVolume = event.seriesVolume
           }
-          if (event.seriesIssue) {
-            s.seriesIssue = event.seriesIssue;
+          if (event.hasOwnProperty('seriesIssue')) {
+            s.seriesIssue = event.seriesIssue
           }
-          if (event.seriesIssued) {
-            s.seriesIssued = event.seriesIssued;
+          if (event.hasOwnProperty('seriesIssued')) {
+            s.seriesIssued = event.seriesIssued
           }
-          if (event.seriesIssn) {
-            s.seriesIssn = event.seriesIssn;
+          if (event.hasOwnProperty('seriesIssn')) {
+            s.seriesIssn = event.seriesIssn
           }
-          if (event.seriesIdentifier) {
-            s.seriesIdentifier = event.seriesIdentifier;
+          if (event.hasOwnProperty('seriesIdentifier')) {
+            s.seriesIdentifier = event.seriesIdentifier
+          }
+          if (event.hasOwnProperty('seriesIdentifierType')) {
+            s.seriesIdentifierType = event.seriesIdentifierType
           }
         }
       }

@@ -413,6 +413,16 @@ export default {
                         importData['containedin'].isbn = isbn
                       }
                       break
+                    case 'skos:exactMatch':
+                      for (let id of values1) {
+                        if (id['@value']) {
+                          importData['containedin'].identifier = id['@value']
+                          importData['containedin'].identifierType = id['@type']
+                        } else {
+                          importData['containedin'].identifier = id
+                        }
+                      }
+                      break
                     case 'rdau:P60193':
                       importData['containedin']['series'] = []
                       for (let v of values1) {
@@ -470,8 +480,13 @@ export default {
                               }
                               break
                             case 'skos:exactMatch':
-                              for (let v of values2) {
-                                ser.identifier = v
+                              for (let id of values2) {
+                                if (id['@value']) {
+                                  ser.identifier = id['@value']
+                                  ser.identifierType = id['@type']
+                                } else {
+                                  ser.identifier = id
+                                }
                               }
                               break
                             default:
@@ -793,7 +808,21 @@ export default {
                         importData.errors.push('Multiple frapo:isOutputOf > skos:exactMatch: ' + JSON.stringify(values1))
                       } else {
                         for (let id of values1) {
-                          funding['projectid'] = id
+                          if (id['@type']) {
+                            funding['projectidtype'] = id['@type']
+                            funding['projectid'] = id['@value']
+                          } else {
+                            funding['projectid'] = id
+                          }
+                        }
+                      }
+                      break
+                    case 'frapo:hasProjectIdentifier':
+                      if (funding['projectcode']) {
+                        importData.errors.push('Multiple frapo:isOutputOf > frapo:hasProjectIdentifier: ' + JSON.stringify(values1))
+                      } else {
+                        for (let code of values1) {
+                          funding['projectcode'] = code
                         }
                       }
                       break

@@ -595,6 +595,8 @@
                         v-on:input-language="setSelected(f, 'language', $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-text-field>
@@ -610,6 +612,8 @@
                         v-on:remove="removeField(s.fields, f)"
                         v-on:up="sortFieldUp(s.fields, f)"
                         v-on:down="sortFieldDown(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-title>
@@ -622,6 +626,8 @@
                         v-on:input="selectInput(s.fields, f, $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-select>
@@ -635,6 +641,8 @@
                         v-on:input-date-type="setSelected(f, 'type', $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-date-edtf>
@@ -651,11 +659,14 @@
                         v-on:input-issued="f.issued=$event"
                         v-on:input-issn="f.issn=$event"
                         v-on:input-identifier="f.identifier=$event"
+                        v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
                         v-on:input-page-start="f.pageStart=$event"
                         v-on:input-page-end="f.pageEnd=$event"
                         v-on:add="addField(s.fields, f)"
                         v-on:add-clear="addSeriesClear(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-4"
                       ></p-i-series>
@@ -672,6 +683,8 @@
                         v-on:input-publishing-date="f.publishingDate=$event"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="mt-2 mb-8"
                       ></p-i-bf-publication>
@@ -686,16 +699,11 @@
                         v-on:input-title-language="setSelected(f, 'titleLanguage', $event)"
                         v-on:input-role="containedInRoleInput(f, $event)"
                         v-on:input-series="containedInSeriesInput(f, $event)"
-                        v-on:input-series-title="f.seriesTitle=$event"
-                        v-on:input-series-title-language="setSelected(f, 'seriesTitleLanguage', $event)"
-                        v-on:input-series-volume="f.seriesVolume=$event"
-                        v-on:input-series-issue="f.seriesIssue=$event"
-                        v-on:input-series-issued="f.seriesIssued=$event"
-                        v-on:input-series-issn="f.seriesIssn=$event"
-                        v-on:input-series-identifier="f.seriesIdentifier=$event"
                         v-on:input-page-start="f.pageStart=$event"
                         v-on:input-page-end="f.pageEnd=$event"
                         v-on:input-isbn="f.isbn=$event"
+                        v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                        v-on:input-identifier="f.identifier = $event"
                         v-on:input-suggest-publisher="publisherSuggestInput(f, $event)"
                         v-on:input-publisher-name="f.publisherName=$event"
                         v-on:change-publisher-type="f.publisherType = $event"
@@ -709,6 +717,8 @@
                         v-on:remove-role="removeContainedInRole(f.roles, $event)"
                         v-on:up-role="sortContainedInRoleUp(f.roles, $event)"
                         v-on:down-role="sortContainedInRoleDown(f.roles, $event)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                       ></p-i-contained-in>
                     </template>
@@ -736,6 +746,8 @@
                         v-on:remove="removeField(s.fields, f)"
                         v-on:up="sortFieldUp(s.fields, f)"
                         v-on:down="sortFieldDown(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="mb-6"
                       ></p-i-entity-extended>
@@ -748,6 +760,8 @@
                         v-on:resolve="updateSubject(f, $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-subject-gnd>
@@ -757,6 +771,8 @@
                       <p-i-vocab-ext-readonly
                         v-bind.sync="f"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                       ></p-i-vocab-ext-readonly>
                     </template>
@@ -767,6 +783,8 @@
                         v-on:input-value="f.value=$event"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-literal>
@@ -778,6 +796,8 @@
                         v-on:input="selectInput(s.fields, f, $event)"
                         v-on:add="addField(s.fields, f)"
                         v-on:remove="removeField(s.fields, f)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-association>
@@ -788,6 +808,8 @@
                         v-bind.sync="f"
                         v-on:input-identifier="f.value=$event"
                         v-on:input-identifier-type="setSelected(f, 'type', $event)"
+                        v-on:configure="editFieldProps(f)"
+                        :configurable="enablefieldconfig || f.configurable"
                         :inputStyle="inputStyle"
                         class="my-2"
                       ></p-i-alternate-identifier>
@@ -812,6 +834,8 @@
                                       v-on:add="addField(s.fields, f)"
                                       v-on:add-clear="addIdentifierClear(s.fields, f)"
                                       v-on:remove="removeField(s.fields, f)"
+                                      v-on:configure="editFieldProps(f)"
+                                      :configurable="enablefieldconfig || f.configurable"
                                       :inputStyle="inputStyle"
                                       class="my-2"
                                     ></submit-ir-alternate-identifier>
@@ -840,9 +864,13 @@
                                     v-on:select-funder="setFunder(f, $event)"
                                     v-on:input-funder-name="f.funderName=$event"
                                     v-on:input-identifier="f.identifier=$event"
+                                    v-on:input-identifier-type="setSelected(f, 'identifierType', $event)"
+                                    v-on:input-code="f.code=$event"
                                     v-on:add="addProject(s.fields, f)"
                                     v-on:add-clear="addProjectClear(s.fields, f)"
                                     v-on:remove="removeField(s.fields, f)"
+                                    v-on:configure="editFieldProps(f)"
+                                    :configurable="enablefieldconfig || f.configurable"
                                     :inputStyle="inputStyle"
                                     class="my-2"
                                   ></submit-ir-funding-field>
@@ -863,6 +891,8 @@
                             v-on:input-mimetype="setSelected(f, 'mimetype', $event)"
                             v-on:add="addField(s.fields, f)"
                             v-on:remove="removeField(s.fields, f)"
+                            v-on:configure="editFieldProps(f)"
+                            :configurable="enablefieldconfig || f.configurable"
                             :inputStyle="inputStyle"
                             class="my-2"
                           ></p-i-file>
@@ -998,7 +1028,11 @@ export default {
   props: {
     targetPid: String,
     importData: Object,
-    submitformType: String
+    submitformType: String,
+    enablefieldconfig: {
+      type: Boolean,
+      default: false
+    }
   },
   computed: {
     lang2to3map: function () {
@@ -1132,6 +1166,7 @@ export default {
         accessrights: false,
         version: false,
       },
+      selectedUcrisInfo: null,
       metaProviderName: '',
     }
   },
@@ -1686,249 +1721,249 @@ export default {
               pid: solrResponse.data.response.docs[0].pid,
               title: solrResponse.data.response.docs[0].dc_title[0]
             }
-          } else {
-            let response = await axios.get('https://' + this.config.apis.doi.baseurl + '/works/' + this.doiToImport + '?mailto=' + this.config.email, {
-              headers: {
-                'Accept': this.config.apis.doi.accept
-              }
-            })
+          } 
 
-            let crossrefData = response.data.message
-
-            this.doiImportData = {
-              doi: this.doiToImport.replace(/\s\s+/g, ' ').trim(),
-              title: '',
-              dateIssued: '',
-              authors: [],
-              publicationType: '',
-              publisher: '',
-              journalTitle: '',
-              journalISSN: '',
-              journalVolume: '',
-              journalIssue: '',
-              pageStart: '',
-              pageEnd: '',
-              licenceLabel: ''
+          let response = await axios.get('https://' + this.config.apis.doi.baseurl + '/works/' + this.doiToImport + '?mailto=' + this.config.email, {
+            headers: {
+              'Accept': this.config.apis.doi.accept
             }
+          })
 
-            if (crossrefData['title']) {
-              if (Array.isArray(crossrefData['title'])) {
-                if (crossrefData['title'].length > 0) {
-                  this.doiImportData.title = this.$_.unescape(crossrefData['title'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.title = this.$_.unescape(crossrefData['title'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
+          let crossrefData = response.data.message
 
-            if (crossrefData['subtitle']) {
-              if (Array.isArray(crossrefData['subtitle'])) {
-                if (crossrefData['subtitle'].length > 0) {
-                  this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
-
-            if (crossrefData['issued']) {
-              if (crossrefData['issued']['date-parts']) {
-		if (crossrefData['issued']['date-parts'][0]) {
-                  if (crossrefData['issued']['date-parts'][0][0]) {
-                    this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
-                  }
-                }
-              }
-            }
-
-            if (crossrefData['language']) {
-              if (this.lang2to3map[crossrefData['language']]) {
-                this.doiImportData.language = this.lang2to3map[crossrefData['language']]
-              }
-            }
-
-            let authors = crossrefData['author']
-            if (authors && authors.length > 0) {
-              for (let author of authors) {
-                if (author['given'] || author['family']) {
-                  let auth = {
-                    type: 'schema:Person',
-                    firstname: author['given'] ? author['given'].replace(/\s\s+/g, ' ').trim() : '',
-                    lastname: author['family'] ? author['family'].replace(/\s\s+/g, ' ').trim() : ''
-                  }
-                  if (author['affiliation']) {
-                    if (Array.isArray(author['affiliation'])) {
-                      auth.affiliation = []
-                      for (let af of author['affiliation']) {
-                        auth.affiliation.push(af['name'])
-                      }
-                    }
-                  }
-                  if (author['ORCID']) {
-                    auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
-                  }
-                  this.doiImportData.authors.push(auth)
-                }
-                if (author['name']) {
-                  let auth = {
-                    type: 'schema:Organization',
-                    name: author['name']
-                  }
-                  this.doiImportData.authors.push(auth)
-                }
-              }
-            }
-
-            if (crossrefData['subject']) {
-              if (Array.isArray(crossrefData['subject'])) {
-                this.doiImportData.keywords = []
-                for (let kw of crossrefData['subject']) {
-                  this.doiImportData.keywords.push(kw)
-                }
-              }
-            }
-
-            // https://github.com/citation-style-language/schema/blob/master/csl-types.rnc
-            // https://wiki.univie.ac.at/display/IR/Mapping+CrossRef-Erscheinungsformen
-            switch (crossrefData['type']) {
-              case 'article':
-              case 'journal-article':
-              case 'article-journal':
-                this.doiImportData.publicationType = 'article'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
-                break
-              case 'report':
-                this.doiImportData.publicationType = 'report'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
-                break
-              case 'book':
-              case 'monograph':
-              case 'reference-book':
-              case 'edited-book':
-                this.doiImportData.publicationType = 'book'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
-                break
-              case 'book-chapter':
-              case 'book-part':
-              case 'book-section':
-                this.doiImportData.publicationType = 'book_part'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
-                break
-              case 'dissertation':
-                this.doiImportData.publicationType = 'doctoral_thesis'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
-                break
-              case 'proceedings-article':
-              case 'proceedings':
-                this.doiImportData.publicationType = 'conference_object'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
-                break
-              case 'dataset':
-                this.doiImportData.publicationType = 'research_data'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
-                break
-              case 'other':
-              case 'standard':
-              case 'standard-series':
-              case 'book-entry':
-              case 'book-series':
-              case 'book-set':
-              case 'book-track':
-              case 'component':
-              case 'journal-issue':
-              case 'journal-volume':
-              case 'journal':
-              case 'report-series':
-                this.doiImportData.publicationType = 'other'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
-                break
-              default:
-                this.doiImportData.publicationType = 'other'
-                this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
-            }
-
-            if (crossrefData['publisher']) {
-              if (Array.isArray(crossrefData['publisher'])) {
-                if (crossrefData['publisher'].length > 0) {
-                  this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
-
-            if (crossrefData['container-title']) {
-              if (Array.isArray(crossrefData['container-title'])) {
-                if (crossrefData['container-title'].length > 0) {
-                  this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim())
-                }
-              } else {
-                this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'].replace(/\s\s+/g, ' ').trim())
-              }
-            }
-
-            if (crossrefData['ISSN']) {
-              if (Array.isArray(crossrefData['ISSN'])) {
-                if (crossrefData['ISSN'].length > 0) {
-                  this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
-                }
-              } else {
-                this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
-              }
-            }
-
-            if (crossrefData['ISBN']) {
-              if (Array.isArray(crossrefData['ISBN'])) {
-                if (crossrefData['ISBN'].length > 0) {
-                  this.doiImportData.ISBN = crossrefData['ISBN'][0].replace(/\s\s+/g, ' ').trim()
-                }
-              } else {
-                this.doiImportData.ISBN = crossrefData['ISBN'].replace(/\s\s+/g, ' ').trim()
-              }
-            }
-
-            if (crossrefData['volume']) {
-              this.doiImportData.journalVolume = crossrefData['volume'].replace(/\s\s+/g, ' ').trim()
-            }
-
-            if (crossrefData['issue']) {
-              this.doiImportData.journalIssue = crossrefData['issue'].replace(/\s\s+/g, ' ').trim()
-            }
-
-            if (crossrefData['page']) {
-              let page = crossrefData['page'].split('-')
-              let regexnum = new RegExp('^[0-9]+$')
-              let startpage = page[0]
-              if (regexnum.test(startpage)) {
-                this.doiImportData.pageStart = startpage
-              }
-              if (page.length > 1) {
-                let endpage = page[1]
-                if (regexnum.test(endpage)) {
-                  this.doiImportData.pageEnd = endpage
-                }
-              }
-            }
-
-            if (crossrefData['license']) {
-              if (Array.isArray(crossrefData['license'])) {
-                for (let lic of crossrefData['license']) {
-                  if (lic['URL']) {
-                    const licTerm = this.getTerm('alllicenses', lic['URL'])
-                    console.log('licTerm =>>', licTerm)
-                    if (licTerm) {
-                      this.doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
-                      this.doiImportData.license = lic['URL']
-                    }
-                  }
-                }
-              }
-            }
-            this.resetForm(this, this.doiImportData)
-            setTimeout(() => {
-              this.alignMetadataItems()
-            }, 1000);
+          this.doiImportData = {
+            doi: this.doiToImport.replace(/\s\s+/g, ' ').trim(),
+            title: '',
+            dateIssued: '',
+            authors: [],
+            publicationType: '',
+            publisher: '',
+            journalTitle: '',
+            journalISSN: '',
+            journalVolume: '',
+            journalIssue: '',
+            pageStart: '',
+            pageEnd: '',
+            licenceLabel: ''
           }
+
+          if (crossrefData['title']) {
+            if (Array.isArray(crossrefData['title'])) {
+              if (crossrefData['title'].length > 0) {
+                this.doiImportData.title = this.$_.unescape(crossrefData['title'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.title = this.$_.unescape(crossrefData['title'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['subtitle']) {
+            if (Array.isArray(crossrefData['subtitle'])) {
+              if (crossrefData['subtitle'].length > 0) {
+                this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.subtitle = this.$_.unescape(crossrefData['subtitle'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['issued']) {
+            if (crossrefData['issued']['date-parts']) {
+              if (crossrefData['issued']['date-parts'][0]) {
+                if (crossrefData['issued']['date-parts'][0][0]) {
+                  this.doiImportData.dateIssued = crossrefData['issued']['date-parts'][0][0].toString()
+                }
+              }
+            }
+          }
+
+          if (crossrefData['language']) {
+            if (this.lang2to3map[crossrefData['language']]) {
+              this.doiImportData.language = this.lang2to3map[crossrefData['language']]
+            }
+          }
+
+          let authors = crossrefData['author']
+          if (authors && authors.length > 0) {
+            for (let author of authors) {
+              if (author['given'] || author['family']) {
+                let auth = {
+                  type: 'schema:Person',
+                  firstname: author['given'] ? author['given'].replace(/\s\s+/g, ' ').trim() : '',
+                  lastname: author['family'] ? author['family'].replace(/\s\s+/g, ' ').trim() : ''
+                }
+                if (author['affiliation']) {
+                  if (Array.isArray(author['affiliation'])) {
+                    auth.affiliation = []
+                    for (let af of author['affiliation']) {
+                      auth.affiliation.push(af['name'])
+                    }
+                  }
+                }
+                if (author['ORCID']) {
+                  auth.orcid = author['ORCID'].replace('http://orcid.org/', '')
+                }
+                this.doiImportData.authors.push(auth)
+              }
+              if (author['name']) {
+                let auth = {
+                  type: 'schema:Organization',
+                  name: author['name']
+                }
+                this.doiImportData.authors.push(auth)
+              }
+            }
+          }
+
+          if (crossrefData['subject']) {
+            if (Array.isArray(crossrefData['subject'])) {
+              this.doiImportData.keywords = []
+              for (let kw of crossrefData['subject']) {
+                this.doiImportData.keywords.push(kw)
+              }
+            }
+          }
+
+          // https://github.com/citation-style-language/schema/blob/master/csl-types.rnc
+          // https://wiki.univie.ac.at/display/IR/Mapping+CrossRef-Erscheinungsformen
+          switch (crossrefData['type']) {
+            case 'article':
+            case 'journal-article':
+            case 'article-journal':
+              this.doiImportData.publicationType = 'article'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/VKA6-9XTY'
+              break
+            case 'report':
+              this.doiImportData.publicationType = 'report'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/JMAV-7F3R'
+              break
+            case 'book':
+            case 'monograph':
+            case 'reference-book':
+            case 'edited-book':
+              this.doiImportData.publicationType = 'book'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/47QB-8QF1'
+              break
+            case 'book-chapter':
+            case 'book-part':
+            case 'book-section':
+              this.doiImportData.publicationType = 'book_part'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/XA52-09WA'
+              break
+            case 'dissertation':
+              this.doiImportData.publicationType = 'doctoral_thesis'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/1PHE-7VMS'
+              break
+            case 'proceedings-article':
+            case 'proceedings':
+              this.doiImportData.publicationType = 'conference_object'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/QKDF-E5HA'
+              break
+            case 'dataset':
+              this.doiImportData.publicationType = 'research_data'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/KW6N-2VTP'
+              break
+            case 'other':
+            case 'standard':
+            case 'standard-series':
+            case 'book-entry':
+            case 'book-series':
+            case 'book-set':
+            case 'book-track':
+            case 'component':
+            case 'journal-issue':
+            case 'journal-volume':
+            case 'journal':
+            case 'report-series':
+              this.doiImportData.publicationType = 'other'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+              break
+            default:
+              this.doiImportData.publicationType = 'other'
+              this.doiImportData.publicationTypeId = 'https://pid.phaidra.org/vocabulary/PYRE-RAWJ'
+          }
+
+          if (crossrefData['publisher']) {
+            if (Array.isArray(crossrefData['publisher'])) {
+              if (crossrefData['publisher'].length > 0) {
+                this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.publisher = this.$_.unescape(crossrefData['publisher'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['container-title']) {
+            if (Array.isArray(crossrefData['container-title'])) {
+              if (crossrefData['container-title'].length > 0) {
+                this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'][0].replace(/\s\s+/g, ' ').trim())
+              }
+            } else {
+              this.doiImportData.journalTitle = this.$_.unescape(crossrefData['container-title'].replace(/\s\s+/g, ' ').trim())
+            }
+          }
+
+          if (crossrefData['ISSN']) {
+            if (Array.isArray(crossrefData['ISSN'])) {
+              if (crossrefData['ISSN'].length > 0) {
+                this.doiImportData.journalISSN = crossrefData['ISSN'][0].replace(/\s\s+/g, ' ').trim()
+              }
+            } else {
+              this.doiImportData.journalISSN = crossrefData['ISSN'].replace(/\s\s+/g, ' ').trim()
+            }
+          }
+
+          if (crossrefData['ISBN']) {
+            if (Array.isArray(crossrefData['ISBN'])) {
+              if (crossrefData['ISBN'].length > 0) {
+                this.doiImportData.ISBN = crossrefData['ISBN'][0].replace(/\s\s+/g, ' ').trim()
+              }
+            } else {
+              this.doiImportData.ISBN = crossrefData['ISBN'].replace(/\s\s+/g, ' ').trim()
+            }
+          }
+
+          if (crossrefData['volume']) {
+            this.doiImportData.journalVolume = crossrefData['volume'].replace(/\s\s+/g, ' ').trim()
+          }
+
+          if (crossrefData['issue']) {
+            this.doiImportData.journalIssue = crossrefData['issue'].replace(/\s\s+/g, ' ').trim()
+          }
+
+          if (crossrefData['page']) {
+            let page = crossrefData['page'].split('-')
+            let regexnum = new RegExp('^[0-9]+$')
+            let startpage = page[0]
+            if (regexnum.test(startpage)) {
+              this.doiImportData.pageStart = startpage
+            }
+            if (page.length > 1) {
+              let endpage = page[1]
+              if (regexnum.test(endpage)) {
+                this.doiImportData.pageEnd = endpage
+              }
+            }
+          }
+
+          if (crossrefData['license']) {
+            if (Array.isArray(crossrefData['license'])) {
+              for (let lic of crossrefData['license']) {
+                if (lic['URL']) {
+                  const licTerm = this.getTerm('alllicenses', lic['URL'])
+                  console.log('licTerm =>>', licTerm)
+                  if (licTerm) {
+                    this.doiImportData.licenceLabel = licTerm && licTerm['skos:prefLabel'] && licTerm['skos:prefLabel']['eng'] ? licTerm['skos:prefLabel']['eng'] : 'N/A'
+                    this.doiImportData.license = lic['URL']
+                  }
+                }
+              }
+            }
+          }
+          this.resetForm(this, this.doiImportData)
+          setTimeout(() => {
+            this.alignMetadataItems()
+          }, 1000);
         } catch (error) {
           console.error(error)
           if (error?.response?.status === 404) {
@@ -2172,7 +2207,9 @@ export default {
       if (newField) {
         newField.id = (new Date()).getTime()
         newField.removable = true
+        newField.code = ''
         newField.identifier = ''
+        newField.identifierType = ''
         newField.funderIdentifier = ''
         newField.funderName = ''
         newField.subloopFlag = false
@@ -2184,6 +2221,8 @@ export default {
         newField.id = (new Date()).getTime()
         newField.removable = true
         newField.identifier = ''
+        newField.identifierType = ''
+        newField.code = ''
         newField.subloopFlag = false
       }
     },
@@ -2259,26 +2298,29 @@ export default {
     containedInSeriesInput: function (f, event) {
       for (let s of f.series) {
         if (s.id === event.series.id) {
-          if (event.seriesTitleLanguageTerm) {
+          if (event.hasOwnProperty('seriesTitleLanguageTerm')) {
             s.seriesTitleLanguage = event.seriesTitleLanguageTerm['@id']
           }
-          if (event.seriesTitle) {
+          if (event.hasOwnProperty('seriesTitle')) {
             s.seriesTitle = event.seriesTitle
           }
-          if (event.seriesVolume) {
+          if (event.hasOwnProperty('seriesVolume')) {
             s.seriesVolume = event.seriesVolume
           }
-          if (event.seriesIssue) {
+          if (event.hasOwnProperty('seriesIssue')) {
             s.seriesIssue = event.seriesIssue
           }
-          if (event.seriesIssued) {
+          if (event.hasOwnProperty('seriesIssued')) {
             s.seriesIssued = event.seriesIssued
           }
-          if (event.seriesIssn) {
+          if (event.hasOwnProperty('seriesIssn')) {
             s.seriesIssn = event.seriesIssn
           }
-          if (event.seriesIdentifier) {
+          if (event.hasOwnProperty('seriesIdentifier')) {
             s.seriesIdentifier = event.seriesIdentifier
+          }
+          if (event.hasOwnProperty('seriesIdentifierType')) {
+            s.seriesIdentifierType = event.seriesIdentifierType
           }
         }
       }
@@ -2993,6 +3035,12 @@ export default {
           if (self.importData.containedin.pageend) {
             sf.pageEnd = self.importData.containedin.pageend
           }
+          if (self.importData.containedin.identifier) {
+            sf.identifier = self.importData.containedin.identifier
+          }
+          if (self.importData.containedin.identifierType) {
+            sf.identifierType = self.importData.containedin.identifierType
+          }
           if (self.importData.containedin.roles) {
             if (self.importData.containedin.roles.length > 0) {
               sf.roles = []
@@ -3040,6 +3088,9 @@ export default {
                 }
                 if (ser.identifier) {
                   series.seriesIdentifier = ser.identifier
+                }
+                if (ser.identifierType) {
+                  series.seriesIdentifierType = ser.identifierType
                 }
                 sf.series.push(series)
               }
@@ -3228,6 +3279,12 @@ export default {
           }
           if (funding.projectid) {
             pof.identifier = funding.projectid
+          }
+          if (funding.projectidtype) {
+            pof.identifierType = funding.projectidtype
+          }
+          if (funding.projectcode) {
+            pof.code = funding.projectcode
           }
           sof.push(pof)
         }
