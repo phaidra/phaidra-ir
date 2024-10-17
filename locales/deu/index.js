@@ -675,8 +675,8 @@ export default {
   'Date accepted': 'Datum der Annahme zur Veröffentlichung',
   'Date submitted': 'Datum der Einreichung',
   'Date modified': 'Änderungsdatum',
-  'Funder/Project': 'Förderer/Projekt',
-  Funder: 'Förderer',
+  'Funder/Project': 'Fördergeber/Projekt',
+  Funder: 'Fördergeber',
   'Project identifier': 'Projekt Identifikator',
   Identifiers: 'Identifikatoren',
   'Type of identifier': 'Typ des Identifikators',
@@ -713,5 +713,6 @@ export default {
   'Rights': 'Rechte',
   'Rights and licences': 'Rechte und Lizenzen',
   'Code / Identifier': 'Kod / Identifikator',
-  'Project': 'Projekt'
+  'Project': 'Projekt',
+  'Project number': 'Projektnummer'
 }

@@ -62,8 +62,15 @@ export default {
     '@nuxt/http',
     '@nuxtjs/axios',
     ['cookie-universal-nuxt', { alias: 'cookies' }],
-    '@nuxtjs/sentry'
+    '@nuxtjs/sentry',
+    '@nuxtjs/markdownit'
   ],
+  markdownit: {
+    preset: 'default',
+    linkify: true,
+    breaks: true,
+    runtime: true
+  },
   axios: {
     baseURL: 'https://sandbox.phaidra.org/api',
     browserBaseURL: 'https://sandbox.phaidra.org/api'

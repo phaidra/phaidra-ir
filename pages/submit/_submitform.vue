@@ -3417,11 +3417,16 @@ if (crossrefData['issued']['date-parts'][0]) {
               f.publisherOrgUnitErrorMessages = [];
               f.titleErrorMessages = [];
               if (f.publisherType === "select") {
-                if (f.publisherOrgUnit.length < 1) {
-                  f.publisherOrgUnitErrorMessages.push(
-                    this.$t("Missing publisher")
+                if (
+                  !f.publisherOrgUnit ||
+                  f.publisherOrgUnit === "" ||
+                  f.publisherOrgUnit.length < 1
+                ) {
+                  let event = this.getTerm(
+                    "orgunits",
+                    "https://pid.phaidra.org/univie-org/1MPF-FAME"
                   );
-                  this.validationStatus = "error";
+                  this.publisherSelectInput(f, event);
                 }
               }
               if (f.publisherType === "other") {

@@ -42,7 +42,7 @@
         <v-col cols="12" :md="funderIdentifier === 'other' ? 2 : 4">
           <v-text-field
             :value="code"
-            :label="$t('Project code')"
+            :label="$t('Project number')"
             v-on:blur="$emit('input-code',$event.target.value)"
             :filled="inputStyle==='filled'"
             :outlined="inputStyle==='outlined'"
@@ -65,9 +65,9 @@
           <v-autocomplete
             v-on:input="$emit('input-identifier-type', $event)"
             :label="$t('Type of identifier')"
-            :items="vocabularies['irobjectidentifiertypenoisbn'].terms"
+            :items="vocabularies['irprojectid'].terms"
             :item-value="'@id'"
-            :value="getTerm('irobjectidentifiertypenoisbn', identifierType)"
+            :value="getTerm('irprojectid', identifierType)"
             :filter="autocompleteFilter"
             :filled="inputStyle==='filled'"
             :outlined="inputStyle==='outlined'"
@@ -76,12 +76,12 @@
           >
             <template slot="item" slot-scope="{ item }">
               <v-list-item-content two-line>
-                <v-list-item-title  v-html="`${getLocalizedTermLabel('irobjectidentifiertypenoisbn', item['@id'])}`"></v-list-item-title>
+                <v-list-item-title  v-html="`${getLocalizedTermLabel('irprojectid', item['@id'])}`"></v-list-item-title>
               </v-list-item-content>
             </template>
             <template slot="selection" slot-scope="{ item }">
               <v-list-item-content>
-                <v-list-item-title v-html="`${getLocalizedTermLabel('irobjectidentifiertypenoisbn', item['@id'])}`"></v-list-item-title>
+                <v-list-item-title v-html="`${getLocalizedTermLabel('irprojectid', item['@id'])}`"></v-list-item-title>
               </v-list-item-content>
             </template>
           </v-autocomplete>
