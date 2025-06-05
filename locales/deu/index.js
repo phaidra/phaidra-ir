@@ -651,7 +651,7 @@ export default {
   'Object with this ID was not found.': 'Ein Objekt mit dieser ID wurde nicht gefunden.',
   'To resource': 'Zur Ressource',
   'Page not found': 'Diese Seite ist nicht vorhanden',
-  'SHERPA RoMEO is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis.': 'Open policy finder ist ein Tool, das Open-Access-Richtlinien für Verlage aus der ganzen Welt zusammenfasst und analysiert und für Autor*innen die Bedingungen für die Selbstarchivierung auf Journalebene bereitstellt.',
+  'Open policy finder is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis.': 'Open policy finder ist ein Tool, das Open-Access-Richtlinien für Verlage aus der ganzen Welt zusammenfasst und analysiert und für Autor*innen die Bedingungen für die Selbstarchivierung auf Journalebene bereitstellt.',
   'Possible duplicate found': 'Mögliche Dublette gefunden',
   'This item is not part of the {name} collection': 'Dieses Objekt ist nicht Teil der {name}-Collection',
   Author: 'Autor*in',

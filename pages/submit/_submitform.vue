@@ -591,7 +591,7 @@
               <p>
                 {{
                   $t(
-                    "SHERPA RoMEO is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis."
+                    "Open policy finder is an online resource that aggregates and analyses publisher open access policies from around the world and provides summaries of self-archiving permissions and conditions of rights given to authors on a journal-by-journal basis."
                   )
                 }}
               </p>
