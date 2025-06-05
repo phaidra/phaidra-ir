@@ -584,7 +584,7 @@
           <v-container>
             <v-row no-gutters>
               <h3 class="title font-weight-light primary--text mb-4">
-                {{ $t("SHERPA/RoMEO") }}
+                {{ $t("Open policy finder") }}
               </h3>
             </v-row>
             <v-row no-gutters>
@@ -1547,7 +1547,7 @@ export default {
     },
     showSubmitWarning: function () {
       let permittedVersions = {
-        // these versions are not in sherpa/romeo, so we can't say
+        // these versions are not in Open policy finder, so we can't say
         "https://pid.phaidra.org/vocabulary/TV31-080M": true,
         "https://pid.phaidra.org/vocabulary/83ZP-CPP2": true,
         "https://pid.phaidra.org/vocabulary/MT1G-APSB": true,

@@ -460,7 +460,7 @@ export default {
   AUTHOR_PREPRINT: 'Author\'s preprint',
   AUTHOR_POSTPRINT: 'Author\'s postprint',
   PUBLISHER_PDF: 'Publisher\'s Version/PDF',
-  SUBMIT_ATTENTION: 'According to the legal terms & conditions listed in SHERPA/RoMEO it might not be permitted to upload articles from {journal} as {version} to the instutional repository u:scholar. Please check your upload and, if necessary, choose a version where this is allowed. In case the publisher explicitly granted you the right to upload the published version please let us know in writing via',
+  SUBMIT_ATTENTION: 'According to the legal terms & conditions listed in Open policy finder it might not be permitted to upload articles from {journal} as {version} to the instutional repository u:scholar. Please check your upload and, if necessary, choose a version where this is allowed. In case the publisher explicitly granted you the right to upload the published version please let us know in writing via',
   OTHER_FEMININE: 'Other',
   ABOUT_LINK: 'About {name}',
   ERROR_AFFILIATION: 'At least one person named must be affiliated with {institution}',
