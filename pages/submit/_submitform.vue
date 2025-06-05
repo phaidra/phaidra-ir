@@ -3101,14 +3101,6 @@ if (crossrefData['issued']['date-parts'][0]) {
       }
       sof.push(keyws);
 
-      // handled by submit-ir-funding-field component
-      let pof = fields.getField("project");
-      pof.label = "Funder/Project";
-      pof.multiplicable = true;
-      pof.multiplicableCleared = true;
-      pof.subloopFlag = true;
-      sof.push(pof);
-
       if (self.submitformparam === "book") {
         let isbn = {
           id: "alternate-identifier",
@@ -3131,7 +3123,7 @@ if (crossrefData['issued']['date-parts'][0]) {
 
       let aif = fields.getField("alternate-identifier");
       aif.label = "Identifier";
-      aif.identifierLabel = "Identifier";
+      aif.identifierLabel = "Publication identifier(s)";
       aif.vocabulary = "irobjectidentifiertypenoisbn";
       aif.multiplicable = true;
       aif.addOnly = true;
@@ -3141,6 +3133,14 @@ if (crossrefData['issued']['date-parts'][0]) {
         aif.value = doiImportData.doi;
       }
       sof.push(aif);
+
+      // handled by submit-ir-funding-field component
+      let pof = fields.getField("project");
+      pof.label = "Funder/Project";
+      pof.multiplicable = true;
+      pof.multiplicableCleared = true;
+      pof.subloopFlag = true;
+      sof.push(pof);
 
       if (self.submitformparam === "book") {
         let nop = fields.getField("number-of-pages");

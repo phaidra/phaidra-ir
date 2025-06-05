@@ -1,54 +1,63 @@
 <template>
   <v-row>
-    <v-col cols="12" md="5" v-if="showType">
-      <v-autocomplete
-        v-on:input="$emit('input-identifier-type', $event)"
-        :label="$t('Type of identifier')"
-        :items="vocabularies[vocabulary].terms"
-        :item-value="'@id'"
-        :value="getTerm(vocabulary, type)"
-        :filter="autocompleteFilter"
-        :disabled="disabletype"
-        :filled="inputStyle==='filled'"
-        :outlined="inputStyle==='outlined'"
-        return-object
-        clearable
-      >
-        <template slot="item" slot-scope="{ item }">
-          <v-list-item-content two-line>
-            <v-list-item-title  v-html="`${getLocalizedTermLabel(vocabulary, item['@id'])}`"></v-list-item-title>
-            <v-list-item-subtitle v-if="showIds" v-html="`${item['@id']}`"></v-list-item-subtitle>
-          </v-list-item-content>
-        </template>
-        <template slot="selection" slot-scope="{ item }">
-          <v-list-item-content>
-            <v-list-item-title v-html="`${getLocalizedTermLabel(vocabulary, item['@id'])}`"></v-list-item-title>
-          </v-list-item-content>
-        </template>
-      </v-autocomplete>
-    </v-col>
-    <v-col cols="12" :md="showType ? 5 : 10">
-      <v-text-field
-        :value="value"
-        v-on:input="$emit('input-identifier', $event)"
-        :label="$t(identifierLabel ? identifierLabel : 'Identifier')"
-        :placeholder="placeholder(type)"
-        :required="required"
-        :rules="[validationrules[getIdentifierRuleName(type)]]"
-        :filled="inputStyle==='filled'"
-        :outlined="inputStyle==='outlined'"
-      ></v-text-field>
-    </v-col>
-    <v-col cols="2">
-      <v-btn icon @click="$emit('add', $event)">
-        <v-icon>mdi-content-duplicate</v-icon>
-      </v-btn>
-      <v-btn icon @click="$emit('add-clear', $event)">
-        <v-icon>mdi-plus</v-icon>
-      </v-btn>
-      <v-btn v-if="removable" icon @click="$emit('remove', $event)">
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
+    <v-col cols="12">
+      <v-row>
+        <v-col cols="12">
+          {{ $t('Please enter the publication identifier if available') }}
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="12" md="5" v-if="showType">
+          <v-autocomplete
+            v-on:input="$emit('input-identifier-type', $event)"
+            :label="$t('Type of identifier')"
+            :items="vocabularies[vocabulary].terms"
+            :item-value="'@id'"
+            :value="getTerm(vocabulary, type)"
+            :filter="autocompleteFilter"
+            :disabled="disabletype"
+            :filled="inputStyle==='filled'"
+            :outlined="inputStyle==='outlined'"
+            return-object
+            clearable
+          >
+            <template slot="item" slot-scope="{ item }">
+              <v-list-item-content two-line>
+                <v-list-item-title  v-html="`${getLocalizedTermLabel(vocabulary, item['@id'])}`"></v-list-item-title>
+                <v-list-item-subtitle v-if="showIds" v-html="`${item['@id']}`"></v-list-item-subtitle>
+              </v-list-item-content>
+            </template>
+            <template slot="selection" slot-scope="{ item }">
+              <v-list-item-content>
+                <v-list-item-title v-html="`${getLocalizedTermLabel(vocabulary, item['@id'])}`"></v-list-item-title>
+              </v-list-item-content>
+            </template>
+          </v-autocomplete>
+        </v-col>
+        <v-col cols="12" :md="showType ? 5 : 10">
+          <v-text-field
+            :value="value"
+            v-on:input="$emit('input-identifier', $event)"
+            :label="$t(identifierLabel ? identifierLabel : 'Identifier')"
+            :placeholder="placeholder(type)"
+            :required="required"
+            :rules="[validationrules[getIdentifierRuleName(type)]]"
+            :filled="inputStyle==='filled'"
+            :outlined="inputStyle==='outlined'"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-btn icon @click="$emit('add', $event)">
+            <v-icon>mdi-content-duplicate</v-icon>
+          </v-btn>
+          <v-btn icon @click="$emit('add-clear', $event)">
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <v-btn v-if="removable" icon @click="$emit('remove', $event)">
+            <v-icon>mdi-minus</v-icon>
+          </v-btn>
+        </v-col>
+      </v-row>
     </v-col>
   </v-row>
 </template>

@@ -3262,43 +3262,6 @@ export default {
       }
       sof.push(keyws)
 
-      // handled by submit-ir-funding-field component
-      if (self.importData && self.importData.funding && (self.importData.funding.length > 0)) {
-        let i = 0
-        for (let funding of self.importData.funding) {
-          i++
-          let pof = fields.getField('project')
-          pof.label = 'Funder/Project'
-          pof.removable = true
-          pof.multiplicable = true
-          pof.multiplicableCleared = true
-          pof.subloopFlag = i === 1
-          if (funding.funderid) {
-            pof.funderIdentifier = funding.funderid
-          }
-          if ((funding.funderid === 'other') && funding.fundername) {
-            pof.funderName = funding.fundername
-          }
-          if (funding.projectid) {
-            pof.identifier = funding.projectid
-          }
-          if (funding.projectidtype) {
-            pof.identifierType = funding.projectidtype
-          }
-          if (funding.projectcode) {
-            pof.code = funding.projectcode
-          }
-          sof.push(pof)
-        }
-      } else {
-        let pof = fields.getField('project')
-        pof.label = 'Funder/Project'
-        pof.multiplicable = true
-        pof.multiplicableCleared = true
-        pof.subloopFlag = true
-        sof.push(pof)
-      }
-
       let identifiersArrayNoIsbn = []
       if ((self.submitformparam === 'book')) {
         let isbn = {
@@ -3370,6 +3333,43 @@ export default {
           aif.value = doiImportData.doi
         }
         sof.push(aif)
+      }
+
+      // handled by submit-ir-funding-field component
+      if (self.importData && self.importData.funding && (self.importData.funding.length > 0)) {
+        let i = 0
+        for (let funding of self.importData.funding) {
+          i++
+          let pof = fields.getField('project')
+          pof.label = 'Funder/Project'
+          pof.removable = true
+          pof.multiplicable = true
+          pof.multiplicableCleared = true
+          pof.subloopFlag = i === 1
+          if (funding.funderid) {
+            pof.funderIdentifier = funding.funderid
+          }
+          if ((funding.funderid === 'other') && funding.fundername) {
+            pof.funderName = funding.fundername
+          }
+          if (funding.projectid) {
+            pof.identifier = funding.projectid
+          }
+          if (funding.projectidtype) {
+            pof.identifierType = funding.projectidtype
+          }
+          if (funding.projectcode) {
+            pof.code = funding.projectcode
+          }
+          sof.push(pof)
+        }
+      } else {
+        let pof = fields.getField('project')
+        pof.label = 'Funder/Project'
+        pof.multiplicable = true
+        pof.multiplicableCleared = true
+        pof.subloopFlag = true
+        sof.push(pof)
       }
 
       if (self.submitformparam === 'book') {

@@ -714,5 +714,8 @@ export default {
   'Rights and licences': 'Rechte und Lizenzen',
   'Code / Identifier': 'Kod / Identifikator',
   'Project': 'Projekt',
-  'Project number': 'Projektnummer'
+  'Project number': 'Projektnummer',
+  'Publication identifier(s)': 'Identifikator(en) für die Publikation',
+  'Please enter the publication identifier if available': 'Tragen Sie hier den Identifikator für die Publikation ein, sofern vorhanden',
+  'Please enter funders and project numbers. Project identifiers can be added if available': 'Tragen Sie hier Fördergeber und Projektnummer(n) ein. Zusätzlich können auch Projektidentifikatoren angegeben werden, sofern vorhanden'
 }
