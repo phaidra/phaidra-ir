@@ -3066,6 +3066,7 @@ export default {
                 seriesidx++
                 let series = {
                   id: 'contained-in-series-' + seriesidx,
+                  seriesType: 'schema:CreativeWork',
                   multiplicableCleared: true
                 }
                 if (ser.title) {
