@@ -694,6 +694,12 @@ address {
   font-weight: 400;
 }
 
+.theme--light.v-card > .v-card__title,
+.theme--dark.v-card > .v-card__title {
+  background-color: #757575;
+}
+
+
 #quicklinks-button {
   background-color: #1a74b0;
   text-decoration: none;
