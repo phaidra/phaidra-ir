@@ -2821,6 +2821,7 @@ export default {
           role.firstname = importRole.firstname
           role.lastname = importRole.lastname
           role.showIdentifierType = false
+          role.showBirthAndDeathDate = false
           if (importRole.identifier) {
             role.identifierType = importRole.identifier.type
             role.identifierText = importRole.identifier.value
@@ -2856,6 +2857,7 @@ export default {
             role.enableOrgTree = self.config.enableorgtree
             role.enableAffTree = self.config.enableafftree
             role.role = 'role:aut'
+            role.showBirthAndDeathDate = false
             if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
               role.hideRole = true
               role.label = 'Author'
@@ -2901,6 +2903,7 @@ export default {
           role.role = 'role:aut'
           role.type = 'schema:Person'
           role.enableTypeSelect = false
+          role.showBirthAndDeathDate = false
           if ((self.submitformparam === 'journal-article') || (self.submitformparam === 'book-part')) {
             role.hideRole = true
             role.label = 'Author'

@@ -2883,6 +2883,7 @@ if (crossrefData['issued']['date-parts'][0]) {
           role.enableOrgTree = self.config.enableorgtree;
           role.enableAffTree = self.config.enableafftree;
           role.role = "role:aut";
+          role.showBirthAndDeathDate = false
           if (
             self.submitformparam === "journal-article" ||
             self.submitformparam === "book-part"
@@ -2926,6 +2927,7 @@ if (crossrefData['issued']['date-parts'][0]) {
         role.role = "role:aut";
         role.type = "schema:Person";
         role.enableTypeSelect = false;
+        role.showBirthAndDeathDate = false
         if (
           self.submitformparam === "journal-article" ||
           self.submitformparam === "book-part"
