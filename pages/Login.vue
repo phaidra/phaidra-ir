@@ -7,6 +7,7 @@
             <v-card-text>
               <v-col cols="10" offset="1">
                 <v-text-field
+                  autofocus
                   v-on:keyup.enter="login()"
                   :disabled="loading"
                   :label="$t('Username')"
