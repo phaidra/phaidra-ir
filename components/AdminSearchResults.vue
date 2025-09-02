@@ -10,7 +10,7 @@
           <span v-else>{{ doc.owner }}</span>
         </v-col>
         <v-col cols="1">
-          <a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doc.pid">{{ doc.pid }}</a>
+          <a target="_blank" :href="config.phaidrabaseurl + '/' + doc.pid">{{ doc.pid }}</a>
         </v-col>
         <v-col cols="3">
           <nuxt-link class="font-weight-light primary--text" :to="{ path: `/detail/${doc.pid}`}">{{ doc.dc_title[0] | truncate(100) }}</nuxt-link>
