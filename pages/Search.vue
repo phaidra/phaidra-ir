@@ -269,12 +269,14 @@ export default {
           deactivateFacetQueries(fq);
         }
       }
+      console.log(this.facetQueries)
       // open first association query (level: univeristy)
       for (let fq of this.facetQueries) {
         if (fq.id === "association") {
           for (let q of fq.queries) {
-            q.active = true;
-            break;
+            if (q.id === 'https://pid.phaidra.org/univie-org/1MPF-FAME' || q.id === 'https://pid.phaidra.org/kug-org/K8HY-RMBP') {
+              q.active = true;
+            }
           }
           break;
         }
