@@ -163,7 +163,7 @@ export function buildAssociationFacet (orgUnitsTree) {
                 if (l4Unit.subunits) {
                   for (const l5Unit of l4Unit.subunits) {
                     l5Facet.queries.push({
-                      query: 'association_id:"' + l5Unit['@id'] + '"',
+                      query: '(association_id:"' + l5Unit['@id'] + '" OR affiliation_id:"' + l5Unit['@id'] + '")',
                       active: false,
                       id: l5Unit['@id'],
                       label: {
@@ -174,7 +174,7 @@ export function buildAssociationFacet (orgUnitsTree) {
                 }
 
                 l4Facet.queries.push({
-                  query: 'association_id:"' + l4Unit['@id'] + '"',
+                  query: '(association_id:"' + l4Unit['@id'] + '" OR affiliation_id:"' + l4Unit['@id'] + '")',
                   active: false,
                   id: l4Unit['@id'],
                   label: {
@@ -186,7 +186,7 @@ export function buildAssociationFacet (orgUnitsTree) {
             }
 
             l3Facet.queries.push({
-              query: 'association_id:"' + l3Unit['@id'] + '"',
+              query: '(association_id:"' + l3Unit['@id'] + '" OR affiliation_id:"' + l3Unit['@id'] + '")',
               active: false,
               id: l3Unit['@id'],
               label: {
@@ -198,7 +198,7 @@ export function buildAssociationFacet (orgUnitsTree) {
         }
 
         l2Facet.queries.push({
-          query: 'association_id:"' + l2Unit['@id'] + '"',
+          query: '(association_id:"' + l2Unit['@id'] + '" OR affiliation_id:"' + l2Unit['@id'] + '")',
           active: false,
           id: l2Unit['@id'],
           label: {
@@ -210,7 +210,7 @@ export function buildAssociationFacet (orgUnitsTree) {
     }
 
     associationFacet.queries.push({
-      query: 'association_id:"' + l1Unit['@id'] + '"',
+      query: '(association_id:"' + l1Unit['@id'] + '" OR affiliation_id:"' + l1Unit['@id'] + '")',
       active: i === 2,
       id: l1Unit['@id'],
       label: {
