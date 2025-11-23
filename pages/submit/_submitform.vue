@@ -1481,6 +1481,10 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+    <div>
+      <!--10.28937/978-3-7873-4945-6-->
+      {{ JSON.stringify(this.getJsonld(), null, 2) }}
+      </div>
   </div>
 </template>
 
@@ -3185,7 +3189,7 @@ if (crossrefData['issued']['date-parts'][0]) {
           if (doiImportData.pageEnd) {
             sf.pageEnd = doiImportData.pageEnd;
           }
-          if (doiImportData && doiImportData.dateIssued) {
+          if (doiImportData && doiImportData.journalTitle && doiImportData.dateIssued) {
             sf.issued = doiImportData.dateIssued;
           }
         }
