@@ -997,7 +997,7 @@
     </v-stepper>
     <v-btn v-if="targetPid" style="margin-right:120px;" right fixed bottom  @click="validationEnabled = !validationEnabled" :color="validationEnabled ? 'success' : 'warning'">{{ $t(validationEnabled ? 'Validation enabled' : 'Validation disabled')}}</v-btn>
     <v-btn v-if="targetPid" fixed bottom right raised color="primary" :loading="loading" :disabled="loading || (importData.unknownpredicates.length > 0) || (importData.errors.length > 0)" @click="save()">{{ $t('Save') }}</v-btn>
-    <code style="display:none;" class="mdeditor-header">{{ getMetadata() }}</code>
+    <code v-if="this.user.username === this.config.iraccount" class="mdeditor-header">{{ JSON.stringify(getMetadata(), null, 2) }}</code>
   </div>
 </template>
 

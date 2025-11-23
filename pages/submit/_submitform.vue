@@ -1481,10 +1481,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <div>
-      <!--10.28937/978-3-7873-4945-6-->
-      {{ JSON.stringify(this.getJsonld(), null, 2) }}
-      </div>
+    <code v-if="this.user.username === this.config.iraccount" class="mdeditor-header">{{ JSON.stringify(getMetadata(), null, 2) }}</code>
   </div>
 </template>
 
