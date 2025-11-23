@@ -1481,7 +1481,7 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <code v-if="this.user.username === this.config.iraccount" class="mdeditor-header">{{ JSON.stringify(getMetadata(), null, 2) }}</code>
+    <code v-if="this.user.username === this.config.iraccount"><pre>{{ JSON.stringify(getMetadata(), null, 2) }}</pre></code>
   </div>
 </template>
 
