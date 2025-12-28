@@ -72,8 +72,8 @@ export default {
     runtime: true
   },
   axios: {
-    baseURL: 'https://sandbox.phaidra.org/api',
-    browserBaseURL: 'https://sandbox.phaidra.org/api'
+    baseURL: 'https://services.phaidra.univie.ac.at/api',
+    browserBaseURL: 'https://services.phaidra.univie.ac.at/api'
   },
   sentry: {
     dsn: config?.monitor?.sentry?.dsn
