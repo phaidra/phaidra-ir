@@ -258,7 +258,7 @@ export default {
       self.stats.download = null
       self.stats.detail = null
       try {
-        let response = await axios.get(self.config.api + '/ir/stats/' + pid)
+        let response = await axios.get(self.config.api + '/stats/' + pid)
         if (response.data.stats) {
           self.stats.download = response.data.stats.downloads
           self.stats.detail = response.data.stats.detail_page
