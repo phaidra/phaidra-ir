@@ -23,7 +23,7 @@
           <div class="grey--text pt-2">{{ doc.requestedlicense }}</div>
         </v-col>
         <v-col cols="2">
-          <v-btn icon :color="'grey darken-1'" @click="downloadFile(config.api + '/object/' + doc.pid + '/diss/Content/download')">
+          <v-btn icon :color="'grey darken-1'" @click="downloadFile(config.api + '/object/' + doc.pid + '/download')">
             <v-icon>mdi-download</v-icon>
           </v-btn>
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">

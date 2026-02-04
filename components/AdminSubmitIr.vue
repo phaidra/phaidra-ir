@@ -104,7 +104,7 @@
               </v-row>
             </div>
             <v-alert outlined type="error" color="primary" transition="slide-y-transition" v-if="doiDuplicate">
-              <span class="mr-2 black--text">{{ $t('Possible duplicate found') }}:</span><a target="_blank" :href="'https://' + config.phaidrabaseurl + '/' + doiDuplicate.pid">{{ doiDuplicate.title }}</a>
+              <span class="mr-2 black--text">{{ $t('Possible duplicate found') }}:</span><a target="_blank" :href="config.phaidrabaseurl + '/' + doiDuplicate.pid">{{ doiDuplicate.title }}</a>
             </v-alert>
             <v-slide-y-transition>
               <v-row no-gutters justify="center">

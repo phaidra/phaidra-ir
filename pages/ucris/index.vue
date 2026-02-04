@@ -79,7 +79,7 @@ export default {
     resetTable: function () {
       this.docs = [];
       this.total = [];
-      this.page = 0;
+      this.page = 1;
       this.search()
     },
     search: async function () {
