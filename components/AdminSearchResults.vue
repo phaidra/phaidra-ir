@@ -29,7 +29,7 @@
           <v-btn icon :color="'grey darken-1'" @click="openHistory(doc.pid)">
             <v-icon dark>history</v-icon>
           </v-btn>
-          <v-btn v-if="doc.datastreams.includes('POLICY')" icon :color="'error'" @click="openRights(doc.pid)">
+          <v-btn v-if="doc.isrestricted" icon :color="'error'" @click="openRights(doc.pid)">
             <v-icon dark>mdi-lock</v-icon>
           </v-btn>
           <v-btn v-else icon :color="'grey darken-1'" @click="openRights(doc.pid)">
