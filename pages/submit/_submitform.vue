@@ -207,9 +207,8 @@
                     <a
                       @click.stop
                       :href="
-                        'https://' +
                         config.phaidrabaseurl +
-                        '/terms_of_use/show_terms_of_use'
+                        '/termsofuse'
                       "
                       target="_blank"
                       >Phaidra</a
