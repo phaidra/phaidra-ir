@@ -1718,8 +1718,8 @@ export default {
         if (response.data.nrdays) {
           this.checkAllowSubmitRes.nrdays = response.data.nrdays;
         }
-        if (response.data.nrdays) {
-          this.checkAllowSubmitRes.nrdays = response.data.nrdays;
+        if (response.data.nruploads) {
+          this.checkAllowSubmitRes.nruploads = response.data.nruploads;
         }
       } catch (error) {
         console.error(error);
