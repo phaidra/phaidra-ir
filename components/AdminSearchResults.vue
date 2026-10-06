@@ -180,6 +180,7 @@ export default {
       try {
         var httpFormData = new FormData()
         httpFormData.append('file', this.fileUpload)
+        httpFormData.append('mimetype', this.fileUpload.type)
         let response = await axios.post(this.config.api + '/object/' + this.uploadPid + '/data', httpFormData, {
           headers: {
             'Content-Type': 'multipart/form-data',
